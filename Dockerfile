@@ -1,15 +1,26 @@
 FROM python:3.10-slim
 
+COPY ./requirements.txt /requirements.txt
+COPY . /app
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    default-libmysqlclient-dev \
-    && rm -rf /var/lib/apt/lists/*
+RUN python -m venv /py && \
+  /py/bin/pip install --upgrade pip && \
+  /py/bin/pip install -r /requirements.txt && \
+  adduser --disabled-password --no-create-home django-user
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+ENV PATH="/py/bin:$PATH"
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
-COPY . .
+USER django-user
 
-EXPOSE 8000
+# Gunicorn as app server
+# CMD exec gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 8 --timeout 0 lmsbackend.wsgi:application
+
+CMD exec gunicorn lmsbackend.wsgi:application \
+  --bind 0.0.0.0:$PORT \
+  --workers 3 \
+  --threads 4 \
+  --worker-class gthread \
+  --timeout 120

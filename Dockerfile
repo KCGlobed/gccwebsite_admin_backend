@@ -18,7 +18,7 @@ USER django-user
 # Gunicorn as app server
 # CMD exec gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 8 --timeout 0 lmsbackend.wsgi:application
 
-CMD exec gunicorn lmsbackend.wsgi:application \
+CMD exec gunicorn gcc_backend.wsgi:application \
   --bind 0.0.0.0:$PORT \
   --workers 3 \
   --threads 4 \

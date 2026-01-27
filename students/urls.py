@@ -6,5 +6,7 @@ urlpatterns = [
     path("query_page_list", StudentQuery_list.as_view()),
     path("studentdata_page_list", StudentData_list.as_view()),
     path("studentpayment_page_list", StudentPayment_list.as_view()),
+    path("studentcampus_page_list", CampusStudent_list.as_view()),
+    path("facultycampus_page_list", CampusFaculty_list.as_view()),
 
 ]

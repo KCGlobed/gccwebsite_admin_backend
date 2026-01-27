@@ -83,7 +83,53 @@ class StudentPayment_list(APIView):
         paginator = self.pagination_class()
         page = paginator.paginate_queryset(datas, request, view=self)
         serializers = ListStudentPaymentSerializer(page, many=True)
-        print(serializers.data)
+        print(serializers)
+        
+        return paginator.get_paginated_response(serializers.data)
+    
+
+
+
+class CampusFaculty_list(APIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = CustomPageNumberPagination
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['id']
+    ordering_fields = ['id']
+    def get(self, request):
+        datas = CampusFaculty.objects.all().order_by('-id')
+        search_filter = filters.SearchFilter()
+        datas = search_filter.filter_queryset(request, datas, self)
+
+        ordering_filter = filters.OrderingFilter()
+        datas = ordering_filter.filter_queryset(request, datas, self)
+
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(datas, request, view=self)
+        serializers = ListCampusFacultySerializer(page, many=True)
+        print(serializers)
+        
+        return paginator.get_paginated_response(serializers.data)
+    
+
+class CampusStudent_list(APIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = CustomPageNumberPagination
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['id']
+    ordering_fields = ['id']
+    def get(self, request):
+        datas = CampusStudent.objects.all().order_by('-id')
+        search_filter = filters.SearchFilter()
+        datas = search_filter.filter_queryset(request, datas, self)
+
+        ordering_filter = filters.OrderingFilter()
+        datas = ordering_filter.filter_queryset(request, datas, self)
+
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(datas, request, view=self)
+        serializers = ListCampusStudentSerializer(page, many=True)
+        print(serializers)
         
         return paginator.get_paginated_response(serializers.data)
     

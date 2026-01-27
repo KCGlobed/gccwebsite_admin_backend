@@ -101,3 +101,59 @@ class Payments(models.Model):
 
     class Meta:
         db_table = 'payments'
+
+
+
+
+#### >>>>>>>>>>>>>>>>>>>>>> #### >>>>>>>>>>>>>>>>>>>>>>>> #### >>>>>>>>>>>>>>>>>>>>>>>....
+
+
+
+
+class CampusFaculty(models.Model):
+    full_name = models.CharField(max_length=255)
+    email = models.CharField(max_length=255)
+    mobile = models.CharField(max_length=50)
+    city = models.CharField(max_length=255)
+    state = models.CharField(max_length=255)
+    address = models.TextField()
+    institution_name = models.CharField(max_length=255)
+    department = models.CharField(max_length=255)
+    designation = models.CharField(max_length=255)
+    teaching_experience = models.CharField(max_length=50)
+    industrial_experience = models.CharField(max_length=255, blank=True, null=True)
+    highest_qualification = models.CharField(max_length=255)
+    motivation = models.TextField()
+    support_activities = models.JSONField()
+    student_reach = models.CharField(max_length=255)
+    consent = models.BooleanField()
+    created_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'campus_faculty'
+
+
+class CampusStudent(models.Model):
+    full_name = models.CharField(max_length=255)
+    email = models.CharField(max_length=255)
+    mobile = models.CharField(max_length=50)
+    city = models.CharField(max_length=255)
+    state = models.CharField(max_length=255)
+    address = models.TextField()
+    college_name = models.CharField(max_length=255)
+    program_of_study = models.CharField(max_length=255)
+    program_other = models.CharField(max_length=255, blank=True, null=True)
+    semester = models.CharField(max_length=255)
+    student_body_member = models.CharField(max_length=255)
+    campus_ambassador_history = models.CharField(max_length=255)
+    inspiration = models.TextField()
+    promotion_channels = models.JSONField()
+    student_reach = models.CharField(max_length=255)
+    consent = models.BooleanField()
+    created_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'campus_student'
+

@@ -19,5 +19,17 @@ class ListStudentPaymentSerializer(serializers.ModelSerializer) :
     class Meta:
         model = Payments
         fields = "__all__"
+
+
+class ListCampusFacultySerializer(serializers.ModelSerializer) :
+    class Meta:
+        model = CampusFaculty
+        fields = "__all__"
+
+
+class ListCampusStudentSerializer(serializers.ModelSerializer) :
+    class Meta:
+        model = CampusStudent
+        fields = "__all__"
         
 

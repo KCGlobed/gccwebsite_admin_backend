@@ -134,4 +134,137 @@ class CampusStudent_list(APIView):
         return paginator.get_paginated_response(serializers.data)
     
 
+# from xhtml2pdf import pisa
+# from io import BytesIO
+# from django.template.loader import get_template
+# from google.cloud import storage
+# client = storage.Client()
+# import pandas as pd
+# import tempfile
+# import re
+# from datetime import datetime, timedelta
+# import os
 
+# # print([b.name for b in client.list_buckets()])
+
+# class GetSessionReportPDFView(APIView):
+#     # renderer_classes = [ReportsRenderer]
+#     permission_classes = [IsAuthenticated]
+#     # @auto_logout
+#     def get(self, request, sid=None):
+        
+#         datas = CampusStudent.objects.all().order_by('-id')
+#         completed_session = ListCampusStudentSerializer(datas, context={'user':request.user,"subject_id":sid,"session_type":"completed"})
+
+
+#         data = {
+#                     'username':request.user.first_name +' '+request.user.last_name,
+#                     'user_id':request.user.email
+#                 }
+        
+
+#         template = get_template('pdf/session_report.html')
+#         html  = template.render(data)
+#         with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as temp_file:
+#             pdf_path = temp_file.name
+            
+#             # Encode HTML and create PDF
+#             html = html.encode('latin-1', 'replace').decode('latin-1')
+#             pdf = pisa.CreatePDF(BytesIO(html.encode("ISO-8859-1")), dest=temp_file)
+
+#             if pdf.err:
+#                 raise Exception("PDF generation error!")
+        
+#         # After the 'with' block, the file is closed, but not deleted yet
+#         try:
+#             # GCS file naming logic
+#             timestamp = datetime.now().strftime("%d_%m_%y_%H_%M")
+#             report_name = "session_report"
+#             username = re.sub(r'\s+', '_', f"{request.user.first_name} {request.user.last_name}")
+#             gcs_folder_name = "media/kcc_data_list/reports"
+#             gcs_file_name = f"{gcs_folder_name}/{username}_{report_name}_{timestamp}.pdf"
+
+#             # Upload the temporary file to GCS
+#             # bucket = client.get_bucket(settings.GS_BUCKET_NAME)
+#             bucket = client.get_bucket("kcc_report_data")
+#             print("bcket...",bucket)
+#             blob = bucket.blob(gcs_file_name)
+#             blob.upload_from_filename(pdf_path)
+#             return Response({
+#                 "message":"Success",
+#                 "data":{"report_url": blob.public_url},
+#                 "status":200}
+#             )
+#         finally:
+#             print("calleddd...")
+#             # Ensure the temporary file is deleted from the server's disk
+#             os.remove(pdf_path)
+
+
+
+
+
+from google.cloud import storage
+from datetime import datetime, timedelta
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from django.template.loader import get_template
+from io import BytesIO
+from xhtml2pdf import pisa
+import tempfile, os, re
+
+
+class GetSessionReportPDFView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, sid=None):
+
+        data = {
+            'username': f"{request.user.first_name} {request.user.last_name}",
+            'user_id': request.user.email
+        }
+
+        # Render HTML
+        template = get_template('pdf/session_report.html')
+        html = template.render(data)
+
+        # Create PDF
+        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as temp_file:
+            pdf_path = temp_file.name
+            pisa.CreatePDF(BytesIO(html.encode("UTF-8")), dest=temp_file)
+
+        try:
+            # GCS file naming
+            timestamp = datetime.now().strftime("%d_%m_%y_%H_%M")
+            username = re.sub(r'\s+', '_', data["username"])
+            gcs_file_name = (
+                f"media/kcc_data_list/reports/"
+                f"{username}_session_report_{timestamp}.pdf"
+            )
+
+            # Upload to GCS
+            client = storage.Client()
+            bucket = client.bucket("kcc_report_data")
+            blob = bucket.blob(gcs_file_name)
+            blob.upload_from_filename(
+                pdf_path,
+                content_type="application/pdf"
+            )
+
+            # ✅ Generate SIGNED URL (THIS IS THE KEY)
+            signed_url = blob.generate_signed_url(
+                version="v4",
+                expiration=timedelta(minutes=15),
+                method="GET"
+            )
+
+            return Response({
+                "message": "Success",
+                "data": {
+                    "report_url": signed_url
+                }
+            }, status=200)
+
+        finally:
+            os.remove(pdf_path)

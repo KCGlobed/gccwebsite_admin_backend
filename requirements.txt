@@ -31,6 +31,7 @@ protobuf==6.33.4
 psycopg2-binary==2.9.11
 pyasn1==0.6.2
 pyasn1_modules==0.4.2
+pycairo==1.29.0
 pycparser==3.0
 pyHanko==0.32.0
 pyhanko-certvalidator==0.29.0

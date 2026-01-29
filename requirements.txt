@@ -8,6 +8,7 @@ cryptography==46.0.4
 cssselect2==0.8.0
 Django==5.2.10
 django-cors-headers==4.9.0
+django-storages==1.14.6
 djangorestframework==3.16.1
 djangorestframework_simplejwt==5.5.1
 drf-standardized-errors==0.15.0

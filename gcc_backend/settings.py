@@ -155,7 +155,17 @@ CORS_ALLOW_ALL_ORIGINS = True
 # ]
 
 from datetime import timedelta
+from google.oauth2 import service_account
+import os
 
+GS_BUCKET_NAME = "gcc_cloud_test"
+
+DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+
+
+# GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+#     os.path.join(BASE_DIR, 'credentail_bucket.json')
+# )
 
 # REST_FRAMEWORK = {
 #     "DEFAULT_AUTHENTICATION_CLASSES": [

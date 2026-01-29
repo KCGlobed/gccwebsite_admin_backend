@@ -30,7 +30,7 @@ USER django-user
 
 # ---- gunicorn ----
 CMD exec gunicorn gcc_backend.wsgi:application \
-    --bind 0.0.0.0:${PORT:-8080} \
+    --bind 0.0.0.0:${PORT:-8000} \
     --workers 3 \
     --threads 4 \
     --worker-class gthread \

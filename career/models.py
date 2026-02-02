@@ -53,3 +53,11 @@ class PartnerWithUs(models.Model):
 
 
 
+class NewsletterSubscribers(models.Model):
+    email = models.CharField(unique=True, max_length=255)
+    created_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'newsletter_subscribers'
+
+

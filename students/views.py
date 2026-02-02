@@ -159,53 +159,173 @@ import os
 #         print(bucket.name)
 #         return Response({"status":"success"})
     
+def web(request):
+    data_objs = CampusStudent.objects.all().order_by("-id")
+    data_list = ListCampusStudentSerializer(data_objs, many=True).data
+
+    # Flatten serializer data (IMPORTANT for xhtml2pdf)
+    clean_list = []
+    for row in data_list:
+        clean_list.append({
+            "full_name": row.get("full_name", ""),
+            "email": row.get("email", ""),
+            "mobile": row.get("mobile", ""),
+            "city": row.get("city", ""),
+            "state": row.get("state", ""),
+            "address": row.get("address", ""),
+            "college_name": row.get("college_name", ""),
+            "program_of_study": row.get("program_of_study", ""),
+            "program_other": row.get("program_other", ""),
+            "semester": row.get("semester", ""),
+            "student_body_member": row.get("student_body_member", ""),
+            "campus_ambassador_history": row.get("campus_ambassador_history", ""),
+            "inspiration": row.get("inspiration", ""),
+            "student_reach": row.get("student_reach", ""),
+            "consent": row.get("consent", "")
+        })
+    context = {
+        "username": request.user.email,
+        "user_id": request.user.id,
+        "data_list": clean_list,
+        "report_date": datetime.now()
+    }
+    return render(request, 'pdf/session_report.html', context)
+
+
+
+
 class GetSessionReportPDFView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, sid=None):
+    def get(self, request):
 
-        data = {
-            'username': f"{request.user.first_name} {request.user.last_name}",
-            'user_id': request.user.email
+        data_objs = CampusStudent.objects.all().order_by("-id")
+        data_list = CampusStudentPDFSerializer(data_objs, many=True).data
+
+        # # Flatten serializer data (IMPORTANT for xhtml2pdf)
+        # clean_list = []
+        # for row in data_list:
+        #     clean_list.append({
+        #         "full_name": row.get("full_name", ""),
+        #         "email": row.get("email", ""),
+        #         "mobile": row.get("mobile", ""),
+        #         "city": row.get("city", ""),
+        #         "state": row.get("state", ""),
+        #         "address": row.get("address", ""),
+        #         "college_name": row.get("college_name", ""),
+        #         "program_of_study": row.get("program_of_study", ""),
+        #         "program_other": row.get("program_other", ""),
+        #         "semester": row.get("semester", ""),
+        #         "student_body_member": row.get("student_body_member", ""),
+        #         "campus_ambassador_history": row.get("campus_ambassador_history", ""),
+        #         "inspiration": row.get("inspiration", ""),
+        #         "student_reach": row.get("student_reach", ""),
+        #         "consent": row.get("consent", "")
+        #     })
+        context = {
+            "username": request.user.email,
+            "user_id": request.user.id,
+            "data_list": data_list,
+            "report_date": datetime.now()
         }
 
-        template = get_template('pdf/session_report.html')
-        html = template.render(data)
+        # Render template
+        template = get_template("pdf/session_report.html")
+        html = template.render(context)
 
-        # ---------- Create temp PDF ----------
-        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as temp_file:
-            pdf_path = temp_file.name
-            html = html.encode("latin-1", "replace").decode("latin-1")
-            pisa.CreatePDF(BytesIO(html.encode("ISO-8859-1")), dest=temp_file)
+        # xhtml2pdf needs ISO-8859-1
+        html = html.encode("ISO-8859-1", "ignore").decode("ISO-8859-1")
+
+        # Create temp file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+            pdf_path = tmp.name
+            pisa_status = pisa.CreatePDF(BytesIO(html.encode("ISO-8859-1")), dest=tmp)
+
+        if pisa_status.err:
+            os.remove(pdf_path)
+            return Response({"error": "PDF generation failed"}, status=500)
 
         try:
-            # ---------- GCS Path ----------
-            username = re.sub(r"\s+", "_", data["username"])
+            # Upload to GCS
+            username = re.sub(r"\s+", "_", request.user.email)
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            gcs_file_name = f"media/kcc_data_list/reports/{username}_session_report_{timestamp}.pdf"
+            gcs_file = f"media/kcc_data_list/reports/{username}_{timestamp}.pdf"
 
-            # ---------- Upload to GCS ----------
             bucket = client.bucket(settings.GS_BUCKET_NAME)
-            blob = bucket.blob(gcs_file_name)
+            blob = bucket.blob(gcs_file)
             blob.upload_from_filename(pdf_path, content_type="application/pdf")
-
             # ---------- Generate signed URL ----------
             url = blob.generate_signed_url(
                 version="v4",
                 expiration=timedelta(minutes=30),
                 method="GET"
             )
-
             return Response({
                 "message": "Success",
                 "data": {
                     "report_url": url
-                },
-                "status": 200
+                }
             })
 
         finally:
             os.remove(pdf_path)
+
+
+
+
+# from weasyprint import HTML
+
+# class GetSessionReportPDFView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request):
+
+#         data = {}
+#         data_objs = CampusStudent.objects.all().order_by('-id')
+#         data_list = ListCampusStudentSerializer(data_objs, many=True).data
+#         data["username"] = request.user.email
+#         data["user_id"] = request.user.id
+#         data["data_list"] = data_list
+#         data["report_date"] = "30-01-2026"
+#         print(data)
+#         template = get_template('pdf/session_report.html')
+#         html = template.render(data)
+
+#         # ---------- Create temp PDF ----------
+#         with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as temp_file:
+#             pdf_path = temp_file.name
+#             html = html.encode("latin-1", "replace").decode("latin-1")
+#             pisa.CreatePDF(BytesIO(html.encode("ISO-8859-1")), dest=temp_file)
+            
+#             # HTML(string=html).write_pdf(pdf_path)
+#         try:
+#             # ---------- GCS Path ----------
+#             username = re.sub(r"\s+", "_", data["username"])
+#             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+#             gcs_file_name = f"media/kcc_data_list/reports/{username}_session_report_{timestamp}.pdf"
+
+#             # ---------- Upload to GCS ----------
+#             bucket = client.bucket(settings.GS_BUCKET_NAME)
+#             blob = bucket.blob(gcs_file_name)
+#             blob.upload_from_filename(pdf_path, content_type="application/pdf")
+
+#             # ---------- Generate signed URL ----------
+#             url = blob.generate_signed_url(
+#                 version="v4",
+#                 expiration=timedelta(minutes=30),
+#                 method="GET"
+#             )
+
+#             return Response({
+#                 "message": "Success",
+#                 "data": {
+#                     "report_url": url
+#                 },
+#                 "status": 200
+#             })
+
+#         finally:
+#             os.remove(pdf_path)
 
 
 # class GetSessionReportPDFView(APIView):

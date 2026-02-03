@@ -19,6 +19,9 @@ RUN python -m venv /py && \
 COPY . /app
 WORKDIR /app
 
+RUN /py/bin/python manage.py collectstatic --noinput
+
+
 # ---- non-root user ----
 RUN adduser --disabled-password --no-create-home django-user
 

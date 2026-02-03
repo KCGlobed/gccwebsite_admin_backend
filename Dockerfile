@@ -32,9 +32,7 @@ ENV PYTHONUNBUFFERED=1
 USER django-user
 
 # ---- gunicorn ----
-CMD python manage.py makemigrations && \
-    python manage.py migrate && \
-    exec gunicorn gcc_backend.wsgi:application \
+CMD exec gunicorn gcc_backend.wsgi:application \
       --bind 0.0.0.0:${PORT:-8080} \
       --workers 3 \
       --threads 4 \

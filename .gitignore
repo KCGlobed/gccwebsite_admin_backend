@@ -70,8 +70,6 @@ htmlcov/
 # Node (if frontend exists)
 # ========
 
-# credential gcp
-credentail_bucket.json
 
 
 

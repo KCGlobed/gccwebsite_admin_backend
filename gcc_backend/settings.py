@@ -84,23 +84,23 @@ WSGI_APPLICATION = 'gcc_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
 # DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": "GCCDB",
-#         "USER": "postgres",
-#         "PASSWORD": "Kamal@2026Jan",
-#         "HOST": "35.200.238.228",
-#         "PORT": "5432",
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "GCCDB",
+        "USER": "postgres",
+        "PASSWORD": "Kamal@2026Jan",
+        "HOST": "35.200.238.228",
+        "PORT": "5432",
+    }
+}
 
 
 # Password validation

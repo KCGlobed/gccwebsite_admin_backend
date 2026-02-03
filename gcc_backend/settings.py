@@ -137,13 +137,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+# STATIC_URL = 'static/'
+# STATIC_ROOT = BASE_DIR / "staticfiles"
+
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -158,14 +160,30 @@ from datetime import timedelta
 from google.oauth2 import service_account
 import os
 
-GS_BUCKET_NAME = "gcc_cloud_test"
+GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+    os.path.join(BASE_DIR, 'credentail_bucket.json')
+)
 
-DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+STORAGES = {
+    "default": {
+        "BACKEND": 'gcc_backend.gcloud.Media',
+    },
+    "staticfiles": {
+        "BACKEND": 'gcc_backend.gcloud.Static',
+    },
+}
 
+GS_PROJECT_ID = "gcc-backend"
+GS_BUCKET_NAME = 'gcc_static_files_backend'
+GS_BUCKET_NAME_2 = 'gcc-private-book-bucket'
+GS_STATIC_BUCKET_NAME = 'gcc_static_files_backend'
+GS_FILE_OVERWRITE = False
+MEDIA_ROOT = "media/"
+STATIC_ROOT = "static/"
+STATIC_URL = 'https://storage.googleapis.com/{}/static/'.format(GS_STATIC_BUCKET_NAME)
+MEDIA_URL = 'https://storage.googleapis.com/{}/media/'.format(GS_BUCKET_NAME)
+SECURE_MEDIA_URL = 'https://storage.googleapis.com/{}/media/'.format(GS_BUCKET_NAME_2)
 
-# GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-#     os.path.join(BASE_DIR, 'credentail_bucket.json')
-# )
 
 # REST_FRAMEWORK = {
 #     "DEFAULT_AUTHENTICATION_CLASSES": [

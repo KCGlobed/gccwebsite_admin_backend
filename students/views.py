@@ -138,16 +138,20 @@ from xhtml2pdf import pisa
 from io import BytesIO
 from django.template.loader import get_template
 from google.cloud import storage
-client = storage.Client()
-# client = storage.Client.from_service_account_json(os.path.join(settings.BASE_DIR, 'credentail_bucket.json'))
+# client = storage.Client()
+import os
+client = storage.Client.from_service_account_json(os.path.join(settings.BASE_DIR, 'credentail_bucket.json'))
 import pandas as pd
 import tempfile
 import re
 from datetime import datetime, timedelta
-import os
+
 # from django.core.files.storage import default_storage
 # from django.core.files.base import ContentFile
 # print([b.name for b in client.list_buckets()])
+
+
+
 
 # class GetSessionReportPDFView(APIView):
 #     # renderer_classes = [ReportsRenderer]
@@ -159,6 +163,10 @@ import os
 #         print(bucket.name)
 #         return Response({"status":"success"})
     
+
+
+
+
 def web(request):
     data_objs = CampusStudent.objects.all().order_by("-id")
     data_list = ListCampusStudentSerializer(data_objs, many=True).data
@@ -257,7 +265,7 @@ class GetSessionReportPDFView(APIView):
             # ---------- Generate signed URL ----------
             url = blob.generate_signed_url(
                 version="v4",
-                expiration=timedelta(minutes=30),
+                expiration=timedelta(minutes=1),
                 method="GET"
             )
             return Response({

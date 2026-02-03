@@ -19,7 +19,7 @@ RUN python -m venv /py && \
 COPY . /app
 WORKDIR /app
 
-RUN /py/bin/python manage.py collectstatic --noinput
+# RUN /py/bin/python manage.py collectstatic --noinput
 
 
 # ---- non-root user ----

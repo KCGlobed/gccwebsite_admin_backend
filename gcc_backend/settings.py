@@ -91,13 +91,25 @@ WSGI_APPLICATION = 'gcc_backend.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": "GCCDB",
+#         "USER": "postgres",
+#         "PASSWORD": "Kamal@2026Jan",
+#         "HOST": "35.200.238.228",
+#         "PORT": "5432",
+#     }
+# }
+
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "GCCDB",
+        "NAME": "gcc-dev",
         "USER": "postgres",
-        "PASSWORD": "Kamal@2026Jan",
-        "HOST": "35.200.238.228",
+        "PASSWORD": "Kamal@2026June",
+        "HOST": "35.244.52.146",
         "PORT": "5432",
     }
 }

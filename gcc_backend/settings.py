@@ -11,9 +11,24 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+import environ
+env = environ.Env()
+environ.Env.read_env()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+# load_dotenv(os.path.join(BASE_DIR, ".env"))
+
+import json
+ENV = os.getenv('DJANGO_ENV', 'dev')
+if ENV == 'prod':
+    environ.Env.read_env(os.path.join(BASE_DIR, '.env.prod'))
+else:
+    environ.Env.read_env(os.path.join(BASE_DIR, '.env.dev'))
+
+
 
 
 # Quick-start development settings - unsuitable for production
@@ -103,14 +118,26 @@ WSGI_APPLICATION = 'gcc_backend.wsgi.application'
 # }
 
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": "gcc-dev",
+#         "USER": "postgres",
+#         "PASSWORD": "Kamal@2026June",
+#         "HOST": "35.244.52.146",
+#         "PORT": "5432",
+#     }
+# }
+
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "gcc-dev",
-        "USER": "postgres",
-        "PASSWORD": "Kamal@2026June",
-        "HOST": "35.244.52.146",
-        "PORT": "5432",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT"),
     }
 }
 
@@ -171,10 +198,12 @@ CORS_ALLOW_ALL_ORIGINS = True
 from datetime import timedelta
 from google.oauth2 import service_account
 import os
+import json
 
-GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    os.path.join(BASE_DIR, 'credentail_bucket.json')
-)
+creds_raw = env("GOOGLE_CREDENTIALS_JSON")
+creds_dict = json.loads(creds_raw)
+GS_CREDENTIALS = service_account.Credentials.from_service_account_info(creds_dict)
+
 
 STORAGES = {
     "default": {
@@ -184,11 +213,10 @@ STORAGES = {
         "BACKEND": 'gcc_backend.gcloud.Static',
     },
 }
-
-GS_PROJECT_ID = "gcc-backend"
-GS_BUCKET_NAME = 'gcc_static_files_backend'
-GS_BUCKET_NAME_2 = 'gcc-private-book-bucket'
-GS_STATIC_BUCKET_NAME = 'gcc_static_files_backend'
+GS_PROJECT_ID = os.getenv("GS_PROJECT_ID")
+GS_BUCKET_NAME = os.getenv("GS_BUCKET_NAME")
+GS_BUCKET_NAME_2 = os.getenv("GS_BUCKET_NAME_2")
+GS_STATIC_BUCKET_NAME = os.getenv("GS_STATIC_BUCKET_NAME")
 GS_FILE_OVERWRITE = False
 MEDIA_ROOT = "media/"
 STATIC_ROOT = "static/"

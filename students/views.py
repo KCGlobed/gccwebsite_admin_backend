@@ -138,9 +138,8 @@ from xhtml2pdf import pisa
 from io import BytesIO
 from django.template.loader import get_template
 from google.cloud import storage
-# client = storage.Client()
 import os
-client = storage.Client.from_service_account_json(os.path.join(settings.BASE_DIR, 'credentail_bucket.json'))
+client = storage.Client(project=settings.GS_PROJECT_ID,credentials=settings.GS_CREDENTIALS)
 import pandas as pd
 import tempfile
 import re

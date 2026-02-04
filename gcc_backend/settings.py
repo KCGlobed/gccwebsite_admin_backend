@@ -241,6 +241,10 @@ SECURE_MEDIA_URL = 'https://storage.googleapis.com/{}/media/'.format(GS_BUCKET_N
 #     ],
 # }
 
+
+
+
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
        'rest_framework_simplejwt.authentication.JWTAuthentication',

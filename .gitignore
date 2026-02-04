@@ -71,7 +71,8 @@ htmlcov/
 # ========
 
 # credential gcp
-
+secrets/
+*.json
 
 
 

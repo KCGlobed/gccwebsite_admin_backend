@@ -193,7 +193,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://gccwebsite-admin-backend-738131651355.asia-south1.run.app"
+    os.getenv("CSRF_TRUSTED_ORIGINS")
 ]
 
 # CORS_ALLOWED_ORIGINS = [

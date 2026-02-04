@@ -139,7 +139,9 @@ from io import BytesIO
 from django.template.loader import get_template
 from google.cloud import storage
 import os
-client = storage.Client(project=settings.GS_PROJECT_ID,credentials=settings.GS_CREDENTIALS)
+# client = storage.Client(project=settings.GS_PROJECT_ID,credentials=settings.GS_CREDENTIALS)
+client = storage.Client(project=settings.GS_PROJECT_ID)
+
 import pandas as pd
 import tempfile
 import re

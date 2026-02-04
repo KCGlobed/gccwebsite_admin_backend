@@ -198,12 +198,15 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 from datetime import timedelta
 from google.oauth2 import service_account
-import os
-import json
+from google.cloud import storage
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.join(
+    BASE_DIR, os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+)
 
-creds_raw = os.getenv("GOOGLE_CREDENTIALS_JSON")
-creds_dict = json.loads(creds_raw)
-GS_CREDENTIALS = service_account.Credentials.from_service_account_info(creds_dict)
+
+# creds_raw = os.getenv("GOOGLE_CREDENTIALS_JSON")
+# creds_dict = json.loads(creds_raw)
+# GS_CREDENTIALS = service_account.Credentials.from_service_account_info(creds_dict)
 
 
 STORAGES = {

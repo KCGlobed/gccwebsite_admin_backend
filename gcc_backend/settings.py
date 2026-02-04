@@ -23,6 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
+print("asasasas....",os.getenv("DB_NAME"))
+
+
 # ENV = os.getenv('DJANGO_ENV', 'dev')
 # if ENV == 'prod':
 #     environ.Env.read_env(os.path.join(BASE_DIR, '.env.prod'))
@@ -203,14 +206,10 @@ CSRF_TRUSTED_ORIGINS = [
 from datetime import timedelta
 from google.oauth2 import service_account
 from google.cloud import storage
+
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.join(
     BASE_DIR, os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 )
-
-
-# creds_raw = os.getenv("GOOGLE_CREDENTIALS_JSON")
-# creds_dict = json.loads(creds_raw)
-# GS_CREDENTIALS = service_account.Credentials.from_service_account_info(creds_dict)
 
 
 STORAGES = {

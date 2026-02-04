@@ -201,7 +201,7 @@ from google.oauth2 import service_account
 import os
 import json
 
-creds_raw = env("GOOGLE_CREDENTIALS_JSON")
+creds_raw = os.getenv("GOOGLE_CREDENTIALS_JSON")
 creds_dict = json.loads(creds_raw)
 GS_CREDENTIALS = service_account.Credentials.from_service_account_info(creds_dict)
 

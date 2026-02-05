@@ -11,6 +11,5 @@ urlpatterns = [
 
 
     path("test", GetSessionReportPDFView.as_view()),
-    path("web", web),
 
 ]

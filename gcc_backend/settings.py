@@ -14,6 +14,10 @@ from pathlib import Path
 import os
 import environ
 import json
+from datetime import timedelta
+from google.oauth2 import service_account
+from google.cloud import storage
+
 env = environ.Env()
 environ.Env.read_env()
 
@@ -22,18 +26,6 @@ environ.Env.read_env()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
-
-print("asasasas....",os.getenv("DB_NAME"))
-
-
-# ENV = os.getenv('DJANGO_ENV', 'dev')
-# if ENV == 'prod':
-#     environ.Env.read_env(os.path.join(BASE_DIR, '.env.prod'))
-# else:
-#     environ.Env.read_env(os.path.join(BASE_DIR, '.env.dev'))
-
-
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -103,37 +95,6 @@ WSGI_APPLICATION = 'gcc_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": "GCCDB",
-#         "USER": "postgres",
-#         "PASSWORD": "Kamal@2026Jan",
-#         "HOST": "35.200.238.228",
-#         "PORT": "5432",
-#     }
-# }
-
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": "gcc-dev",
-#         "USER": "postgres",
-#         "PASSWORD": "Kamal@2026June",
-#         "HOST": "35.244.52.146",
-#         "PORT": "5432",
-#     }
-# }
-
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -177,14 +138,6 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
-# STATIC_URL = 'static/'
-# STATIC_ROOT = BASE_DIR / "staticfiles"
-
-
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -196,16 +149,6 @@ CSRF_TRUSTED_ORIGINS = [
     os.getenv("CSRF_TRUSTED_ORIGINS")
 ]
 
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:3000",
-#     "http://localhost:3001",
-#     "http://localhost:5173",
-#     "http://localhost:5174",
-# ]
-
-from datetime import timedelta
-from google.oauth2 import service_account
-from google.cloud import storage
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.join(
     BASE_DIR, os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
@@ -232,19 +175,6 @@ MEDIA_URL = 'https://storage.googleapis.com/{}/media/'.format(GS_BUCKET_NAME)
 SECURE_MEDIA_URL = 'https://storage.googleapis.com/{}/media/'.format(GS_BUCKET_NAME_2)
 
 
-# REST_FRAMEWORK = {
-#     "DEFAULT_AUTHENTICATION_CLASSES": [
-#         "rest_framework_simplejwt.authentication.JWTAuthentication",
-#     ],
-#     "DEFAULT_PERMISSION_CLASSES": [
-#         "rest_framework.permissions.IsAuthenticated",
-#     ],
-# }
-
-
-
-
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
        'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -253,6 +183,7 @@ REST_FRAMEWORK = {
     # "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler",
     # 'PAGE_SIZE': 20,
 }
+
 
 # DRF_STANDARDIZED_ERRORS = {
 #     "EXCEPTION_FORMATTER_CLASS": "gcc_backend.exception_formatter.CustomExceptionFormatter",

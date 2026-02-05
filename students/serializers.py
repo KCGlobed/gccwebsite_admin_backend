@@ -34,11 +34,6 @@ class ListCampusStudentSerializer(serializers.ModelSerializer) :
         
 
 class CampusStudentPDFSerializer(serializers.ModelSerializer):
-
-    # full_name = serializers.SerializerMethodField()
-    # student_body_member = serializers.SerializerMethodField()
-    # consent = serializers.SerializerMethodField()
-
     class Meta:
         model = CampusStudent
         fields = [
@@ -59,16 +54,6 @@ class CampusStudentPDFSerializer(serializers.ModelSerializer):
             "consent",
         ]
 
-    # -------- Null-safe fields -------- #
-
-    # def get_full_name(self, obj):
-    #     return f"{obj.first_name or ''} {obj.last_name or ''}".strip() or "—"
-
-    # def get_student_body_member(self, obj):
-    #     return "Yes" if obj.student_body_member else "No"
-
-    # def get_consent(self, obj):
-    #     return "Yes" if obj.consent else "No"
 
     def to_representation(self, instance):
         data = super().to_representation(instance)

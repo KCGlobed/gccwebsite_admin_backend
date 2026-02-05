@@ -9,9 +9,6 @@ from rest_framework.permissions import IsAuthenticated
 
 
 
-
-
-
 class CareerApplication_list(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPageNumberPagination

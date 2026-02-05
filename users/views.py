@@ -17,7 +17,6 @@ class HelloAPI(APIView):
 
 
 class UserLoginView(APIView):
-    # renderer_classes = [UserRenderer]
     def post(self, request, format=None):
         serializer = UserLoginSerializer(data = request.data)
         if serializer.is_valid(raise_exception = True):

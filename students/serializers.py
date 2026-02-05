@@ -64,3 +64,26 @@ class CampusStudentPDFSerializer(serializers.ModelSerializer):
                 data[k] = "—"
 
         return data
+
+
+
+
+class CampusStudentExcelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CampusStudent
+        fields = [
+            "full_name",
+            "email",
+            "mobile",
+            "city",
+            "state",
+            "address",
+            "college_name",
+            "program_of_study",
+            "program_other",
+            "semester",
+            "student_body_member",
+            "campus_ambassador_history",
+            "inspiration",
+            "student_reach"
+        ]

@@ -188,3 +188,74 @@ class GetSessionReportPDFView(APIView):
 
         finally:
             os.remove(pdf_path)
+
+
+
+
+
+class GetSessionReportExcelView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        data_objs = CampusStudent.objects.all().order_by("-id")
+        data_list = CampusStudentExcelSerializer(data_objs, many=True).data
+        print(data_list)
+
+        COLUMN_MAPPING = {
+            "full_name": "Full Name",
+            "email": "Email",
+            "mobile": "Mobile",
+            'city': 'City',
+            'state': 'State',
+            'student_reach': 'Reach Status',
+            'address': 'Address',
+            'college_name': 'College Name',
+            'program_of_study': 'Program Of Study',
+            'program_other': 'Other Program',
+            'semester': 'Semester',
+            'student_body_member': 'Student Body Member',
+            'campus_ambassador_history': 'Campus Ambassador History',
+            'inspiration': 'Inspiration'
+            
+            }
+
+
+
+        # # Create temp file
+        with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as temp_file:
+            pdf_path = temp_file.name
+            
+            # Create DataFrame and save to the temporary file
+            df = pd.DataFrame.from_dict(data_list)
+            df.rename(columns=COLUMN_MAPPING, inplace=True)
+            df.to_excel(pdf_path, header=True, index=False)
+        
+        # After the 'with' block, the file is closed but not deleted
+        try:
+            # GCS file naming logic
+            timestamp = datetime.now().strftime("%d_%m_%y_%H_%M")
+            report_name = "student_report"
+            username = re.sub(r'\s+', '_', f"{request.user.first_name} {request.user.last_name}")
+            gcs_folder_name = "media/excel_report"
+            gcs_file_name = f"{gcs_folder_name}/{username}_{report_name}_{timestamp}.xlsx"
+
+            # Upload the temporary file to GCS
+            bucket = client.get_bucket(settings.GS_BUCKET_NAME_2)
+            blob = bucket.blob(gcs_file_name)
+            blob.upload_from_filename(pdf_path)
+            # ---------- Generate signed URL ----------
+            url = blob.generate_signed_url(
+                version="v4",
+                expiration=timedelta(minutes=1),
+                method="GET"
+            )
+            return Response({
+                "message": "Success",
+                "data": {
+                    "report_url": url
+                }
+            })
+
+        finally:
+            os.remove(pdf_path)
+
+

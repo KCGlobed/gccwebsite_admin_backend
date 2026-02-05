@@ -5,9 +5,6 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 urlpatterns = [
-
-    path("", HelloAPI.as_view()),
-    
     path("login/", UserLoginView.as_view()),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 

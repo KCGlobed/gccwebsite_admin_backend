@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import authenticate, login
@@ -7,12 +8,76 @@ from gcc_backend.utils import *
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated
 
+def welcome(request):
+    return HttpResponse("""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>GCC School</title>
+        <style>
+            body {
+                margin: 0;
+                height: 100vh;
+                font-family: 'Segoe UI', Arial, sans-serif;
+                background: linear-gradient(135deg, #020617, #0f172a);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+            }
 
-class HelloAPI(APIView):
-    permission_classes = [IsAuthenticated]
-    def get(self, request):
-        return Response({"message": "Welcome to GCC School Learning..!!"})
-    
+            .card {
+                background: rgba(255,255,255,0.05);
+                padding: 60px 80px;
+                border-radius: 16px;
+                text-align: center;
+                box-shadow: 0 0 40px rgba(56,189,248,0.15);
+                backdrop-filter: blur(10px);
+            }
+
+            h1 {
+                font-size: 42px;
+                margin-bottom: 10px;
+                color: #38bdf8;
+                letter-spacing: 1px;
+            }
+
+            p {
+                font-size: 16px;
+                color: #cbd5f5;
+                margin-bottom: 30px;
+            }
+
+            .line {
+                width: 120px;
+                height: 3px;
+                background: linear-gradient(90deg, #2563eb, #38bdf8);
+                margin: auto;
+                border-radius: 10px;
+            }
+
+            .footer {
+                margin-top: 30px;
+                font-size: 13px;
+                color: #94a3b8;
+                letter-spacing: 1px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="card">
+            <h1>GCC School</h1>
+            <div class="line"></div>
+            <p>Welcome to the School Management System</p>
+            <div class="footer">
+                Backend Services Running
+            </div>
+        </div>
+    </body>
+    </html>
+    """)
+
 
 
 

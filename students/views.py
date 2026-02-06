@@ -106,7 +106,6 @@ class CampusFaculty_list(APIView):
         paginator = self.pagination_class()
         page = paginator.paginate_queryset(datas, request, view=self)
         serializers = ListCampusFacultySerializer(page, many=True)
-        print(serializers)
         
         return paginator.get_paginated_response(serializers.data)
     
@@ -140,14 +139,15 @@ class GetSessionReportPDFView(APIView):
     def get(self, request):
         data_objs = CampusStudent.objects.all().order_by("-id")
         data_list = CampusStudentPDFSerializer(data_objs, many=True).data
-
+        selected_bucket = settings.GS_BUCKET_NAME
         context = {
             "username": request.user.email,
             "user_id": request.user.id,
             "data_list": data_list,
-            "report_date": datetime.now()
+            "report_date": datetime.now(),
+            "bucket_static_logo":f"https://storage.googleapis.com/{selected_bucket}/static/images/gccschool.jpeg"
         }
-
+        # return Response({"data":context})
         # Render template
         template = get_template("pdf/session_report.html")
         html = template.render(context)
@@ -168,9 +168,9 @@ class GetSessionReportPDFView(APIView):
             # Upload to GCS
             username = re.sub(r"\s+", "_", request.user.email)
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            gcs_file = f"media/kcc_data_list/reports/{username}_{timestamp}.pdf"
+            gcs_file = f"media/pdf_reports/{username}_{timestamp}.pdf"
 
-            bucket = client.bucket(settings.GS_BUCKET_NAME)
+            bucket = client.bucket(settings.GS_BUCKET_NAME_2)
             blob = bucket.blob(gcs_file)
             blob.upload_from_filename(pdf_path, content_type="application/pdf")
             # ---------- Generate signed URL ----------
@@ -198,7 +198,6 @@ class GetSessionReportExcelView(APIView):
     def get(self, request):
         data_objs = CampusStudent.objects.all().order_by("-id")
         data_list = CampusStudentExcelSerializer(data_objs, many=True).data
-        print(data_list)
 
         COLUMN_MAPPING = {
             "full_name": "Full Name",
@@ -217,9 +216,6 @@ class GetSessionReportExcelView(APIView):
             'inspiration': 'Inspiration'
             
             }
-
-
-
         # # Create temp file
         with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as temp_file:
             pdf_path = temp_file.name

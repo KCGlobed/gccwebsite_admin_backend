@@ -26,7 +26,6 @@ class CareerApplication_list(APIView):
         paginator = self.pagination_class()
         page = paginator.paginate_queryset(datas, request, view=self)
         serializers = ListCareerApplicationSerializer(page, many=True)
-        print(serializers)
         
         return paginator.get_paginated_response(serializers.data)
     
@@ -48,7 +47,6 @@ class PartnerWithUs_list(APIView):
         paginator = self.pagination_class()
         page = paginator.paginate_queryset(datas, request, view=self)
         serializers = ListPartnerWithUsSerializer(page, many=True)
-        print(serializers)
         
         return paginator.get_paginated_response(serializers.data)
     

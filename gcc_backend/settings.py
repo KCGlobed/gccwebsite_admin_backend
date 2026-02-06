@@ -26,7 +26,7 @@ environ.Env.read_env()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
-environ.Env.read_env("/.env")
+environ.Env.read_env("/secrets/.env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -99,11 +99,11 @@ WSGI_APPLICATION = 'gcc_backend.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PASSWORD"),
-        "HOST": os.getenv("DB_HOST"),
-        "PORT": os.getenv("DB_PORT"),
+        "NAME": env("DB_NAME"),
+        "USER": env("DB_USER"),
+        "PASSWORD": env("DB_PASSWORD"),
+        "HOST": env("DB_HOST"),
+        "PORT": env("DB_PORT"),
     }
 }
 
@@ -147,11 +147,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
 
 CSRF_TRUSTED_ORIGINS = [
-    os.getenv("CSRF_TRUSTED_ORIGINS")
+    env("CSRF_TRUSTED_ORIGINS")
 ]
 
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = env("GOOGLE_APPLICATION_CREDENTIALS")
 
 
 STORAGES = {
@@ -162,10 +162,10 @@ STORAGES = {
         "BACKEND": 'gcc_backend.gcloud.Static',
     },
 }
-GS_PROJECT_ID = os.getenv("GS_PROJECT_ID")
-GS_BUCKET_NAME = os.getenv("GS_BUCKET_NAME")
-GS_BUCKET_NAME_2 = os.getenv("GS_BUCKET_NAME_2")
-GS_STATIC_BUCKET_NAME = os.getenv("GS_STATIC_BUCKET_NAME")
+GS_PROJECT_ID = env("GS_PROJECT_ID")
+GS_BUCKET_NAME = env("GS_BUCKET_NAME")
+GS_BUCKET_NAME_2 = env("GS_BUCKET_NAME_2")
+GS_STATIC_BUCKET_NAME = env("GS_STATIC_BUCKET_NAME")
 GS_FILE_OVERWRITE = False
 MEDIA_ROOT = "media/"
 STATIC_ROOT = "static/"

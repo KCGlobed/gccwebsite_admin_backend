@@ -168,7 +168,7 @@ class GetSessionReportPDFView(APIView):
             # Upload to GCS
             username = re.sub(r"\s+", "_", request.user.email)
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            gcs_file = f"media/pdf_reports/{username}_{timestamp}.pdf"
+            gcs_file = f"media/pdf_reports/{username}_campusreport.pdf"
 
             bucket = client.bucket(settings.GS_BUCKET_NAME_2)
             blob = bucket.blob(gcs_file)
@@ -229,10 +229,10 @@ class GetSessionReportExcelView(APIView):
         try:
             # GCS file naming logic
             timestamp = datetime.now().strftime("%d_%m_%y_%H_%M")
-            report_name = "student_report"
+            report_name = "campusreport"
             username = re.sub(r'\s+', '_', f"{request.user.first_name} {request.user.last_name}")
             gcs_folder_name = "media/excel_report"
-            gcs_file_name = f"{gcs_folder_name}/{username}_{report_name}_{timestamp}.xlsx"
+            gcs_file_name = f"{gcs_folder_name}/{username}_{report_name}.xlsx"
 
             # Upload the temporary file to GCS
             bucket = client.get_bucket(settings.GS_BUCKET_NAME_2)

@@ -68,6 +68,8 @@ class CreateBlogView(APIView):
             "data": serializer.errors
         })
     
+
+
 class UpdateBlogView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -126,6 +128,6 @@ class DeleteBlogView(APIView):
             return Response({
                 "success": False,
                 "message": "Blog not found",
-                "data": [{"id":cid}],
+                "data": [{"id":pk}],
                 "status":status.HTTP_400_BAD_REQUEST
             })

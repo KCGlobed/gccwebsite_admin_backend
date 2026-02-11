@@ -18,15 +18,16 @@ from datetime import timedelta
 from google.oauth2 import service_account
 from google.cloud import storage
 
-env = environ.Env()
-environ.Env.read_env()
+# env = environ.Env()
+# environ.Env.read_env()
 
-
+print("environettetetet varioable")
+print(os.environ["DB_NAME"])
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
-environ.Env.read_env(".env")
+# environ.Env.read_env(".env")
 
 
 # print("ENV FILE:", os.path.exists("/secrets/.env"))
@@ -108,11 +109,11 @@ WSGI_APPLICATION = 'gcc_backend.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": env("DB_NAME"),
-        "USER": env("DB_USER"),
-        "PASSWORD": env("DB_PASSWORD"),
-        "HOST": env("DB_HOST"),
-        "PORT": env("DB_PORT"),
+        "NAME": os.environ["DB_NAME"],
+        "USER": os.environ["DB_USER"],
+        "PASSWORD": os.environ["DB_PASSWORD"],
+        "HOST": os.environ["DB_HOST"],
+        "PORT": os.environ["DB_PORT"],
     }
 }
 
@@ -156,11 +157,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
 
 CSRF_TRUSTED_ORIGINS = [
-    env("CSRF_TRUSTED_ORIGINS")
+    os.environ["CSRF_TRUSTED_ORIGINS"]
 ]
 
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = env("GOOGLE_APPLICATION_CREDENTIALS")
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
 
 
 STORAGES = {
@@ -171,10 +172,10 @@ STORAGES = {
         "BACKEND": 'gcc_backend.gcloud.Static',
     },
 }
-GS_PROJECT_ID = env("GS_PROJECT_ID")
-GS_BUCKET_NAME = env("GS_BUCKET_NAME")
-GS_BUCKET_NAME_2 = env("GS_BUCKET_NAME_2")
-GS_STATIC_BUCKET_NAME = env("GS_STATIC_BUCKET_NAME")
+GS_PROJECT_ID = os.environ["GS_PROJECT_ID"]
+GS_BUCKET_NAME = os.environ["GS_BUCKET_NAME"]
+GS_BUCKET_NAME_2 = os.environ["GS_BUCKET_NAME_2"]
+GS_STATIC_BUCKET_NAME = os.environ["GS_STATIC_BUCKET_NAME"]
 GS_FILE_OVERWRITE = False
 MEDIA_ROOT = "media/"
 STATIC_ROOT = "static/"

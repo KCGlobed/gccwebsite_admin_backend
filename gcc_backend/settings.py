@@ -23,7 +23,6 @@ from google.cloud import storage
 
 print("environettetetet varioable")
 print(os.environ["DB_NAME"])
-print(os.environ["GOOGLE_APPLICATION_CREDENTIALS"])
 print(os.environ["DB_USER"])
 print(os.environ["DB_PORT"])
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -163,8 +162,7 @@ CSRF_TRUSTED_ORIGINS = [
     os.environ["CSRF_TRUSTED_ORIGINS"]
 ]
 
-
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/secrets/credentail_bucket.json"
 
 
 STORAGES = {

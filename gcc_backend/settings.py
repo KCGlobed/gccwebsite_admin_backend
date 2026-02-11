@@ -26,12 +26,12 @@ environ.Env.read_env()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
-environ.Env.read_env("/secrets/.env")
+environ.Env.read_env(".env")
 
 
-print("ENV FILE:", os.path.exists("/secrets/.env"))
-print("DB NAME:", os.getenv("DB_NAME"))
-print("GOOGLE_APPLICATION_CREDENTIALS:", os.getenv("GOOGLE_APPLICATION_CREDENTIALS"))
+# print("ENV FILE:", os.path.exists("/secrets/.env"))
+# print("DB NAME:", os.getenv("DB_NAME"))
+# print("GOOGLE_APPLICATION_CREDENTIALS:", os.getenv("GOOGLE_APPLICATION_CREDENTIALS"))
 
 
 

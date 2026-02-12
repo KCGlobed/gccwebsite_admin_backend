@@ -18,18 +18,14 @@ from datetime import timedelta
 from google.oauth2 import service_account
 from google.cloud import storage
 
-# env = environ.Env()
-# environ.Env.read_env()
+env = environ.Env()
+environ.Env.read_env()
 
-print("environettetetet varioable")
-print(os.environ["DB_NAME"])
-print(os.environ["DB_USER"])
-print(os.environ["DB_PORT"])
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
-# environ.Env.read_env(".env")
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+environ.Env.read_env(".env")
 
 
 # print("ENV FILE:", os.path.exists("/secrets/.env"))
@@ -61,6 +57,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
+    'drf_yasg',  # for Swagger / Redoc
     # 'drf_standardized_errors',
     'users',
     'students',
@@ -162,7 +159,7 @@ CSRF_TRUSTED_ORIGINS = [
     os.environ["CSRF_TRUSTED_ORIGINS"]
 ]
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/secret/credentail_bucket.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "secrets/credentail_bucket.json"
 
 
 STORAGES = {

@@ -161,7 +161,7 @@ CSRF_TRUSTED_ORIGINS = [
     os.environ["CSRF_TRUSTED_ORIGINS"]
 ]
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/secrets/credentail_bucket.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/secret/credentail_bucket.json"
 
 
 STORAGES = {

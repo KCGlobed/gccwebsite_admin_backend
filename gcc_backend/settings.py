@@ -100,6 +100,8 @@ TEMPLATES = [
 
 
 
+
+
 WSGI_APPLICATION = 'gcc_backend.wsgi.application'
 
 # Database

@@ -51,4 +51,38 @@ class PartnerWithUs_list(APIView):
         return paginator.get_paginated_response(serializers.data)
     
 
+from gcc_backend.utils import *
 
+
+class DossierDataForm_Create(APIView):
+    # permission_classes = [IsAuthenticated]
+    def post(self, request, format=None):
+        serializer = ListDossierDataSerializer(data = request.data)
+        if serializer.is_valid(raise_exception = True):
+            serializer.save()
+            pdf_url = "https://storage.googleapis.com/gcc_static_files_backend/static/files/GCC%20SCHOOL%20Dossier.pdf"
+            return success_response(message="success", data={"url":pdf_url}, status_code=status.HTTP_200_OK)
+        else:
+            return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
+
+
+class DossierDataForm_List(APIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = CustomPageNumberPagination
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['id']
+    ordering_fields = ['id']
+    def get(self, request):
+        datas = DossierData.objects.all().order_by('-id')
+        search_filter = filters.SearchFilter()
+        datas = search_filter.filter_queryset(request, datas, self)
+
+        ordering_filter = filters.OrderingFilter()
+        datas = ordering_filter.filter_queryset(request, datas, self)
+
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(datas, request, view=self)
+        serializers = ListDossierDataSerializer(page, many=True)
+        
+        return paginator.get_paginated_response(serializers.data)
+    

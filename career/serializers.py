@@ -17,3 +17,10 @@ class ListPartnerWithUsSerializer(serializers.ModelSerializer) :
         
 
 
+class ListDossierDataSerializer(serializers.ModelSerializer) :
+    class Meta:
+        model = DossierData
+        fields = "__all__"
+        
+
+

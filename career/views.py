@@ -52,7 +52,7 @@ class PartnerWithUs_list(APIView):
     
 
 from gcc_backend.utils import *
-
+from gcc_backend import settings
 
 class DossierDataForm_Create(APIView):
     # permission_classes = [IsAuthenticated]
@@ -60,7 +60,7 @@ class DossierDataForm_Create(APIView):
         serializer = ListDossierDataSerializer(data = request.data)
         if serializer.is_valid(raise_exception = True):
             serializer.save()
-            pdf_url = "https://storage.googleapis.com/gcc_static_files_backend/static/files/GCC%20SCHOOL%20Dossier.pdf"
+            pdf_url = f"{settings.STATIC_URL}files/GCC%20SCHOOL%20Dossier.pdf"
             return success_response(message="success", data={"url":pdf_url}, status_code=status.HTTP_200_OK)
         else:
             return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)

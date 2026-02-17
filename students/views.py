@@ -255,3 +255,44 @@ class GetSessionReportExcelView(APIView):
             os.remove(pdf_path)
 
 
+
+
+
+
+class GetSessionFileUploadView(APIView):
+    def post(self, request):
+        file = request.FILES["file"]
+        upload_for = request.data["upload_for"]
+
+        # Upload to GCS
+        gcs_file = f"media/{upload_for}/{file.name}"
+
+        print("name..",gcs_file)
+
+        bucket = client.bucket(settings.GS_BUCKET_NAME_2)
+        blob = bucket.blob(gcs_file)
+        print(blob)
+        blob.upload_from_file(
+            file,
+            content_type=file.content_type
+        )
+        # blob.upload_from_filename(pdf_path, content_type="application/pdf")
+        # ---------- Generate signed URL ----------
+        url = blob.generate_signed_url(
+            version="v4",
+            expiration=timedelta(minutes=15),
+            method="GET"
+        )
+        return Response({
+            "message": "File uploaded successfully",
+            "data": {
+                "file_name": file.name,
+                "gcs_path": gcs_file,
+                "download_url": url
+            }
+        })
+
+
+
+
+

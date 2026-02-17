@@ -13,4 +13,6 @@ urlpatterns = [
     path("test", GetSessionReportPDFView.as_view()),
     path("test_excel", GetSessionReportExcelView.as_view()),
 
+    path("test_file", GetSessionFileUploadView.as_view()),
+
 ]

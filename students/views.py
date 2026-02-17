@@ -198,7 +198,7 @@ class GetSessionReportExcelView(APIView):
     def get(self, request):
         data_objs = CampusStudent.objects.all().order_by("-id")
         data_list = CampusStudentExcelSerializer(data_objs, many=True).data
-
+        
         COLUMN_MAPPING = {
             "full_name": "Full Name",
             "email": "Email",
@@ -262,33 +262,55 @@ class GetSessionReportExcelView(APIView):
 class GetSessionFileUploadView(APIView):
     def post(self, request):
         file = request.FILES["file"]
-        upload_for = request.data["upload_for"]
+        upload_for = request.data["upload_for"]  #images/files/videos
+        bucket_flag = request.data["bucket"]
 
         # Upload to GCS
-        gcs_file = f"media/{upload_for}/{file.name}"
+        if str(bucket_flag) == "1":
+            gcs_file = f"media/{upload_for}/{file.name}"
+            bucket = client.bucket(settings.GS_BUCKET_NAME_2)
+            blob = bucket.blob(gcs_file)
 
-
-        bucket = client.bucket(settings.GS_BUCKET_NAME_2)
-        blob = bucket.blob(gcs_file)
-        blob.upload_from_file(
+            blob.upload_from_file(
             file,
             content_type=file.content_type
-        )
-        # blob.upload_from_filename(pdf_path, content_type="application/pdf")
-        # ---------- Generate signed URL ----------
-        url = blob.generate_signed_url(
-            version="v4",
-            expiration=timedelta(minutes=15),
-            method="GET"
-        )
-        return Response({
-            "message": "File uploaded successfully",
-            "data": {
-                "file_name": file.name,
-                "gcs_path": gcs_file,
-                "download_url": url
-            }
-        })
+            )
+            # blob.upload_from_filename(pdf_path, content_type="application/pdf")
+            # ---------- Generate signed URL ----------
+            url = blob.generate_signed_url(
+                version="v4",
+                expiration=timedelta(minutes=15),
+                method="GET"
+            )
+            return Response({
+                "message": "File uploaded successfully",
+                "data": {
+                    "file_name": file.name,
+                    "gcs_path": gcs_file,
+                    "download_url": url
+                }
+            })
+        
+        else:
+            gcs_file = f"static/{upload_for}/{file.name}"
+            bucket = client.bucket(settings.GS_BUCKET_NAME)
+            blob = bucket.blob(gcs_file)
+            blob.upload_from_file(
+            file,
+            content_type=file.content_type
+            )
+            # blob.upload_from_filename(pdf_path, content_type="application/pdf")
+            # ---------- Generate signed URL ----------
+            url = blob.public_url
+            return Response({
+                "message": "File uploaded successfully",
+                "data": {
+                    "file_name": file.name,
+                    "gcs_path": gcs_file,
+                    "download_url": url
+                }
+            })
+        
 
 
 

@@ -267,11 +267,9 @@ class GetSessionFileUploadView(APIView):
         # Upload to GCS
         gcs_file = f"media/{upload_for}/{file.name}"
 
-        print("name..",gcs_file)
 
         bucket = client.bucket(settings.GS_BUCKET_NAME_2)
         blob = bucket.blob(gcs_file)
-        print(blob)
         blob.upload_from_file(
             file,
             content_type=file.content_type

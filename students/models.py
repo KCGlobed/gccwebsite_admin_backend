@@ -87,6 +87,12 @@ class StudentsData(models.Model):
         db_table = 'students_data'
 
 
+
+class FormType(models.IntegerChoices):
+    Payment = 1, 'Payment'
+    Dossier = 2, 'Dossier'
+
+
 class Payments(models.Model):
     student = models.ForeignKey('StudentsData', models.DO_NOTHING)
     razorpay_order_id = models.CharField(max_length=255, blank=True, null=True)
@@ -98,6 +104,9 @@ class Payments(models.Model):
     response = models.JSONField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
+    #Added type for form specification
+    form_type = models.IntegerField(choices=FormType.choices, default=FormType.Payment)
+    form_id   = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:
         db_table = 'payments'

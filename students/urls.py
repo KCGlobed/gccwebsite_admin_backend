@@ -15,4 +15,6 @@ urlpatterns = [
 
     path("upload_file", GetSessionFileUploadView.as_view()),
 
+    path("payment_reports_pdf", GetPaymentReportPDFView.as_view()),
+    path("payment_report_excel", GetPaymentReportExcelView.as_view()),
 ]

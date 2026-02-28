@@ -33,7 +33,15 @@ class ListStudentPaymentSerializer(serializers.ModelSerializer) :
 
         return forms_data
 
-    
+
+
+class ListPaymentExcelReportSerializer(serializers.ModelSerializer) :
+    class Meta:
+        model = Payments
+        fields = ["razorpay_order_id","razorpay_payment_id","amount","status"]
+
+
+
 
 class ListCampusFacultySerializer(serializers.ModelSerializer) :
     class Meta:

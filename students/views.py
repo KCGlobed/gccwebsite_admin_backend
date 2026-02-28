@@ -132,6 +132,8 @@ class CampusStudent_list(APIView):
     
 
 
+#### Reports
+
 
 
 class GetSessionReportPDFView(APIView):
@@ -188,6 +190,63 @@ class GetSessionReportPDFView(APIView):
 
         finally:
             os.remove(pdf_path)
+
+
+class GetPaymentReportPDFView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        data_objs = Payments.objects.all().order_by("-id")
+        data_list = ListStudentPaymentSerializer(data_objs, many=True).data
+        selected_bucket = settings.GS_BUCKET_NAME
+        context = {
+            "username": request.user.email,
+            "user_id": request.user.id,
+            "data_list": data_list,
+            "report_date": datetime.now(),
+            "bucket_static_logo":f"https://storage.googleapis.com/{selected_bucket}/static/images/gccschool.jpeg"
+        }
+        # return Response({"data":context})
+        # Render template
+        template = get_template("pdf/payment_report.html")
+        html = template.render(context)
+
+        # xhtml2pdf needs ISO-8859-1
+        html = html.encode("ISO-8859-1", "ignore").decode("ISO-8859-1")
+
+        # Create temp file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+            pdf_path = tmp.name
+            pisa_status = pisa.CreatePDF(BytesIO(html.encode("ISO-8859-1")), dest=tmp)
+
+        if pisa_status.err:
+            os.remove(pdf_path)
+            return Response({"error": "PDF generation failed"}, status=500)
+
+        try:
+            # Upload to GCS
+            username = re.sub(r"\s+", "_", request.user.email)
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            gcs_file = f"media/pdf_reports/{username}_paymentreport.pdf"
+
+            bucket = client.bucket(settings.GS_BUCKET_NAME_2)
+            blob = bucket.blob(gcs_file)
+            blob.upload_from_filename(pdf_path, content_type="application/pdf")
+            # ---------- Generate signed URL ----------
+            url = blob.generate_signed_url(
+                version="v4",
+                expiration=timedelta(minutes=1),
+                method="GET"
+            )
+            return Response({
+                "message": "Success",
+                "data": {
+                    "report_url": url
+                }
+            })
+
+        finally:
+            os.remove(pdf_path)
+
 
 
 
@@ -254,6 +313,58 @@ class GetSessionReportExcelView(APIView):
         finally:
             os.remove(pdf_path)
 
+
+
+class GetPaymentReportExcelView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        data_objs = Payments.objects.all().order_by("-id")
+        data_list = ListPaymentExcelReportSerializer(data_objs, many=True).data
+        
+        COLUMN_MAPPING = {
+            "razorpay_order_id": "Order ID",
+            "razorpay_payment_id": "Payment ID",
+            "amount": "Amount",
+            "status": "Payment Status"
+            
+            }
+        # # Create temp file
+        with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as temp_file:
+            pdf_path = temp_file.name
+            
+            # Create DataFrame and save to the temporary file
+            df = pd.DataFrame.from_dict(data_list)
+            df.rename(columns=COLUMN_MAPPING, inplace=True)
+            df.to_excel(pdf_path, header=True, index=False)
+        
+        # After the 'with' block, the file is closed but not deleted
+        try:
+            # GCS file naming logic
+            timestamp = datetime.now().strftime("%d_%m_%y_%H_%M")
+            report_name = "paymentreport"
+            username = re.sub(r'\s+', '_', f"{request.user.first_name} {request.user.last_name}")
+            gcs_folder_name = "media/excel_report"
+            gcs_file_name = f"{gcs_folder_name}/{username}_{report_name}.xlsx"
+
+            # Upload the temporary file to GCS
+            bucket = client.get_bucket(settings.GS_BUCKET_NAME_2)
+            blob = bucket.blob(gcs_file_name)
+            blob.upload_from_filename(pdf_path)
+            # ---------- Generate signed URL ----------
+            url = blob.generate_signed_url(
+                version="v4",
+                expiration=timedelta(minutes=1),
+                method="GET"
+            )
+            return Response({
+                "message": "Success",
+                "data": {
+                    "report_url": url
+                }
+            })
+
+        finally:
+            os.remove(pdf_path)
 
 
 

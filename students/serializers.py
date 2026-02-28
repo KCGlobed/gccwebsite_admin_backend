@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import *
-
+from career.models import DossierData
+from career.serializers import ListDossierDataSerializer
 
 
 class ListStudentQuerySerializer(serializers.ModelSerializer) :
@@ -16,10 +17,23 @@ class ListStudentDataSerializer(serializers.ModelSerializer) :
 
 
 class ListStudentPaymentSerializer(serializers.ModelSerializer) :
+    forms_detail = serializers.SerializerMethodField('get_forms_detail')
     class Meta:
         model = Payments
         fields = "__all__"
 
+    def get_forms_detail(self, obj):
+        if obj.form_type == 1:
+            forms_data = []
+        if obj.form_type == 2:
+            forms_obj = DossierData.objects.filter(id=obj.form_id)
+            forms_data = ListDossierDataSerializer(forms_obj, many=True).data
+        else:
+            forms_data = []
+
+        return forms_data
+
+    
 
 class ListCampusFacultySerializer(serializers.ModelSerializer) :
     class Meta:

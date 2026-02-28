@@ -87,3 +87,26 @@ class DossierDataForm_List(APIView):
         
         return paginator.get_paginated_response(serializers.data)
     
+
+
+
+class DossierDataPage_List(APIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = CustomPageNumberPagination
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['id']
+    ordering_fields = ['id']
+    def get(self, request):
+        datas = DossierData.objects.all().order_by('-id')
+        search_filter = filters.SearchFilter()
+        datas = search_filter.filter_queryset(request, datas, self)
+
+        ordering_filter = filters.OrderingFilter()
+        datas = ordering_filter.filter_queryset(request, datas, self)
+
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(datas, request, view=self)
+        serializers = ListDossierDataSerializer(page, many=True)
+        
+        return paginator.get_paginated_response(serializers.data)
+    

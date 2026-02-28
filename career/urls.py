@@ -9,4 +9,5 @@ urlpatterns = [
     path("createdossierform", DossierDataForm_Create.as_view()),
     path("dossierdata_page_list", DossierDataForm_List.as_view()),
 
+    path("dossierdata_pagination_list", DossierDataPage_List.as_view()),
 ]

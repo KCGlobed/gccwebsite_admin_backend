@@ -196,7 +196,8 @@ class GetPaymentReportPDFView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
         data_objs = Payments.objects.all().order_by("-id")
-        data_list = ListStudentPaymentSerializer(data_objs, many=True).data
+        data_list = ListPaymentPDFSerializer(data_objs, many=True).data
+        # return Response({})
         selected_bucket = settings.GS_BUCKET_NAME
         context = {
             "username": request.user.email,
@@ -250,7 +251,7 @@ class GetPaymentReportPDFView(APIView):
 
 
 
-
+### excel reports
 
 class GetSessionReportExcelView(APIView):
     permission_classes = [IsAuthenticated]
@@ -320,21 +321,36 @@ class GetPaymentReportExcelView(APIView):
     def get(self, request):
         data_objs = Payments.objects.all().order_by("-id")
         data_list = ListPaymentExcelReportSerializer(data_objs, many=True).data
-        
+        print(data_list)
+        # return Response({})
         COLUMN_MAPPING = {
+            "full_name":"Full Name",
+            "email":"Email",
+            "phone":"Phone",
+            "city":"City",
+            "state":"State",
             "razorpay_order_id": "Order ID",
             "razorpay_payment_id": "Payment ID",
             "amount": "Amount",
-            "status": "Payment Status"
-            
+            "status": "Payment Status",
+            "created_at": "Payment Date"
             }
         # # Create temp file
         with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as temp_file:
             pdf_path = temp_file.name
             
-            # Create DataFrame and save to the temporary file
-            df = pd.DataFrame.from_dict(data_list)
+            #### Create DataFrame and save to the temporary file
+            # df = pd.DataFrame.from_dict(data_list)
+            # df.rename(columns=COLUMN_MAPPING, inplace=True)
+
+            df = pd.DataFrame(data_list)
+
+            # Reorder columns as per COLUMN_MAPPING keys
+            df = df[list(COLUMN_MAPPING.keys())]
+
+            # Rename columns for Excel headers
             df.rename(columns=COLUMN_MAPPING, inplace=True)
+
             df.to_excel(pdf_path, header=True, index=False)
         
         # After the 'with' block, the file is closed but not deleted

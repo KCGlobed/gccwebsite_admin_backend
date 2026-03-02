@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import *
 from career.models import DossierData
 from career.serializers import ListDossierDataSerializer
-
+from django.utils import timezone
 
 class ListStudentQuerySerializer(serializers.ModelSerializer) :
     class Meta:
@@ -23,22 +23,88 @@ class ListStudentPaymentSerializer(serializers.ModelSerializer) :
         fields = "__all__"
 
     def get_forms_detail(self, obj):
-        if obj.form_type == 1:
-            forms_data = []
-        if obj.form_type == 2:
-            forms_obj = DossierData.objects.filter(id=obj.form_id)
-            forms_data = ListDossierDataSerializer(forms_obj, many=True).data
-        else:
-            forms_data = []
-
+        forms_obj = DossierData.objects.filter(id=obj.form_id)
+        forms_data = ListDossierDataSerializer(forms_obj, many=True).data
         return forms_data
+
+
+class ListDossierDataReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DossierData
+        exclude = ["created_at","updated_at"]
+
+
+
+class ListPaymentPDFSerializer(serializers.ModelSerializer) :
+    created_at = serializers.SerializerMethodField('get_created_at')
+    class Meta:
+        model = Payments
+        fields = "__all__"
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        # Fetch related form
+        form_obj = DossierData.objects.filter(id=instance.form_id).first()
+
+        if form_obj:
+            form_data = ListDossierDataReportSerializer(form_obj).data
+            # Merge form fields into main response
+            data.update(form_data)
+
+        return data
+    
+    def get_created_at(self, obj):
+        if obj.created_at:
+            # Convert to project TIME_ZONE automatically
+            local_dt = timezone.localtime(obj.created_at)
+
+            formatted_date = local_dt.strftime("%B %d, %Y, %I:%M %p")
+
+            # Remove leading zero and convert AM/PM to a.m./p.m.
+            formatted_date = formatted_date.replace(" 0", " ")
+            formatted_date = formatted_date.replace("AM", "a.m.").replace("PM", "p.m.")
+        else:
+            formatted_date = "--"
+        return formatted_date
 
 
 
 class ListPaymentExcelReportSerializer(serializers.ModelSerializer) :
+    created_at = serializers.SerializerMethodField('get_created_at')
     class Meta:
         model = Payments
-        fields = ["razorpay_order_id","razorpay_payment_id","amount","status"]
+        fields = ["razorpay_order_id","razorpay_payment_id","amount","status","created_at"]
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        # Fetch related form
+        form_obj = DossierData.objects.filter(id=instance.form_id).first()
+
+        if form_obj:
+            form_data = ListDossierDataReportSerializer(form_obj).data
+            form_data.pop('id')
+            # Merge form fields into main response
+            data.update(form_data)
+
+        return data
+    
+    def get_created_at(self, obj):
+        if obj.created_at:
+            # Convert to project TIME_ZONE automatically
+            local_dt = timezone.localtime(obj.created_at)
+
+            formatted_date = local_dt.strftime("%B %d, %Y, %I:%M %p")
+
+            # Remove leading zero and convert AM/PM to a.m./p.m.
+            formatted_date = formatted_date.replace(" 0", " ")
+            formatted_date = formatted_date.replace("AM", "a.m.").replace("PM", "p.m.")
+        else:
+            formatted_date = "--"
+        return formatted_date
+
+
 
 
 

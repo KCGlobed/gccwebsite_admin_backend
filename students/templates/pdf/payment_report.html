@@ -97,20 +97,21 @@
                         <td>
                             <b>Payment Id</b>
                         </td>
-                    
                         <td>
                             <b>Amount</b>
+                        </td>
+                        <td>
+                            <b>Payment Date</b>
                         </td>
                     
                     </tr>
                     {% for session in data_list %}
                         <tr>
-                            {% for form_data in session.forms_detail %}
-                                <td>Full Name: {{form_data.full_name}}<br>Email: {{form_data.email}}<br>Mobile: {{form_data.phone}}<br>City: {{form_data.city}}<br>State: {{form_data.state}}</td>
-                            {% endfor %}
+                            <td>Full Name: {{session.full_name}}<br>Email: {{session.email}}<br>Mobile: {{session.phone}}<br>City: {{session.city}}<br>State: {{session.state}}</td>
                             <td>{{session.razorpay_order_id}}</td>
                             <td>{{session.razorpay_payment_id}}</td>
                             <td>{{session.amount}}</td>
+                            <td>{{session.created_at}}</td>
                         </tr>
                     {% endfor %}
                 </table>

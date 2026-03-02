@@ -158,10 +158,14 @@ class CampusStudent(models.Model):
     campus_ambassador_history = models.CharField(max_length=255)
     inspiration = models.TextField()
     promotion_channels = models.JSONField()
-    student_reach = models.CharField(max_length=255)
+    student_reach = models.CharField(max_length=255) ## remove field from system using default values
     consent = models.BooleanField()
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
+    #added
+    student_body_description = models.TextField(blank=True)
+    campus_ambassador_description = models.TextField(blank=True)
+
 
     class Meta:
         db_table = 'campus_student'

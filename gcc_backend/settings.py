@@ -175,6 +175,7 @@ STATIC_URL = 'https://storage.googleapis.com/{}/static/'.format(GS_STATIC_BUCKET
 MEDIA_URL = 'https://storage.googleapis.com/{}/media/'.format(GS_BUCKET_NAME)
 SECURE_MEDIA_URL = 'https://storage.googleapis.com/{}/media/'.format(GS_BUCKET_NAME_2)
 
+SIGNED_URL_EXPIRY = 1 #minutes
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

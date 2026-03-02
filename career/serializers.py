@@ -1,14 +1,18 @@
 from rest_framework import serializers
 from .models import *
-
+from django.conf import settings
 
 
 
 class ListCareerApplicationSerializer(serializers.ModelSerializer) :
+    resume_path = serializers.SerializerMethodField('get_resume_path')
     class Meta:
         model = CareerApplication
         fields = "__all__"
-
+    
+    def get_resume_path(self, obj):
+        url = f'https://storage.googleapis.com/{settings.GS_BUCKET_NAME}/{obj.resume_path}'
+        return url
 
 class ListPartnerWithUsSerializer(serializers.ModelSerializer) :
     class Meta:

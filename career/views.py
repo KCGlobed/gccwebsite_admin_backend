@@ -7,6 +7,9 @@ from rest_framework import filters
 from gcc_backend.pagination import CustomPageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 
+from gcc_backend.utils import *
+from gcc_backend import settings
+
 
 
 class CareerApplication_list(APIView):
@@ -51,9 +54,6 @@ class PartnerWithUs_list(APIView):
         return paginator.get_paginated_response(serializers.data)
     
 
-from gcc_backend.utils import *
-from gcc_backend import settings
-
 class DossierDataForm_Create(APIView):
     # permission_classes = [IsAuthenticated]
     def post(self, request, format=None):
@@ -88,16 +88,14 @@ class DossierDataForm_List(APIView):
         return paginator.get_paginated_response(serializers.data)
     
 
-
-
-class DossierDataPage_List(APIView):
+class NewsletterSubscribers_List(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPageNumberPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['id']
     ordering_fields = ['id']
     def get(self, request):
-        datas = DossierData.objects.all().order_by('-id')
+        datas = NewsletterSubscribers.objects.all().order_by('-id')
         search_filter = filters.SearchFilter()
         datas = search_filter.filter_queryset(request, datas, self)
 
@@ -106,7 +104,8 @@ class DossierDataPage_List(APIView):
 
         paginator = self.pagination_class()
         page = paginator.paginate_queryset(datas, request, view=self)
-        serializers = ListDossierDataSerializer(page, many=True)
+        serializers = ListNewsletterSubscriberSerializer(page, many=True)
         
         return paginator.get_paginated_response(serializers.data)
     
+

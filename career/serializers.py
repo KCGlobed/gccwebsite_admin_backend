@@ -23,4 +23,10 @@ class ListDossierDataSerializer(serializers.ModelSerializer) :
         fields = "__all__"
         
 
+class ListNewsletterSubscriberSerializer(serializers.ModelSerializer) :
+    class Meta:
+        model = NewsletterSubscribers
+        fields = "__all__"
+        
+
 

@@ -18,7 +18,7 @@ import re
 from datetime import datetime, timedelta
 client = storage.Client(project=settings.GS_PROJECT_ID)
 from rest_framework import status
-
+from django.utils.dateparse import parse_date
 
 # Create your views here.
 
@@ -99,6 +99,20 @@ class Blogs_list(APIView):
     ordering_fields = ['id']
     def get(self, request):
         datas = Blog.objects.all().order_by('-id')
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
         search_filter = filters.SearchFilter()
         datas = search_filter.filter_queryset(request, datas, self)
 

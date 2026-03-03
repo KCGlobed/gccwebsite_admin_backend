@@ -16,6 +16,7 @@ import pandas as pd
 import tempfile
 import re
 from datetime import datetime, timedelta
+from django.utils.dateparse import parse_date
 client = storage.Client(project=settings.GS_PROJECT_ID)
 
 
@@ -30,6 +31,20 @@ class StudentQuery_list(APIView):
     ordering_fields = ['id']
     def get(self, request):
         datas = StudentEnquiries.objects.all().order_by('-id')
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
         search_filter = filters.SearchFilter()
         datas = search_filter.filter_queryset(request, datas, self)
 
@@ -52,6 +67,21 @@ class StudentData_list(APIView):
     ordering_fields = ['id']
     def get(self, request):
         datas = StudentsData.objects.all().order_by('-id')
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+
         search_filter = filters.SearchFilter()
         datas = search_filter.filter_queryset(request, datas, self)
 
@@ -74,6 +104,21 @@ class StudentPayment_list(APIView):
     ordering_fields = ['id']
     def get(self, request):
         datas = Payments.objects.all().order_by('-id')
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date   = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            print(start_date, type(start_date))
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
         search_filter = filters.SearchFilter()
         datas = search_filter.filter_queryset(request, datas, self)
 
@@ -97,6 +142,21 @@ class CampusFaculty_list(APIView):
     ordering_fields = ['id']
     def get(self, request):
         datas = CampusFaculty.objects.all().order_by('-id')
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+
         search_filter = filters.SearchFilter()
         datas = search_filter.filter_queryset(request, datas, self)
 
@@ -118,6 +178,20 @@ class CampusStudent_list(APIView):
     ordering_fields = ['id']
     def get(self, request):
         datas = CampusStudent.objects.all().order_by('-id')
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
         search_filter = filters.SearchFilter()
         datas = search_filter.filter_queryset(request, datas, self)
 

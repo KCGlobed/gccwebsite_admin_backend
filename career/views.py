@@ -6,7 +6,7 @@ from .serializers import *
 from rest_framework import filters
 from gcc_backend.pagination import CustomPageNumberPagination
 from rest_framework.permissions import IsAuthenticated
-
+from django.utils.dateparse import parse_date
 from gcc_backend.utils import *
 from gcc_backend import settings
 
@@ -20,6 +20,20 @@ class CareerApplication_list(APIView):
     ordering_fields = ['id']
     def get(self, request):
         datas = CareerApplication.objects.all().order_by('-id')
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
         search_filter = filters.SearchFilter()
         datas = search_filter.filter_queryset(request, datas, self)
 
@@ -41,6 +55,21 @@ class PartnerWithUs_list(APIView):
     ordering_fields = ['id']
     def get(self, request):
         datas = PartnerWithUs.objects.all().order_by('-id')
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+
         search_filter = filters.SearchFilter()
         datas = search_filter.filter_queryset(request, datas, self)
 
@@ -75,6 +104,21 @@ class DossierDataForm_List(APIView):
     ordering_fields = ['id']
     def get(self, request):
         datas = DossierData.objects.all().order_by('-id')
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+
         search_filter = filters.SearchFilter()
         datas = search_filter.filter_queryset(request, datas, self)
 
@@ -96,6 +140,20 @@ class NewsletterSubscribers_List(APIView):
     ordering_fields = ['id']
     def get(self, request):
         datas = NewsletterSubscribers.objects.all().order_by('-id')
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
         search_filter = filters.SearchFilter()
         datas = search_filter.filter_queryset(request, datas, self)
 

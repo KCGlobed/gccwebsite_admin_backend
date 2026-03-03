@@ -16,6 +16,7 @@ import pandas as pd
 import tempfile
 import re
 from datetime import datetime, timedelta
+from django.utils.dateparse import parse_date
 client = storage.Client(project=settings.GS_PROJECT_ID)
 
 
@@ -79,6 +80,20 @@ class GetPaymentReportPDFView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
         data_objs = Payments.objects.all().order_by("-id")
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                data_objs = data_objs.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                data_objs = data_objs.filter(created_at__date__lte=end_date)
+
         data_list = ListPaymentPDFSerializer(data_objs, many=True).data
         selected_bucket = settings.GS_BUCKET_NAME
         context = {
@@ -201,6 +216,21 @@ class GetPaymentReportExcelView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
         data_objs = Payments.objects.all().order_by("-id")
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                data_objs = data_objs.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                data_objs = data_objs.filter(created_at__date__lte=end_date)
+
+
         data_list = ListPaymentExcelReportSerializer(data_objs, many=True).data
         COLUMN_MAPPING = {
             "full_name":"Full Name",

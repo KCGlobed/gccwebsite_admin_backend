@@ -76,7 +76,7 @@ class GetSessionReportPDFView(APIView):
             os.remove(pdf_path)
 
 
-class GetPaymentReportPDFView(APIView):
+class GetPaymentReportPDFView(APIView): 
     permission_classes = [IsAuthenticated]
     def get(self, request):
         data_objs = Payments.objects.all().order_by("-id")

@@ -18,4 +18,7 @@ urlpatterns = [
 
     path("payment_reports_pdf", GetPaymentReportPDFView.as_view()),
     path("payment_report_excel", GetPaymentReportExcelView.as_view()),
+
+    path("campusfaculty_reports_pdf", GetCampusFacultyReportPDFView.as_view()),
+    # path("payment_report_excel", GetPaymentReportExcelView.as_view()),
 ]

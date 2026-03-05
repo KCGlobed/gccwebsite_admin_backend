@@ -101,8 +101,9 @@ class StudentPayment_list(APIView):
     pagination_class = CustomPageNumberPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['id']
-    ordering_fields = ['id']
+    ordering_fields = '__all__'
     def get(self, request):
+
         datas = Payments.objects.all().order_by('-id')
 
         # Date range filter
@@ -110,7 +111,6 @@ class StudentPayment_list(APIView):
         end_date   = request.GET.get('end_date')
         if start_date:
             start_date = parse_date(start_date)
-            print(start_date, type(start_date))
             if start_date:
                 datas = datas.filter(created_at__date__gte=start_date)
 

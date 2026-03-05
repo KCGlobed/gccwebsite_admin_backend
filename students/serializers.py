@@ -115,6 +115,12 @@ class ListCampusFacultySerializer(serializers.ModelSerializer) :
         fields = "__all__"
 
 
+class ListCampusFacultyPDFSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CampusFaculty
+        fields = "__all__"
+
+
 class ListCampusStudentSerializer(serializers.ModelSerializer) :
     class Meta:
         model = CampusStudent

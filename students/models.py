@@ -94,7 +94,6 @@ class FormType(models.IntegerChoices):
 
 
 class Payments(models.Model):
-    student = models.ForeignKey('StudentsData', models.DO_NOTHING)
     razorpay_order_id = models.CharField(max_length=255, blank=True, null=True)
     razorpay_payment_id = models.CharField(max_length=255, blank=True, null=True)
     razorpay_signature = models.CharField(max_length=255, blank=True, null=True)

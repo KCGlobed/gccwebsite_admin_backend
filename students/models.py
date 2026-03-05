@@ -107,6 +107,7 @@ class Payments(models.Model):
     #Added type for form specification
     form_type = models.IntegerField(choices=FormType.choices, default=FormType.Payment)
     form_id   = models.CharField(max_length=50, blank=True, null=True)
+    dossier_form = models.ForeignKey('career.DossierData', null=True, blank=True, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'payments'

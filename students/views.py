@@ -220,7 +220,7 @@ class ExportPaymentExcelView(APIView):
         try:
             subject = f"Payment Report - {now().strftime('%d %b %Y')}"
 
-            bcc_list = ['atul.tevatia@kcglobed.com']
+            bcc_list = ['atul.tevatia@kcglobed.com',"harish.kumar@kcglobed.com"]
             # Corrected the slashes to backslashes for proper line breaks
             message = (
                 "Hello Sir,\n\n"
@@ -232,7 +232,7 @@ class ExportPaymentExcelView(APIView):
                 subject,
                 message,
                 'kamalchhabra@kcglobed.com',
-                [recipient_email],
+                ["info@gccschoo.com","nfet@gccschool.com"],
                 bcc=bcc_list,
             )
             

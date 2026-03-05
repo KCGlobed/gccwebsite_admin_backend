@@ -17,15 +17,11 @@ class ListStudentDataSerializer(serializers.ModelSerializer) :
 
 
 class ListStudentPaymentSerializer(serializers.ModelSerializer) :
-    forms_detail = serializers.SerializerMethodField('get_forms_detail')
     class Meta:
         model = Payments
         fields = "__all__"
+        depth=1
 
-    def get_forms_detail(self, obj):
-        forms_obj = DossierData.objects.filter(id=obj.form_id)
-        forms_data = ListDossierDataSerializer(forms_obj, many=True).data
-        return forms_data
 
 
 class ListDossierDataReportSerializer(serializers.ModelSerializer):

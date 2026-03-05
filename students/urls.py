@@ -10,6 +10,7 @@ urlpatterns = [
     path("studentcampus_page_list", CampusStudent_list.as_view()),
     path("facultycampus_page_list", CampusFaculty_list.as_view()),
 
+    path("automate-email-task", ExportPaymentExcelView.as_view()),
 
     path("test", GetSessionReportPDFView.as_view()),
     path("test_excel", GetSessionReportExcelView.as_view()),

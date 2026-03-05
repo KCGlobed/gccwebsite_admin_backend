@@ -18,6 +18,13 @@ import re
 from datetime import datetime, timedelta
 from django.utils.dateparse import parse_date
 client = storage.Client(project=settings.GS_PROJECT_ID)
+import io
+from openpyxl import Workbook
+from django.core.mail import EmailMessage
+from django.utils.timezone import now
+from rest_framework import status
+from django.utils import timezone
+from datetime import timedelta
 
 
 
@@ -157,6 +164,89 @@ class StudentPayment_list(APIView):
         return paginator.get_paginated_response(serializers.data)
     
 
+
+
+
+class ExportPaymentExcelView(APIView):
+    def get(self, request):
+        recipient_email = "testtechno0@yopmail.com"
+        # 1. Fetch data (Reuse your annotated logic)
+        # Note: Using .iterator() is better for large datasets to save memory
+        
+        # 1. Calculate the timestamp for 24 hours ago
+        time_threshold = timezone.now() - timedelta(hours=24)
+
+        # 2. Filter queryset
+        # Note: 'isnull' is lowercase in Django lookups
+        queryset = Payments.objects.filter(
+            razorpay_order_id__isnull=False,
+            created_at__gte=time_threshold
+        ).order_by('-created_at')
+        # 2. Create Excel in memory
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Payments Report"
+
+        # Headers
+        headers = ['Order ID','Payment ID', 'Amount', 'Currency', 'Student Name', 'Email', "Phone","City","State","Payment Status",'Date']
+        ws.append(headers)
+
+        # Rows
+        for p in queryset:
+
+            dossier = p.dossier_form
+
+            ws.append([
+                p.razorpay_order_id,
+                p.razorpay_payment_id,
+                float(p.amount),
+                p.currency,
+                dossier.full_name if dossier else "N/A",
+                dossier.email if dossier else "N/A",
+                dossier.phone if dossier else "N/A",
+                dossier.city if dossier else "N/A",
+                dossier.state if dossier else "N/A",
+                p.status,
+                p.created_at.strftime('%Y-%m-%d %H:%M') if p.created_at else "N/A"
+            ])
+
+        # Save to BytesIO stream
+        output = io.BytesIO()
+        wb.save(output)
+        output.seek(0)
+
+        # 3. Send Email
+        try:
+            subject = f"Payment Report - {now().strftime('%d %b %Y')}"
+
+            bcc_list = ['testtechno0@yopmail.com']
+            # Corrected the slashes to backslashes for proper line breaks
+            message = (
+                "Hello Sir,\n\n"
+                "Please find the attached payment dossier report for the last 24 hours.\n\n"
+                "Thanks,\n"
+                "KCGlobed Team"
+            )
+            email = EmailMessage(
+                subject,
+                message,
+                'kamalchhabra@kcglobed.com',
+                [recipient_email],
+                bcc=bcc_list,
+            )
+            
+            # Attach the file (filename, content, mimetype)
+            email.attach(
+                f'Payment_Report_{now().strftime("%Y%m%d")}.xlsx',
+                output.getvalue(),
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            )
+            email.send()
+
+            return Response({"message": "Email sent successfully"}, status=status.HTTP_200_OK)
+        
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class CampusFaculty_list(APIView):

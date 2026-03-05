@@ -112,8 +112,38 @@ class UserLoginView(APIView):
 
 
 
+class CreateStudentView(APIView):
+    def post(self, request, format=None):
+        serializer = CreateStudentSerializer(data = request.data)
+        if serializer.is_valid(raise_exception = True):
+            user  = serializer.save()
+            return success_response(message="User Created Successfully", data={}, status_code=status.HTTP_200_OK)
+        return error_response(message="failed", data = serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
+    
 
 
 
+class UserForgotPasswordView(APIView):
+    def post(self, request, format=None):
+        serializer = UserForgotPasswordSerializer(data = request.data)
+        if serializer.is_valid(raise_exception = True):
+            return success_response(message="Reset password link sent on email successfully!", data=[], status_code=status.HTTP_200_OK)
+        return error_response(message="failed", data = serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
 
 
+
+# User Reset Password
+class UserResetPasswordView(APIView):
+    def post(self, request, format=None):
+        serializer = UserResetPasswordSerializer(data = request.data)
+        if serializer.is_valid(raise_exception = True):
+            return success_response(message="Password reset successfully!", data=[], status_code=status.HTTP_200_OK)
+        return error_response(message="failed", data = serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
+
+
+class GetStudentDetailView(APIView):
+    def get(self, request, id=None,format=None):
+        subadmin_list = User.objects.filter(role = User.Student, id=id).first()
+        serializer = StudentProfileSerializer(subadmin_list)
+        return success_response(message="Success", data=serializer.data, status_code=status.HTTP_200_OK)
+    

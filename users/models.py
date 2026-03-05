@@ -59,11 +59,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     SuperAdmin = 1
     SubAdmin = 2
     Manager = 3
+    Student = 4
 
     ROLE_CHOICES = (
         (SuperAdmin, 'SuperAdmin'),
         (SubAdmin, 'SubAdmin'),
         (Manager, 'Manager'),
+        (Student, 'Student'),
     )
 
     SOCIAL_LOGIN_CHOICES = (

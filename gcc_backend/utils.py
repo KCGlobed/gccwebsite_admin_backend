@@ -1,7 +1,8 @@
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from rest_framework import status
-
+import random
+import string
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
@@ -37,3 +38,17 @@ def get_client_ip(request):
         else request.META.get("REMOTE_ADDR")
     )
 
+
+def generate_random_password(length=8):
+    letters = string.ascii_letters 
+    digits = string.digits       
+    special_characters = '@#$%&*'
+    password = [
+        random.choice(special_characters),  
+        random.choice(letters),             
+        random.choice(digits)
+    ]
+    all_characters = letters + digits + special_characters
+    password += random.choices(all_characters, k=length - 3)
+    random.shuffle(password)
+    return ''.join(password)

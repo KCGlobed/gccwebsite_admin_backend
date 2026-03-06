@@ -109,6 +109,36 @@ class UserLoginView(APIView):
     
 
 
+class WebsiteUserLoginView(APIView):
+    def post(self, request, format=None):
+        serializer = WebsiteUserLoginSerializer(data = request.data)
+        if serializer.is_valid(raise_exception = True):
+            email = serializer.data.get('email').lower()
+            password = serializer.data.get('password')
+            user = authenticate(email = email, password = password)
+            if user is not None:
+                
+                token = get_tokens_for_user(user)
+                update_last_login(None, user)
+
+                # if user.current_refresh is not None:
+                #     try:
+                #         RefreshToken(user.current_refresh).blacklist()
+                #     except TokenError:
+                #         pass
+                
+                # user.current_refresh = token['refresh']
+                # user.save()
+
+
+                return success_response(message="Login Success", data={'token': token, 'user_role': serializer.data.get('role'), "user_id":user.id}, status_code=status.HTTP_200_OK)
+            else:
+                return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
+        
+        return error_response(message="failed", data = serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
+    
+
+
 
 class CreateStudentView(APIView):
     def post(self, request, format=None):

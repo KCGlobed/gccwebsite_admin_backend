@@ -150,7 +150,7 @@ class UserForgotPasswordSerializer(serializers.ModelSerializer):
             uid = urlsafe_base64_encode(force_bytes(user.id))
             token = PasswordResetTokenGenerator().make_token(user)
             
-            url = settings.BASE_URL+"/user/reset/?uid="+uid+'&token='+token
+            url = settings.WEBSITE_BASE_URL+"/user/reset/?uid="+uid+'&token='+token
 
             subject = 'Reset Password Link'
             message = f'Hi {user.first_name} {user.last_name}, Here is the your reset password link: '+url

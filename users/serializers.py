@@ -25,7 +25,7 @@ class WebsiteUserLoginSerializer(serializers.ModelSerializer):
         fields = ['email', 'password',"role"]
 
     def validate(self, data):
-        user = User.objects.filter(email =data.get('email').lower()).first()
+        user = User.objects.filter(email =data.get('email').lower(), role=User.Student).first()
         if user is None:
             raise serializers.ValidationError("User Not found with this email!")
         
@@ -54,7 +54,7 @@ class UserLoginSerializer(serializers.ModelSerializer):
         fields = ['email', 'password',"role"]
 
     def validate(self, data):
-        user = User.objects.filter(email =data.get('email').lower(), role=User.Student).first()
+        user = User.objects.filter(email =data.get('email').lower()).first()
         if user is None:
             raise serializers.ValidationError("User Not found with this email!")
         

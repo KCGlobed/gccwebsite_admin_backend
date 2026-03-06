@@ -143,7 +143,10 @@ class UserResetPasswordView(APIView):
 
 class GetStudentDetailView(APIView):
     def get(self, request, id=None,format=None):
+        print("student role data....", User.Student)
         subadmin_list = User.objects.filter(role = User.Student, id=id).first()
+        print("subadmin list....",subadmin_list)
         serializer = StudentProfileSerializer(subadmin_list)
+        print("serializers....",serializer)
         return success_response(message="Success", data=serializer.data, status_code=status.HTTP_200_OK)
     

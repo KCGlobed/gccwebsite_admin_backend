@@ -170,3 +170,24 @@ class CampusStudent(models.Model):
     class Meta:
         db_table = 'campus_student'
 
+
+class ContactUs(models.Model):
+    first_name = models.CharField(max_length=255, null=True, blank=True)
+    last_name = models.CharField(max_length=255, null=True, blank=True)
+    email = models.CharField(max_length=255, null=True, blank=True)
+    phone = models.CharField(max_length=255, null=True, blank=True)
+    state = models.CharField(max_length=255, null=True, blank=True)
+    city = models.CharField(max_length=255, null=True, blank=True)
+    country = models.CharField(max_length=255, null=True, blank=True)
+    pincode = models.CharField(max_length=255, null=True, blank=True)
+    message = models.TextField(null=True, blank=True)
+    status = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
+    
+    class Meta:
+        verbose_name = 'Quick Contact'
+        verbose_name_plural = 'Quick Contact'
+        
+    def __str__(self):
+        return '%s' % self.id

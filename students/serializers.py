@@ -177,3 +177,43 @@ class CampusStudentExcelSerializer(serializers.ModelSerializer):
             "inspiration",
             "student_reach"
         ]
+
+
+class ContactUsSerializer(serializers.ModelSerializer) :
+    first_name = serializers.CharField(max_length = 255, required=True)
+    last_name = serializers.CharField(max_length = 255, required=True)
+    email = serializers.CharField(max_length = 255, required=True)
+    phone = serializers.CharField(max_length = 255, required=True)
+    state = serializers.CharField(max_length = 255, required=True)
+    city = serializers.CharField(max_length = 255, required=True)
+    class Meta:
+        model = ContactUs
+        fields = ['first_name','last_name','email','phone',"state","city"]
+        
+    def validate(self, data):
+
+        return data
+
+
+    def create(self , validate_data):
+        
+        query = ContactUs(
+            first_name = validate_data.get('first_name'),
+            last_name = validate_data.get('last_name'),
+            email = validate_data.get('email'),
+            phone = validate_data.get('phone'),
+            state = validate_data.get('state'),
+            city = validate_data.get('city'),
+
+        )
+        query.save()
+        
+        return query
+    
+
+class ContactListSerializer(serializers.ModelSerializer):
+    created_at = serializers.DateTimeField(read_only=True, format="%Y-%m-%d")
+    
+    class Meta:
+        model = ContactUs
+        fields = ['id',"first_name","last_name",'email',"phone","state","city","message","created_at"]

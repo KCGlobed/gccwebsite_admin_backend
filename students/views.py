@@ -323,5 +323,47 @@ class CampusStudent_list(APIView):
 
 
 
+class ContactUsView(APIView):
+    def post(self, request, format=None):
+        serializer = ContactUsSerializer(data = request.data)
+        if serializer.is_valid(raise_exception = True):
+            user  = serializer.save()
+            return Response({'message':'Message sent Successfully','data':serializer.data})
 
+        return Response(serializer.errors)
+    
 
+class GetContactUSView(APIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = CustomPageNumberPagination
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['first_name',"last_name","email","phone","state","city"]
+    ordering_fields = ['first_name',"last_name","email","phone","state","city","created_at"]
+    def get(self, request):
+        datas = ContactUs.objects.all()
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+        search_filter = filters.SearchFilter()
+        datas = search_filter.filter_queryset(request, datas, self)
+
+        ordering_filter = filters.OrderingFilter()
+        datas = ordering_filter.filter_queryset(request, datas, self)
+
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(datas, request, view=self)
+        serializers = ContactListSerializer(page, many=True)
+        
+        return paginator.get_paginated_response(serializers.data)
+    

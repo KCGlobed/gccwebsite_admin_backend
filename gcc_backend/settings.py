@@ -215,4 +215,4 @@ EMAIL_USE_SSL = True
 
 
 # BASE_URL = 'https://gccschool.com'
-BASE_URL = 'http://localhost:3000'
+WEBSITE_BASE_URL = os.getenv("WEBSITE_BASE_URL")

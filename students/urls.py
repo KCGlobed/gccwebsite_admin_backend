@@ -22,4 +22,7 @@ urlpatterns = [
 
     path("campusfaculty_reports_pdf", GetCampusFacultyReportPDFView.as_view()),
     # path("payment_report_excel", GetPaymentReportExcelView.as_view()),
+
+    path('contact-us/', ContactUsView.as_view(), name="contact-us"),
+    path('get-contact-us-list/', GetContactUSView.as_view(), name="get-contact-us-list"),
 ]

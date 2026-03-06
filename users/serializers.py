@@ -1,6 +1,16 @@
 from rest_framework import serializers
 from users.models import *
 
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.contrib.auth.tokens import PasswordResetTokenGenerator 
+from django.utils.encoding import smart_str, force_bytes
+
+from django.conf import settings
+from django.core.mail import send_mail
+from gcc_backend.utils import *
+from django.template import loader
+
+
 
 
 class UserLoginSerializer(serializers.ModelSerializer):
@@ -34,11 +44,6 @@ class UserLoginSerializer(serializers.ModelSerializer):
 
 
 
-
-from django.conf import settings
-from django.core.mail import send_mail
-from gcc_backend.utils import *
-from django.template import loader
 
 
 class CreateStudentSerializer(serializers.ModelSerializer):
@@ -74,8 +79,11 @@ class CreateStudentSerializer(serializers.ModelSerializer):
         user.state = validate_data.get('state')
         user.city = validate_data.get('city')
         user.save()
-
-        subject = 'Welcome to GCC School!'
+        num = user.id
+        formatted = str(num).zfill(5)
+        print(formatted)
+        print(f"NFET-2026-{formatted}")
+        subject = 'GCC School – Payment Confirmation & Next Steps for NFET 2026'
 
         message = f''
         email_from = settings.EMAIL_HOST_USER
@@ -84,7 +92,8 @@ class CreateStudentSerializer(serializers.ModelSerializer):
             'user_login_detail_email.html',
             {
                 'name': user.first_name,
-                'verification_link': 'https://gccschool.com/',
+                'candidate_id': f"NFET-2026-{formatted}",
+                'slot_booking': 'https://forms.gle/UQqKnCsmJzVLK6qU8',
                 "email": user.email,
                 "password": password,               
 
@@ -94,12 +103,6 @@ class CreateStudentSerializer(serializers.ModelSerializer):
         send_mail( subject, message, email_from, recipient_list,html_message=html_message )
 
         return user
-
-
-from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from django.contrib.auth.tokens import PasswordResetTokenGenerator 
-from django.utils.encoding import smart_str, force_bytes
-
 
 
 

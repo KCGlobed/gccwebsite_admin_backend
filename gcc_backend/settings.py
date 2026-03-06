@@ -215,9 +215,3 @@ EMAIL_USE_SSL = True
 
 
 BASE_URL = 'https://gccschool.com'
-
-
-print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-print("env value...", os.getenv("EMAIL_HOST"))
-print("env value...", os.getenv("EMAIL_HOST_PASSWORD"))
-

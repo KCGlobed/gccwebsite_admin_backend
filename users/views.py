@@ -79,12 +79,6 @@ def welcome(request):
     """)
 
 
-class Testing2(APIView):
-    def get(self, request):
-        msg = "This is for testing api run2...."
-        return Response({"msg":"api found2", "data":msg})
-
-
 class UserLoginView(APIView):
     def post(self, request, format=None):
         serializer = UserLoginSerializer(data = request.data)
@@ -145,21 +139,9 @@ class UserResetPasswordView(APIView):
         return error_response(message="failed", data = serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
 
 
-class GetStudentDetailView_Test(APIView):
+class GetStudentDetailView(APIView):
     def get(self, request, id=None, format=None):
-        print("student role data....", User.Student)
         subadmin_list = User.objects.filter(role = User.Student, id=id).first()
-        print("subadmin list....",subadmin_list)
         serializer = StudentProfileDetailSerializer(subadmin_list)
-        print("serializers....",serializer)
         return success_response(message="Success", data=serializer.data, status_code=status.HTTP_200_OK)
-    
-
-
-
-class Testing3(APIView):
-    def get(self, request):
-        msg = "This is for testing api run3...."
-        return Response({"msg":"api found3", "data":msg})
-
 

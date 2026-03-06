@@ -11,6 +11,5 @@ urlpatterns = [
     
     path("newslettersubscribers_page_list", NewsletterSubscribers_List.as_view()),
 
-    path("testing", Testing.as_view()),
     
 ]

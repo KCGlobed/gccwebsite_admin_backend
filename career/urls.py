@@ -10,5 +10,7 @@ urlpatterns = [
     path("dossierdata_page_list", DossierDataForm_List.as_view()),
     
     path("newslettersubscribers_page_list", NewsletterSubscribers_List.as_view()),
+
+    path("testing", Testing.as_view()),
     
 ]

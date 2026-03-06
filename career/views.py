@@ -167,3 +167,12 @@ class NewsletterSubscribers_List(APIView):
         return paginator.get_paginated_response(serializers.data)
     
 
+
+
+
+
+
+class Testing(APIView):
+    def get(self, request):
+        msg = "This is for testing api run...."
+        return Response({"msg":"api found"})

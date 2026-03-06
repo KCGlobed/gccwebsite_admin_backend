@@ -79,6 +79,10 @@ def welcome(request):
     """)
 
 
+class Testing2(APIView):
+    def get(self, request):
+        msg = "This is for testing api run2...."
+        return Response({"msg":"api found2", "data":msg})
 
 
 class UserLoginView(APIView):
@@ -150,3 +154,12 @@ class GetStudentDetailView_Test(APIView):
         print("serializers....",serializer)
         return success_response(message="Success", data=serializer.data, status_code=status.HTTP_200_OK)
     
+
+
+
+class Testing3(APIView):
+    def get(self, request):
+        msg = "This is for testing api run3...."
+        return Response({"msg":"api found3", "data":msg})
+
+

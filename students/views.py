@@ -367,3 +367,26 @@ class GetContactUSView(APIView):
         
         return paginator.get_paginated_response(serializers.data)
     
+
+
+class CreateStudentProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request, format=None):
+        serializer = CompleteStudentSerializer(data = request.data)
+        if serializer.is_valid(raise_exception = True):
+            user  = serializer.save()
+            return Response({'message':'Message sent Successfully','data':[]})
+
+        return Response(serializer.errors)
+    
+
+
+class GetStudentProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        datas = StudentProfile.objects.filter(user = 3).first()
+        if datas is not None:
+            serializers = StudentProfileSerializer(datas)
+            return Response({'message':'','data':serializers.data})
+
+        return Response({'message':'','data':[]})

@@ -25,4 +25,7 @@ urlpatterns = [
 
     path('contact-us/', ContactUsView.as_view(), name="contact-us"),
     path('get-contact-us-list/', GetContactUSView.as_view(), name="get-contact-us-list"),
+
+    path('create-update-student-profile/', CreateStudentProfileView.as_view(), name="create-update-student-profile"),
+    path('get-student-profile/', GetStudentProfileView.as_view(), name="get-student-profile"),
 ]

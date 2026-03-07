@@ -323,6 +323,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
             query = StudentProfile(
                 user = User.objects.filter(id = validate_data.get('user')).first(),
                 last_name = validate_data.get('last_name'),
+                first_name = validate_data.get('first_name'),
                 email = validate_data.get('email'),
                 phone = validate_data.get('phone'),
                 state = validate_data.get('state'),

@@ -291,7 +291,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
         print(validate_data.get('user_experience'))
         print(type(validate_data.get('user_experience')))
         if datas is not None:
-            datas.first_name = validate_data.get('last_name', datas.first_name)
+            datas.first_name = validate_data.get('first_name', datas.first_name)
             datas.last_name = validate_data.get('last_name', datas.last_name)
             datas.email = validate_data.get('email', datas.email)
             datas.phone = validate_data.get('phone', datas.phone)

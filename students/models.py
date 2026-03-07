@@ -191,3 +191,89 @@ class ContactUs(models.Model):
         
     def __str__(self):
         return '%s' % self.id
+
+
+
+class EmployementStatus(models.IntegerChoices):
+    FRESHER = 1, 'FRESHER'
+    EXPERIENCED = 2, 'EXPERIENCED'
+
+class HigherEducation(models.IntegerChoices):
+    YES = 1, 'YES'
+    NO = 2, 'NO'
+
+class PGStatus(models.IntegerChoices):
+    COMPLETED = 1, 'COMPLETED'
+    PURSURING = 2, 'PURSURING'
+
+class Medium(models.IntegerChoices):
+    ENGLISH = 1, 'ENGLISH'
+    HINDI = 2, 'HINDI'
+    OTHER = 3, 'OTHER'
+
+class Gender(models.IntegerChoices):
+    MALE = 1, 'MALE'
+    FEMALE = 2, 'FEMALE'
+    OTHER = 3, 'OTHER'
+
+
+class StudentProfile(models.Model):
+    user = models.ForeignKey('users.User', null=True, blank=True, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=255, null=True, blank=True)
+    last_name = models.CharField(max_length=255, null=True, blank=True)
+    email = models.CharField(max_length=255, null=True, blank=True)
+    phone = models.CharField(max_length=255, null=True, blank=True)
+    contact_name = models.CharField(max_length=255, null=True, blank=True)
+    contact_phone = models.CharField(max_length=255, null=True, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    gender = models.IntegerField(choices=Gender.choices,default=Gender.MALE)
+    nationality = models.CharField(max_length=255, null=True, blank=True)
+    pincode = models.CharField(max_length=255, null=True, blank=True)
+    city = models.CharField(max_length=255, null=True, blank=True)
+    state = models.CharField(max_length=255, null=True, blank=True)
+    address = models.CharField(max_length=255, null=True, blank=True)
+    tenth_passing_year = models.CharField(max_length=255, null=True, blank=True)
+    tenth_passing_percentage = models.CharField(max_length=255, null=True, blank=True)
+    twelveth_passing_year = models.CharField(max_length=255, null=True, blank=True)
+    twelveth_passing_percentage = models.CharField(max_length=255, null=True, blank=True)
+    medium_instruction = models.IntegerField(choices=Medium.choices,default=Medium.ENGLISH)
+    other_instruction = models.CharField(max_length=255, null=True, blank=True)
+    pg_status = models.IntegerField(choices=PGStatus.choices,default=PGStatus.COMPLETED)
+    pg_percentage = models.CharField(max_length=255, null=True, blank=True)
+    institution = models.CharField(max_length=255, null=True, blank=True)
+    higher_education_status = models.IntegerField(choices=HigherEducation.choices,default=HigherEducation.YES)
+    higher_qualification = models.CharField(max_length=255, null=True, blank=True)
+    higher_qualification_institution = models.CharField(max_length=255, null=True, blank=True)
+    employement_status = models.IntegerField(choices=EmployementStatus.choices,default=EmployementStatus.FRESHER)
+    aadhaar = models.FileField(blank=False, null=False)
+    dob_certificate = models.FileField(blank=False, null=False)
+    photo = models.FileField(blank=False, null=False)
+    status = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
+    
+    class Meta:
+        verbose_name = 'Student Profile'
+        verbose_name_plural = 'Student Profile'
+        
+    def __str__(self):
+        return '%s' % self.id
+    
+
+
+class StudentExperience(models.Model):
+    student_profile = models.ForeignKey('StudentProfile', null=True, blank=True, on_delete=models.CASCADE)
+    position = models.CharField(max_length=255, null=True, blank=True)
+    company_name = models.CharField(max_length=255, null=True, blank=True)
+    area = models.CharField(max_length=255, null=True, blank=True)
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
+
+    class Meta:
+        verbose_name = 'User Experience'
+        verbose_name_plural = 'User Experience'
+
+    def __str__(self):
+        return '%s' % self.id

@@ -384,7 +384,7 @@ class CreateStudentProfileView(APIView):
 class GetStudentProfileView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        datas = StudentProfile.objects.filter(user = 3).first()
+        datas = StudentProfile.objects.filter(user = request.user).first()
         if datas is not None:
             serializers = StudentProfileSerializer(datas)
             return Response({'message':'','data':serializers.data})

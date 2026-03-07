@@ -4,6 +4,7 @@ from users.models import *
 from career.models import DossierData
 from career.serializers import ListDossierDataSerializer
 from django.utils import timezone
+import json
 
 class ListStudentQuerySerializer(serializers.ModelSerializer) :
     class Meta:
@@ -258,9 +259,8 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
     aadhaar = serializers.FileField(required=False,allow_null=True)
     dob_certificate = serializers.FileField(required=False,allow_null=True)
     photo = serializers.FileField(required=False,allow_null=True)
-
-    user_experience = ExperienceSerializer(many=True)
-
+    user_experience = serializers.JSONField()
+    
 
     class Meta:
         model = StudentProfile
@@ -268,11 +268,28 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
         
     def validate(self, data):
         return data
+    
+    def validate_user_experience(self, value):
+        # 1. Convert string to Python list if necessary
+        
+        if isinstance(value, str):
+            try:
+                value = json.loads(value)
+            except json.JSONDecodeError:
+                raise serializers.ValidationError("Malformed JSON string.")
+
+        # 2. Run the data through a nested serializer for strict validation
+        serializer = ExperienceSerializer(data=value, many=True)
+        if serializer.is_valid():
+            return serializer.validated_data
+        raise serializers.ValidationError(serializer.errors)
 
 
     def create(self , validate_data):
         
         datas = StudentProfile.objects.filter(user_id = validate_data.get('user')).first()
+        print(validate_data.get('user_experience'))
+        print(type(validate_data.get('user_experience')))
         if datas is not None:
             datas.first_name = validate_data.get('last_name', datas.first_name)
             datas.last_name = validate_data.get('last_name', datas.last_name)

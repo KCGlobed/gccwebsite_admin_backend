@@ -81,10 +81,10 @@ class CreateStudentSerializer(serializers.ModelSerializer):
     city = serializers.CharField(max_length = 255, required=False, allow_blank=True)
     state = serializers.CharField(max_length = 255, required=False, allow_blank=True)
     country = serializers.CharField(max_length = 255, required=False, allow_blank=True)
-
+    phone1 = serializers.CharField(max_length = 255, required=False, allow_blank=True)
     class Meta:
         model = User
-        fields = ['email','full_name',"city","state","country"]
+        fields = ['email','full_name',"city","state","country","phone1"]
         
 
     def validate(self, data):
@@ -107,11 +107,10 @@ class CreateStudentSerializer(serializers.ModelSerializer):
         user.country = validate_data.get('country')
         user.state = validate_data.get('state')
         user.city = validate_data.get('city')
+        user.phone1 = validate_data.get('phone1')
         user.save()
         num = user.id
         formatted = str(num).zfill(5)
-        print(formatted)
-        print(f"NFET-2026-{formatted}")
         subject = 'GCC School – Payment Confirmation & Next Steps for NFET 2026'
 
         message = f''
@@ -135,6 +134,16 @@ class CreateStudentSerializer(serializers.ModelSerializer):
         return user
 
 
+
+
+class StudentProfileImageUploadSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(required=True)
+    class Meta:
+        model = User
+        fields = ['image']
+
+
+        
 
 class UserForgotPasswordSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length = 255,required=True)

@@ -175,3 +175,15 @@ class GetStudentDetailView(APIView):
         serializer = StudentProfileDetailSerializer(subadmin_list)
         return success_response(message="Success", data=serializer.data, status_code=status.HTTP_200_OK)
 
+
+class StudentProfileImageUploadView(APIView):
+    def post(self, request, id=None, format=None):
+        subadmin_list = User.objects.filter(role = User.Student, id=id).first()
+        if subadmin_list:
+            serializer = StudentProfileImageUploadSerializer(subadmin_list, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return success_response(message="Success", data=serializer.data, status_code=status.HTTP_200_OK)
+            return error_response(message="failed", data = serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
+        else:
+            return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)

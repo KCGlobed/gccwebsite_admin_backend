@@ -216,15 +216,45 @@ class ExportPaymentExcelView(APIView):
         wb.save(output)
         output.seek(0)
 
+
+        queryset1 = DossierData.objects.filter(
+            created_at__gte=time_threshold
+        ).order_by('-created_at')
+        # 2. Create Excel in memory
+        wb1 = Workbook()
+        ws1 = wb1.active
+        ws1.title = "Dossior Lead Report"
+
+        # Headers
+        headers = ['Student Name', 'Email', "Phone","City","State",'Date']
+        ws1.append(headers)
+
+        # Rows
+        for dossier in queryset1:
+
+            ws1.append([
+                dossier.full_name if dossier else "N/A",
+                dossier.email if dossier else "N/A",
+                dossier.phone if dossier else "N/A",
+                dossier.city if dossier else "N/A",
+                dossier.state if dossier else "N/A",
+                p.created_at.strftime('%Y-%m-%d %H:%M') if p.created_at else "N/A"
+            ])
+
+        # Save to BytesIO stream
+        output1 = io.BytesIO()
+        wb1.save(output1)
+        output1.seek(0)
+
         # 3. Send Email
         try:
-            subject = f"Payment Report - {now().strftime('%d %b %Y')}"
+            subject = f"Payment Report & Dossier Lead - {now().strftime('%d %b %Y')}"
 
-            bcc_list = ['atul.tevatia@kcglobed.com']
+            bcc_list = ['testtechno0@yopmail.com']
             # Corrected the slashes to backslashes for proper line breaks
             message = (
                 "Hello Sir,\n\n"
-                "Please find the attached payment dossier report for the last 24 hours.\n\n"
+                "Please find the attached payment report & dossier lead report for the last 24 hours.\n\n"
                 "Thanks,\n"
                 "KCGlobed Team"
             )
@@ -240,6 +270,12 @@ class ExportPaymentExcelView(APIView):
             email.attach(
                 f'Payment_Report_{now().strftime("%Y%m%d")}.xlsx',
                 output.getvalue(),
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            )
+
+            email.attach(
+                f'Dossier_Report_{now().strftime("%Y%m%d")}.xlsx',
+                output1.getvalue(),
                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             )
             email.send()

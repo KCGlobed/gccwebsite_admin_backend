@@ -224,8 +224,8 @@ class ExperienceSerializer(serializers.Serializer):
     company_name = serializers.CharField(required=False, allow_blank=True)
     position = serializers.CharField(required=False, allow_blank=True)
     area = serializers.CharField(required=False, allow_blank=True)
-    start_date = serializers.DateField(required=False)
-    end_date = serializers.DateField(required=False)
+    start_date = serializers.DateField(required=False, allow_null = True)
+    end_date = serializers.DateField(required=False, allow_null = True)
 
 class CompleteStudentSerializer(serializers.ModelSerializer) :
     user = serializers.IntegerField(required=True)

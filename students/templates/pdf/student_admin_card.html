@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>NFET Admit Card</title>
+</head>
+
+<body style="font-family:Arial, sans-serif;background:#f4f4f4;padding:20px;">
+
+<div style="max-width:900px;margin:auto;background:#fff;padding:20px;border:1px solid #ccc;">
+
+<!-- HEADER -->
+<div style="display:flex;align-items:center;margin-bottom:10px;">
+    
+    <img src="{{ logo }}" style="height:50px;margin-right:10px;">
+
+    <div>
+        <div style="font-size:22px;font-weight:bold;color:#5b2c91;">
+            GCC SCHOOL
+        </div>
+
+        <div style="font-size:12px;color:#444;">
+            GET HIRED FIRST, THEN TRAINED.
+
+            ( ISO 21001:2025 )
+        </div>
+    </div>
+
+</div>
+
+
+<!-- TITLE BAR -->
+
+<div style="background:#5b2c91;color:#fff;text-align:center;
+padding:10px;font-weight:bold;font-size:18px;margin-bottom:20px;">
+NATIONAL FINANCE ENTRANCE TEST (NFET) Admit Card
+</div>
+
+
+
+<!-- STUDENT DETAILS TABLE -->
+
+<table style="width:100%; border-collapse:collapse; font-family:Arial;">
+
+<tr>
+
+<td style="border:1px solid #444; padding:10px; width:220px; font-weight:bold;">
+Application ID :
+</td>
+
+<td style="border:1px solid #444; padding:10px;">
+{{ application_id }}
+</td>
+
+
+<td rowspan="6" style="border:1px solid #444; width:200px; padding:0;">
+
+
+<!-- BARCODE -->
+<div style="border-bottom:1px solid #444; padding:5px; text-align:center;">
+<img src="{{ barcode }}" style="width:100%; height:40px;">
+</div>
+
+
+<!-- PHOTO -->
+<div style="padding:10px; text-align:center;">
+<img src="{{ student_photo }}" style="width:120px;height:150px;object-fit:cover;">
+</div>
+
+
+<!-- SIGNATURE -->
+<div style="border-top:1px solid #444;text-align:center;padding:10px;font-size:11px;">
+Candidate's Signature in the
+
+presence of invigilator
+</div>
+
+
+</td>
+</tr>
+
+
+<tr>
+<td style="border:1px solid #444; padding:10px; font-weight:bold;">
+Name:
+</td>
+
+<td style="border:1px solid #444; padding:10px;">
+{{ student_name }}
+</td>
+</tr>
+
+
+
+<tr>
+<td style="border:1px solid #444; padding:10px; font-weight:bold;">
+Date of Exam:
+</td>
+
+<td style="border:1px solid #444; padding:10px;">
+{{ exam_date }}
+</td>
+</tr>
+
+
+
+<tr>
+<td style="border:1px solid #444; padding:10px; font-weight:bold;">
+Time of Exam:
+</td>
+
+<td style="border:1px solid #444; padding:10px;">
+{{ exam_time }}
+</td>
+</tr>
+
+
+
+<tr>
+<td style="border:1px solid #444; padding:10px; font-weight:bold;">
+Mode of Exam:
+</td>
+
+<td style="border:1px solid #444; padding:10px;">
+Online (Through Laptop/Desktop Only)
+</td>
+</tr>
+
+
+
+<tr>
+<td style="border:1px solid #444; padding:10px; font-weight:bold;">
+Link of Test:
+</td>
+
+<td style="border:1px solid #444; padding:10px;">
+<a href="{{ test_link }}">{{ test_link }}</a>
+</td>
+</tr>
+
+</table>
+
+
+
+<!-- IMPORTANT INSTRUCTIONS -->
+
+<div style="border:1px solid #aaa;margin-top:30px;padding:20px;">
+
+<div style="text-align:center;font-weight:bold;font-size:20px;margin-bottom:15px;">
+Important Instructions
+</div>
+
+
+<ol style="font-size:14px;line-height:1.6;color:#333;padding-left:18px;">
+
+<li>Candidates are advised to carefully read all instructions on the test interface before starting the examination.</li>
+
+<li>Candidates must log in at least 15 minutes before the scheduled test time to complete the verification and system checks.</li>
+
+<li>A valid photo identification document may be required for verification before the test begins.</li>
+
+<li>The webcam must remain switched on at all times, and the candidate's face should be clearly visible during the examination.</li>
+
+<li>Candidates must not leave their seat or move away from the camera once the examination has started.</li>
+
+<li>Unfair means are strictly prohibited, including the use of mobile phones, additional devices, books, notes, or assistance from any other person in the room.</li>
+
+<li>If any unfair practice is observed by the virtual invigilator, the candidate's test may be cancelled.</li>
+
+<li>Candidates must not share the examination link with anyone or attempt to access the test from multiple devices. The IP address and system details will be recorded for verification.</li>
+
+</ol>
+
+
+<div style="color:red;text-align:center;margin-top:10px;">
+Please follow the above guidelines to ensure a smooth and fair examination experience.
+</div>
+
+</div>
+
+
+
+<!-- SIGNATURE -->
+
+<div style="text-align:right;margin-top:40px;">
+
+<img src="{{ coordinator_signature }}" style="height:40px;">
+
+
+<span style="font-size:13px;">
+Examination Coordinator
+</span>
+
+</div>
+
+
+</div>
+
+</body>
+</html>

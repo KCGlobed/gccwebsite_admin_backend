@@ -459,46 +459,66 @@ class StudentSlotBookView(APIView):
         if datas is not None:
             serializers = StudentSlotBookSerializer(datas, data=request.data, partial=True)
             if serializers.is_valid():
-                serializers.save()
-                
-                # # xhtml2pdf needs ISO-8859-1
-                # html = html.encode("ISO-8859-1", "ignore").decode("ISO-8859-1")
+                objs = serializers.save()
+                std_data = StudentProfile.objects.filter(user = request.user).first()
+                data_list = []
+                static_selected_bucket = settings.GS_BUCKET_NAME
+                context = {
+                    "username": request.user.email,
+                    "user_id": request.user.id,
+                    "application_id": std_data.application_id,
+                    "student_name": std_data.first_name+" "+std_data.last_name,
+                    "slot_date": std_data.slot_date,
+                    "slot_time": std_data.slot_time,
+                    "photo": std_data.photo.url,
+                    "barcode":"",
+                    "report_date": datetime.now(),
+                    "test_link":"",
+                    "bucket_static_logo":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/gcc_school_pdf_logo.jpeg",
+                    # "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/admit_card_signature.png"
+                    "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/admit_card_signature_new.png"
+                }
+                # print(context)
+                # return Response({"":""})
+                # Render template
+                template = get_template("pdf/student_admit_card.html")
+                html = template.render(context)
 
-                # # Create temp file
-                # with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
-                #     pdf_path = tmp.name
-                #     pisa_status = pisa.CreatePDF(BytesIO(html.encode("ISO-8859-1")), dest=tmp)
+                # xhtml2pdf needs ISO-8859-1
+                html = html.encode("ISO-8859-1", "ignore").decode("ISO-8859-1")
 
-                # if pisa_status.err:
-                #     os.remove(pdf_path)
-                #     return Response({"error": "PDF generation failed"}, status=500)
+                # Create temp file
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+                    pdf_path = tmp.name
+                    pisa_status = pisa.CreatePDF(BytesIO(html.encode("ISO-8859-1")), dest=tmp)
 
-                # try:
-                #     # Upload to GCS
-                #     username = re.sub(r"\s+", "_", request.user.email)
-                #     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                #     gcs_file = f"media/admit_card/{username}.pdf"
+                if pisa_status.err:
+                    os.remove(pdf_path)
+                    return Response({"error": "PDF generation failed"}, status=500)
+                try:
+                    # Upload to GCS
+                    username = re.sub(r"\s+", "_", request.user.email)
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    gcs_file = f"media/admit_card/{username}_{request.user.id}.pdf"
 
-                #     bucket = client.bucket(settings.GS_BUCKET_NAME_2)
-                #     blob = bucket.blob(gcs_file)
-                #     blob.upload_from_filename(pdf_path, content_type="application/pdf")
-                #     # ---------- Generate signed URL ----------
-                #     url = blob.generate_signed_url(
-                #         version="v4",
-                #         expiration=timedelta(minutes=settings.SIGNED_URL_EXPIRY),
-                #         method="GET"
-                #     )
-                #     return Response({
-                #         "message": "Message sent Successfully",
-                #         "data": [{
-                #             "admit_card_url": url
-                #         }]
-                #     })
+                    bucket = client.bucket(settings.GS_BUCKET_NAME_2)
+                    blob = bucket.blob(gcs_file)
+                    blob.upload_from_filename(pdf_path, content_type="application/pdf")
+                    # ---------- Generate signed URL ----------
+                    url = blob.generate_signed_url(
+                        version="v4",
+                        expiration=timedelta(minutes=settings.SIGNED_URL_EXPIRY),
+                        method="GET"
+                    )
+                    return Response({
+                        "message": "Success",
+                        "data": {
+                            "report_url": url
+                        }
+                    })
 
-                # finally:
-                #     os.remove(pdf_path)
-
-                return Response({'message':'success','data':serializers.data})
+                finally:
+                    os.remove(pdf_path)
             return Response({'message':'failed','data':serializers.errors})
 
         return Response({'message':'failed','data':[]})

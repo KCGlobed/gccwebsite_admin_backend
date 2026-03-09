@@ -187,3 +187,21 @@ class StudentProfileImageUploadView(APIView):
             return error_response(message="failed", data = serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
         else:
             return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
+
+from google.cloud import storage
+from datetime import timedelta
+client = storage.Client(project=settings.GS_PROJECT_ID)
+
+class MediaAccessUrlView(APIView):
+    def post(self, request, format=None):
+        gcs_file = request.data.get("url")
+        bucket = client.bucket(settings.GS_BUCKET_NAME_2)
+        blob = bucket.blob(gcs_file)
+        # blob.upload_from_filename(pdf_path, content_type="application/pdf")
+        # ---------- Generate signed URL ----------
+        url = blob.generate_signed_url(
+            version="v4",
+            expiration=timedelta(minutes=settings.SIGNED_URL_EXPIRY),
+            method="GET"
+        )
+        return success_response(message="Success", data=[{"url":url}], status_code=status.HTTP_200_OK)

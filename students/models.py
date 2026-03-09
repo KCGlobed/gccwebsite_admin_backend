@@ -248,9 +248,14 @@ class StudentProfile(models.Model):
     aadhaar = models.FileField(blank=False, null=False)
     dob_certificate = models.FileField(blank=False, null=False)
     photo = models.FileField(blank=False, null=False)
+    profile_status = models.BooleanField(default=True)
     status = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
+    #added
+    application_id = models.CharField(max_length=200, blank=True, null=True)
+    slot_date = models.DateField(null=True, blank=True)
+    slot_time = models.CharField(max_length=200, blank=True, null=True)
     
     class Meta:
         verbose_name = 'Student Profile'
@@ -259,6 +264,15 @@ class StudentProfile(models.Model):
     def __str__(self):
         return '%s' % self.id
     
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)   # First save to get ID
+
+        if not self.application_id:
+            formatted = str(self.id).zfill(5)
+            self.application_id = f"NFET-2026-{formatted}"  # APP00001
+            super().save(update_fields=['application_id'])
+
 
 
 class StudentExperience(models.Model):

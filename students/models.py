@@ -186,8 +186,8 @@ class ContactUs(models.Model):
     updated_at = models.DateTimeField(auto_now = True)
     
     class Meta:
-        verbose_name = 'Quick Contact'
-        verbose_name_plural = 'Quick Contact'
+        verbose_name = 'Contact Us'
+        verbose_name_plural = 'Contact Us'
         
     def __str__(self):
         return '%s' % self.id

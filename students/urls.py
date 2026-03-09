@@ -30,10 +30,7 @@ urlpatterns = [
     path('get-contact-us-list/', GetContactUSView.as_view(), name="get-contact-us-list"),
 
     path('create-update-student-profile/', CreateStudentProfileView.as_view(), name="create-update-student-profile"),
-<<<<<<< HEAD
     path('student-slot-upload/', StudentSlotBookView.as_view(), name="student-slot-upload"),
-=======
->>>>>>> 59cfe9f162f409790f5f1ff93a016e7507853370
     path('get-student-profile/', GetStudentProfileView.as_view(), name="get-student-profile"),
     path('get-student-profile-listing/', GetStudentProfileListingView.as_view(), name="get-student-profile-listing"),
 

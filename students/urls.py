@@ -28,4 +28,5 @@ urlpatterns = [
 
     path('create-update-student-profile/', CreateStudentProfileView.as_view(), name="create-update-student-profile"),
     path('get-student-profile/', GetStudentProfileView.as_view(), name="get-student-profile"),
+    path('get-student-profile-listing/', GetStudentProfileListingView.as_view(), name="get-student-profile-listing"),
 ]

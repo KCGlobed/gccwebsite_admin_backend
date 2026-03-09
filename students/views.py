@@ -238,7 +238,7 @@ class ExportPaymentExcelView(APIView):
                 dossier.phone if dossier else "N/A",
                 dossier.city if dossier else "N/A",
                 dossier.state if dossier else "N/A",
-                p.created_at.strftime('%Y-%m-%d %H:%M') if p.created_at else "N/A"
+                dossier.created_at.strftime('%Y-%m-%d %H:%M') if dossier.created_at else "N/A"
             ])
 
         # Save to BytesIO stream
@@ -246,15 +246,46 @@ class ExportPaymentExcelView(APIView):
         wb1.save(output1)
         output1.seek(0)
 
+
+        queryset2 = ContactUs.objects.filter(
+            created_at__gte=time_threshold
+        ).order_by('-created_at')
+        # 2. Create Excel in memory
+        wb2 = Workbook()
+        ws2 = wb2.active
+        ws2.title = "Contact Us Report"
+
+        # Headers
+        headers = ['First Name','Last Name', 'Email', "Phone","City","State",'Date']
+        ws2.append(headers)
+
+        # Rows
+        for dossier in queryset2:
+
+            ws2.append([
+                dossier.first_name if dossier else "N/A",
+                dossier.last_name if dossier else "N/A",
+                dossier.email if dossier else "N/A",
+                dossier.phone if dossier else "N/A",
+                dossier.city if dossier else "N/A",
+                dossier.state if dossier else "N/A",
+                dossier.created_at.strftime('%Y-%m-%d %H:%M') if dossier.created_at else "N/A"
+            ])
+
+        # Save to BytesIO stream
+        output2 = io.BytesIO()
+        wb2.save(output2)
+        output2.seek(0)
+
         # 3. Send Email
         try:
-            subject = f"Payment Report & Dossier Lead - {now().strftime('%d %b %Y')}"
+            subject = f"Payment Report, Dossier Lead & Contact Us - {now().strftime('%d %b %Y')}"
 
             bcc_list = ['atul.tevatia@kcglobed.com',"harish.kumar@kcglobed.com"]
             # Corrected the slashes to backslashes for proper line breaks
             message = (
                 "Hello Sir,\n\n"
-                "Please find the attached payment report & dossier lead report for the last 24 hours.\n\n"
+                "Please find the attached payment report , dossier lead report & Contact Us for the last 24 hours.\n\n"
                 "Thanks,\n"
                 "KCGlobed Team"
             )
@@ -276,6 +307,12 @@ class ExportPaymentExcelView(APIView):
             email.attach(
                 f'Dossier_Report_{now().strftime("%Y%m%d")}.xlsx',
                 output1.getvalue(),
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            )
+
+            email.attach(
+                f'Contact_Us_Report_{now().strftime("%Y%m%d")}.xlsx',
+                output2.getvalue(),
                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             )
             email.send()
@@ -412,10 +449,60 @@ class CreateStudentProfileView(APIView):
         if serializer.is_valid(raise_exception = True):
             user  = serializer.save()
             return Response({'message':'Message sent Successfully','data':[]})
-
         return Response(serializer.errors)
-    
 
+
+class StudentSlotBookView(APIView):
+    permission_classes = [IsAuthenticated]
+    def patch(self, request):
+        datas = StudentProfile.objects.filter(user = request.user).first()
+        if datas is not None:
+            serializers = StudentSlotBookSerializer(datas, data=request.data, partial=True)
+            if serializers.is_valid():
+                serializers.save()
+                
+                # # xhtml2pdf needs ISO-8859-1
+                # html = html.encode("ISO-8859-1", "ignore").decode("ISO-8859-1")
+
+                # # Create temp file
+                # with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+                #     pdf_path = tmp.name
+                #     pisa_status = pisa.CreatePDF(BytesIO(html.encode("ISO-8859-1")), dest=tmp)
+
+                # if pisa_status.err:
+                #     os.remove(pdf_path)
+                #     return Response({"error": "PDF generation failed"}, status=500)
+
+                # try:
+                #     # Upload to GCS
+                #     username = re.sub(r"\s+", "_", request.user.email)
+                #     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                #     gcs_file = f"media/admit_card/{username}.pdf"
+
+                #     bucket = client.bucket(settings.GS_BUCKET_NAME_2)
+                #     blob = bucket.blob(gcs_file)
+                #     blob.upload_from_filename(pdf_path, content_type="application/pdf")
+                #     # ---------- Generate signed URL ----------
+                #     url = blob.generate_signed_url(
+                #         version="v4",
+                #         expiration=timedelta(minutes=settings.SIGNED_URL_EXPIRY),
+                #         method="GET"
+                #     )
+                #     return Response({
+                #         "message": "Message sent Successfully",
+                #         "data": [{
+                #             "admit_card_url": url
+                #         }]
+                #     })
+
+                # finally:
+                #     os.remove(pdf_path)
+
+                return Response({'message':'success','data':serializers.data})
+            return Response({'message':'failed','data':serializers.errors})
+
+        return Response({'message':'failed','data':[]})
+    
 
 class GetStudentProfileView(APIView):
     permission_classes = [IsAuthenticated]
@@ -426,3 +513,40 @@ class GetStudentProfileView(APIView):
             return Response({'message':'','data':serializers.data})
 
         return Response({'message':'','data':[]})
+    
+
+
+class GetStudentProfileListingView(APIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = CustomPageNumberPagination
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['first_name',"last_name","email","phone","state","city"]
+    ordering_fields = ['first_name',"last_name","email","phone","state","city","created_at"]
+    def get(self, request):
+        datas = StudentProfile.objects.all().order_by('-id')
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+        search_filter = filters.SearchFilter()
+        datas = search_filter.filter_queryset(request, datas, self)
+
+        ordering_filter = filters.OrderingFilter()
+        datas = ordering_filter.filter_queryset(request, datas, self)
+
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(datas, request, view=self)
+        serializers = StudentProfileSerializer(page, many=True)
+        
+        return paginator.get_paginated_response(serializers.data)
+    

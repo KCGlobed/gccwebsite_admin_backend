@@ -389,6 +389,12 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
     
 
 
+class StudentSlotBookSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentProfile
+        fields = ["email"]
+
+
 class StudentExperienceRelationSerializer(serializers.ModelSerializer):
     
     class Meta:

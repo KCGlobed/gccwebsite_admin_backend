@@ -2,6 +2,9 @@ from django.urls import path
 from .views import *
 from .views_reports import *
 
+
+
+
 urlpatterns = [
 
     path("query_page_list", StudentQuery_list.as_view()),
@@ -26,7 +29,9 @@ urlpatterns = [
     path('contact-us/', ContactUsView.as_view(), name="contact-us"),
     path('get-contact-us-list/', GetContactUSView.as_view(), name="get-contact-us-list"),
 
-    path('create-update-student-profile/<int:id>', CreateStudentProfileView.as_view(), name="create-update-student-profile"),
+    path('create-update-student-profile/', CreateStudentProfileView.as_view(), name="create-update-student-profile"),
+    path('student-slot-upload/', StudentSlotBookView.as_view(), name="student-slot-upload"),
     path('get-student-profile/', GetStudentProfileView.as_view(), name="get-student-profile"),
     path('get-student-profile-listing/', GetStudentProfileListingView.as_view(), name="get-student-profile-listing"),
+
 ]

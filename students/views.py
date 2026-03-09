@@ -499,11 +499,21 @@ class CreateStudentProfileView(APIView):
                 os.remove(pdf_path)
 
         return Response(serializer.errors)
+
+
+class StudentSlotBookView(APIView):
+    permission_classes = [IsAuthenticated]
+    def patch(self, request):
+        datas = StudentProfile.objects.filter(user = request.user).first()
+        if datas is not None:
+            serializers = StudentSlotBookSerializer(datas, data=request.data, partial=True)
+            if serializers.is_valid():
+                serializers.save()
+                return Response({'message':'success','data':serializers.data})
+            return Response({'message':'failed','data':serializers.errors})
+
+        return Response({'message':'failed','data':[]})
     
-
-    def patch(self, request, id=id):
-        return Response({'message':'success','data':[]})    
-
 
 class GetStudentProfileView(APIView):
     permission_classes = [IsAuthenticated]

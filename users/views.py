@@ -187,3 +187,13 @@ class StudentProfileImageUploadView(APIView):
             return error_response(message="failed", data = serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
         else:
             return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+class MediaAccessUrlView(APIView):
+    def post(self, request, id=None, format=None):
+        if True:
+            return error_response(message="failed", data = serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
+        else:
+            return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)

@@ -473,7 +473,7 @@ class GetStudentProfileListingView(APIView):
     search_fields = ['first_name',"last_name","email","phone","state","city"]
     ordering_fields = ['first_name',"last_name","email","phone","state","city","created_at"]
     def get(self, request):
-        datas = StudentProfile.objects.all()
+        datas = StudentProfile.objects.all().order_by('-id')
 
         # Date range filter
         start_date = request.GET.get('start_date')

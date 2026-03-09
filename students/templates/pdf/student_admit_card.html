@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,196 +6,173 @@
 <title>NFET Admit Card</title>
 </head>
 
-<body style="font-family:Arial, sans-serif;background:#f4f4f4;padding:20px;">
+<body style="margin:0;padding:20px;background:#f2f2f2;font-family:Arial,Helvetica,sans-serif;">
 
-<div style="max-width:900px;margin:auto;background:#fff;padding:20px;border:1px solid #ccc;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td align="center">
+
+<table  cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;border:1px solid #d0d0d0;width: 1280px, imop !important;">
 
 <!-- HEADER -->
-<div style="display:flex;align-items:center;margin-bottom:10px;">
-    
-    <img src="{{ bucket_static_logo }}" style="height:50px;margin-right:10px;">
+<tr>
+<td style="padding:20px;">
 
-    <div>
-        <div style="font-size:22px;font-weight:bold;color:#5b2c91;">
-            GCC SCHOOL
-        </div>
-
-        <div style="font-size:12px;color:#444;">
-            GET HIRED FIRST, THEN TRAINED.
-
-            ( ISO 21001:2025 )
-        </div>
-    </div>
-
-</div>
-
-
-<!-- TITLE BAR -->
-
-<div style="background:#5b2c91;color:#fff;text-align:center;
-padding:10px;font-weight:bold;font-size:18px;margin-bottom:20px;">
-NATIONAL FINANCE ENTRANCE TEST (NFET) Admit Card
-</div>
-
-
-
-<!-- STUDENT DETAILS TABLE -->
-
-<table style="width:100%; border-collapse:collapse; font-family:Arial;">
-
+<table  width="100%" cellpadding="0" cellspacing="0">
 <tr>
 
-<td style="border:1px solid #444; padding:10px; width:220px; font-weight:bold;">
-Application ID :
+<td width="150">
+<img src="{{ bucket_static_logo }}" style="height:60px;">
 </td>
 
-<td style="border:1px solid #444; padding:10px;">
-{{ application_id }}
+<td align="right" style="font-size:18px;font-weight:bold;color:#222;line-height:1.4;">
+TEST TODAY,
+<span style="color:#e8a000;">READ TOMORROW</span><br>
+
+STEP IN, PROVE YOURSELF,
+<span style="color:#5b2c91;">GO GLOBAL</span>
 </td>
 
-
-<td rowspan="6" style="border:1px solid #444; width:200px; padding:0;">
-
-
-<!-- BARCODE -->
-<div style="border-bottom:1px solid #444; padding:5px; text-align:center;">
-<img src="{{ bucket_static_logo }}" style="width:100%; height:40px;">
-</div>
-
-
-<!-- PHOTO -->
-<div style="padding:10px; text-align:center;">
-<img src="{{ photo }}" style="width:120px;height:150px;object-fit:cover;">
-</div>
-
-
-<!-- SIGNATURE -->
-<div style="border-top:1px solid #444;text-align:center;padding:10px;font-size:11px;">
-Candidate's Signature in the
-
-presence of invigilator
-</div>
-
+</tr>
+</table>
 
 </td>
 </tr>
 
-
+<!-- TITLE -->
 <tr>
-<td style="border:1px solid #444; padding:10px; font-weight:bold;">
-Name:
-</td>
-
-<td style="border:1px solid #444; padding:10px;">
-{{ student_name }}
+<td style="background:#5b2c91;color:#ffffff;padding:12px 20px;font-size:16px;font-weight:bold;">
+NATIONAL FINANCE ENTRANCE TEST (NFET) – Admit Card
 </td>
 </tr>
 
+<!-- STUDENT INFO -->
+<tr>
+<td style="padding:20px;">
 
+<table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #bbbbbb;font-size:13px;">
 
 <tr>
-<td style="border:1px solid #444; padding:10px; font-weight:bold;">
-Date of Exam:
-</td>
+<td style="border:1px solid #bbbbbb;padding:8px;font-weight:bold;width:150px;">Application ID</td>
+<td style="border:1px solid #bbbbbb;padding:8px;">{{ application_id }}</td>
 
-<td style="border:1px solid #444; padding:10px;">
-{{ slot_date }}
+<td rowspan="6" align="center" style="border-left:1px solid #bbbbbb;padding:10px;">
+<img src="{{ photo }}" style="width:110px;height:140px;border:1px solid #cccccc;"><br><br>
+<span style="font-size:10px;color:#444;">
+Candidate Signature<br>
+(in presence of invigilator)
+</span>
 </td>
 </tr>
 
-
+<tr>
+<td style="border:1px solid #bbbbbb;padding:8px;font-weight:bold;">Name</td>
+<td style="border:1px solid #bbbbbb;padding:8px;">{{ student_name }}</td>
+</tr>
 
 <tr>
-<td style="border:1px solid #444; padding:10px; font-weight:bold;">
-Time of Exam:
-</td>
+<td style="border:1px solid #bbbbbb;padding:8px;font-weight:bold;">Date of Exam</td>
+<td style="border:1px solid #bbbbbb;padding:8px;">{{ slot_date }}</td>
+</tr>
 
-<td style="border:1px solid #444; padding:10px;">
-{{ slot_time }}
+<tr>
+<td style="border:1px solid #bbbbbb;padding:8px;font-weight:bold;">Time of Exam</td>
+<td style="border:1px solid #bbbbbb;padding:8px;">{{ slot_time }}</td>
+</tr>
+
+<tr>
+<td style="border:1px solid #bbbbbb;padding:8px;font-weight:bold;">Mode of Exam</td>
+<td style="border:1px solid #bbbbbb;padding:8px;">
+Online (Laptop/Desktop Only)
 </td>
 </tr>
 
-
-
 <tr>
-<td style="border:1px solid #444; padding:10px; font-weight:bold;">
-Mode of Exam:
-</td>
-
-<td style="border:1px solid #444; padding:10px;">
-Online (Through Laptop/Desktop Only)
-</td>
-</tr>
-
-
-
-<tr>
-<td style="border:1px solid #444; padding:10px; font-weight:bold;">
-Link of Test:
-</td>
-
-<td style="border:1px solid #444; padding:10px;">
-<a href="{{ test_link }}">{{ test_link }}</a>
+<td style="border:1px solid #bbbbbb;padding:8px;font-weight:bold;">Test Link</td>
+<td style="border:1px solid #bbbbbb;padding:8px;">
+<a href="{{ test_link }}" style="color:#5b2c91;text-decoration:none;">
+{{ test_link }}
+</a>
 </td>
 </tr>
 
 </table>
 
+</td>
+</tr>
 
+<!-- INSTRUCTIONS -->
+<tr>
+<td style="padding:20px;">
 
-<!-- IMPORTANT INSTRUCTIONS -->
-
-<div style="border:1px solid #aaa;margin-top:30px;padding:20px;">
-
-<div style="text-align:center;font-weight:bold;font-size:20px;margin-bottom:15px;">
+<table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #999999;">
+<tr>
+<td align="center" style="font-size:18px;font-weight:bold;padding:12px;">
 Important Instructions
-</div>
+</td>
+</tr>
 
+<tr>
+<td style="padding:6px 18px;font-size:13px; text-align: left;">1. Candidates must read all instructions before starting the exam.</td>
+</tr>
 
-<ol style="font-size:14px;line-height:1.6;color:#333;padding-left:18px;">
+<tr>
+<td style="padding:6px 18px;font-size:13px; text-align: left;">2. Login at least 15 minutes before exam time.</td>
+</tr>
 
-<li>Candidates are advised to carefully read all instructions on the test interface before starting the examination.</li>
+<tr>
+<td style="padding:6px 18px;font-size:13px; text-align: left;">3. Keep a valid photo ID for verification.</td>
+</tr>
 
-<li>Candidates must log in at least 15 minutes before the scheduled test time to complete the verification and system checks.</li>
+<tr>
+<td style="padding:6px 18px;font-size:13px; text-align: left;">4. Webcam must remain ON during the exam.</td>
+</tr>
 
-<li>A valid photo identification document may be required for verification before the test begins.</li>
+<tr>
+<td style="padding:6px 18px;font-size:13px;text-align: left;">5. Do not leave your seat during the exam.</td>
+</tr>
 
-<li>The webcam must remain switched on at all times, and the candidate's face should be clearly visible during the examination.</li>
+<tr>
+<td style="padding:6px 18px;font-size:13px;text-align: left;">6. Mobile phones, books and notes are prohibited.</td>
+</tr>
 
-<li>Candidates must not leave their seat or move away from the camera once the examination has started.</li>
+<tr>
+<td style="padding:6px 18px;font-size:13px;text-align: left;">7. Any unfair practice may cancel the examination.</td>
+</tr>
 
-<li>Unfair means are strictly prohibited, including the use of mobile phones, additional devices, books, notes, or assistance from any other person in the room.</li>
+<tr>
+<td style="padding:6px 18px;font-size:13px;text-align: left;">8. Do not share the exam link with anyone.</td>
+</tr>
 
-<li>If any unfair practice is observed by the virtual invigilator, the candidate's test may be cancelled.</li>
+<tr>
+<td style="padding:10px 18px;color:#cc0000;font-size:13px;">
+Please follow the above guidelines for a smooth examination experience.
+</td>
+</tr>
 
-<li>Candidates must not share the examination link with anyone or attempt to access the test from multiple devices. The IP address and system details will be recorded for verification.</li>
+</table>
 
-</ol>
-
-
-<div style="color:red;text-align:center;margin-top:10px;">
-Please follow the above guidelines to ensure a smooth and fair examination experience.
-</div>
-
-</div>
-
-
+</td>
+</tr>
 
 <!-- SIGNATURE -->
+<tr>
+<td align="right" style="padding:20px;">
 
-<div style="text-align:right;margin-top:40px;">
+<img src="{{ bucket_static_signature }}" style="height:90px;"><br>
 
-<img src="{{ bucket_static_signature }}" style="height:40px;">
-
-
-<span style="font-size:13px;">
+<span style="font-size:13px;font-weight:bold;">
 Examination Coordinator
 </span>
 
-</div>
+</td>
+</tr>
 
+</table>
 
-</div>
+</td>
+</tr>
+</table>
 
 </body>
 </html>

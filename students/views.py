@@ -470,13 +470,16 @@ class StudentSlotBookView(APIView):
                     "student_name": std_data.first_name+" "+std_data.last_name,
                     "slot_date": std_data.slot_date,
                     "slot_time": std_data.slot_time,
-                    "photo": std_data.photo,
+                    "photo": std_data.photo.url,
                     "barcode":"",
                     "report_date": datetime.now(),
-                    "test_link":"http://google.com",
+                    "test_link":"",
                     "bucket_static_logo":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/gcc_school_pdf_logo.jpeg",
-                    "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/admit_card_signature.png"
+                    # "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/admit_card_signature.png"
+                    "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/admit_card_signature_new.png"
                 }
+                # print(context)
+                # return Response({"":""})
                 # Render template
                 template = get_template("pdf/student_admit_card.html")
                 html = template.render(context)

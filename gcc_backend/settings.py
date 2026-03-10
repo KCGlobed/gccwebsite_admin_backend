@@ -181,7 +181,7 @@ STATIC_URL = 'https://storage.googleapis.com/{}/static/'.format(GS_STATIC_BUCKET
 MEDIA_URL = 'https://storage.googleapis.com/{}/media/'.format(GS_BUCKET_NAME)
 SECURE_MEDIA_URL = 'https://storage.googleapis.com/{}/media/'.format(GS_BUCKET_NAME_2)
 
-SIGNED_URL_EXPIRY = os.getenv("SIGNED_URL_VALIDITY") #minutes
+SIGNED_URL_EXPIRY = int(os.getenv("SIGNED_URL_EXPIRY")) #minutes
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

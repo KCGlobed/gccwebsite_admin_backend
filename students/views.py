@@ -459,70 +459,75 @@ class StudentSlotBookView(APIView):
         if datas is not None:
             serializers = StudentSlotBookSerializer(datas, data=request.data, partial=True)
             if serializers.is_valid():
-                objs = serializers.save()
-                std_data = StudentProfile.objects.filter(user = request.user).first()
-                data_list = []
-                static_selected_bucket = settings.GS_BUCKET_NAME
-                context = {
-                    "username": request.user.email,
-                    "user_id": request.user.id,
-                    "application_id": std_data.application_id,
-                    "student_name": std_data.first_name+" "+std_data.last_name,
-                    "slot_date": std_data.slot_date,
-                    "slot_time": std_data.slot_time,
-                    "photo": std_data.photo.url,
-                    "barcode":"",
-                    "report_date": datetime.now(),
-                    "test_link":"https://cocubes.in/gccschool-nfet",
-                    "bucket_static_logo":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/gcc-admit-card-logo.jpeg",
-                    # "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/admit_card_signature.png"
-                    "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/gcc_admit_card_sign.png"
-                }
-                # print(context)
-                # return Response({"":""})
-                # Render template
-                template = get_template("pdf/student_admit_card.html")
-                html = template.render(context)
+                serializers.save()
+                return Response({"message": "Success","status":200, "data": {}})
+            return Response({'message':'failed','status':400,'data':serializers.errors})
 
-                # xhtml2pdf needs ISO-8859-1
-                html = html.encode("ISO-8859-1", "ignore").decode("ISO-8859-1")
-
-                # Create temp file
-                with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
-                    pdf_path = tmp.name
-                    pisa_status = pisa.CreatePDF(BytesIO(html.encode("ISO-8859-1")), dest=tmp)
-
-                if pisa_status.err:
-                    os.remove(pdf_path)
-                    return Response({"error": "PDF generation failed"}, status=500)
-                try:
-                    # Upload to GCS
-                    username = re.sub(r"\s+", "_", request.user.email)
-                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                    gcs_file = f"media/admit_card/{username}_{request.user.id}.pdf"
-
-                    bucket = client.bucket(settings.GS_BUCKET_NAME_2)
-                    blob = bucket.blob(gcs_file)
-                    blob.upload_from_filename(pdf_path, content_type="application/pdf")
-                    # ---------- Generate signed URL ----------
-                    url = blob.generate_signed_url(
-                        version="v4",
-                        expiration=timedelta(minutes=settings.SIGNED_URL_EXPIRY),
-                        method="GET"
-                    )
-                    return Response({
-                        "message": "Success",
-                        "data": {
-                            "report_url": url
-                        }
-                    })
-
-                finally:
-                    os.remove(pdf_path)
-            return Response({'message':'failed','data':serializers.errors})
-
-        return Response({'message':'failed','data':[]})
+        return Response({'message':'failed','status':400, 'data':[]})
     
+
+class GetStudentAdmitCardView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        std_data = StudentProfile.objects.filter(user = request.user).first()
+        static_selected_bucket = settings.GS_BUCKET_NAME
+        context = {
+            "username": request.user.email,
+            "user_id": request.user.id,
+            "application_id": std_data.application_id,
+            "student_name": std_data.first_name+" "+std_data.last_name,
+            "slot_date": std_data.slot_date,
+            "slot_time": std_data.slot_time,
+            "photo": std_data.photo.url,
+            "barcode":"",
+            "report_date": datetime.now(),
+            "test_link":"https://cocubes.in/gccschool-nfet",
+            "bucket_static_logo":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/gcc-admit-card-logo.jpeg",
+            # "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/admit_card_signature.png"
+            "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/gcc_admit_card_sign.png"
+        }
+        # Render template
+        template = get_template("pdf/student_admit_card.html")
+        html = template.render(context)
+
+        # xhtml2pdf needs ISO-8859-1
+        html = html.encode("ISO-8859-1", "ignore").decode("ISO-8859-1")
+
+        # Create temp file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+            pdf_path = tmp.name
+            pisa_status = pisa.CreatePDF(BytesIO(html.encode("ISO-8859-1")), dest=tmp)
+
+        if pisa_status.err:
+            os.remove(pdf_path)
+            return Response({"error": "PDF generation failed"}, status=500)
+        try:
+            # Upload to GCS
+            username = re.sub(r"\s+", "_", request.user.email)
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            gcs_file = f"media/admit_card/{username}_{request.user.id}.pdf"
+
+            bucket = client.bucket(settings.GS_BUCKET_NAME_2)
+            blob = bucket.blob(gcs_file)
+            blob.upload_from_filename(pdf_path, content_type="application/pdf")
+            # ---------- Generate signed URL ----------
+            url = blob.generate_signed_url(
+                version="v4",
+                expiration=timedelta(minutes=settings.SIGNED_URL_EXPIRY),
+                method="GET"
+            )
+            return Response({
+                "message": "Success",
+                "data": {
+                    "report_url": url
+                }
+            })
+
+        finally:
+            os.remove(pdf_path)
+
+    
+
 
 class GetStudentProfileView(APIView):
     permission_classes = [IsAuthenticated]

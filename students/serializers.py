@@ -5,6 +5,9 @@ from career.models import DossierData
 from career.serializers import ListDossierDataSerializer
 from django.utils import timezone
 import json
+from datetime import datetime, timedelta
+
+
 
 class ListStudentQuerySerializer(serializers.ModelSerializer) :
     class Meta:
@@ -393,6 +396,44 @@ class StudentSlotBookSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentProfile
         fields = ["slot_date", "slot_time"]
+    
+    def update(self, instance, validated_data):
+        if instance.slot_update_count >= 2:
+            raise serializers.ValidationError(
+                {
+                    "status": 400,
+                    "message": "Slot update limit reached. You cannot update the slot more than 2 times.",
+                    "data":[]
+                }
+            )
+        # Extract start time from slot_time range
+        start_time_str = instance.slot_time.split("-")[0].strip()
+
+        # Convert to time object
+        start_time = datetime.strptime(start_time_str, "%I:%M %p").time()
+
+        # Combine date and time
+        slot_datetime = datetime.combine(instance.slot_date, start_time)
+
+        # Make timezone aware
+        slot_datetime = timezone.make_aware(slot_datetime)
+
+        now = timezone.now()
+        print(now)
+        # Check 48 hour condition
+        if slot_datetime - now <= timedelta(hours=48):
+            raise serializers.ValidationError({
+                "status": 400,
+                "message": "Slot can only be changed if more than 48 hours remain before the scheduled time.",
+                "data": []
+            })
+        instance.slot_date = validated_data.get("slot_date", instance.slot_date)
+        instance.slot_time = validated_data.get("slot_time", instance.slot_time)
+
+        instance.slot_update_count += 1
+        instance.save()
+
+        return instance
 
 
 class StudentExperienceRelationSerializer(serializers.ModelSerializer):

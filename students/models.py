@@ -248,6 +248,7 @@ class StudentProfile(models.Model):
     aadhaar = models.FileField(blank=False, null=False)
     dob_certificate = models.FileField(blank=False, null=False)
     photo = models.FileField(blank=False, null=False)
+    signature = models.FileField(blank=False, null=False)
     profile_status = models.BooleanField(default=True)
     status = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add = True)
@@ -256,6 +257,7 @@ class StudentProfile(models.Model):
     application_id = models.CharField(max_length=200, blank=True, null=True)
     slot_date = models.DateField(null=True, blank=True)
     slot_time = models.CharField(max_length=200, blank=True, null=True)
+    slot_update_count = models.IntegerField(default=0)
     
     class Meta:
         verbose_name = 'Student Profile'

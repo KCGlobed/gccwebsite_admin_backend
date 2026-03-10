@@ -409,7 +409,7 @@ class StudentSlotBookSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {
                     "status": 400,
-                    "message": "Slot update limit reached. You cannot update the slot more than 2 times.",
+                    "message": "This slot has already been updated once and cannot be changed again.",
                     "data":[]
                 }
             )

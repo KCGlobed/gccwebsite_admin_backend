@@ -123,6 +123,7 @@ class CreateStudentSerializer(serializers.ModelSerializer):
                 'candidate_id': f"NFET-2026-{formatted}",
                 'slot_booking': 'https://forms.gle/UQqKnCsmJzVLK6qU8',
                 'website_url': settings.WEBSITE_BASE_URL,
+                'login_url': settings.WEBSITE_BASE_URL+"/login",
                 "email": user.email,
                 "password": password,               
 

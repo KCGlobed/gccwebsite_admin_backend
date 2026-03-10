@@ -267,13 +267,13 @@ class StudentProfile(models.Model):
         return '%s' % self.id
     
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)   # First save to get ID
+    # def save(self, *args, **kwargs):
+    #     super().save(*args, **kwargs)   # First save to get ID
 
-        if not self.application_id:
-            formatted = str(self.id).zfill(6)
-            self.application_id = f"NFET-2026-{formatted}"  # 000001
-            super().save(update_fields=['application_id'])
+    #     if not self.application_id:
+    #         formatted = str(self.id).zfill(6)
+    #         self.application_id = f"NFET-2026-{formatted}"  # 000001
+    #         super().save(update_fields=['application_id'])
 
 
 

@@ -342,6 +342,9 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                     experience.save()
 
         else:
+            formatted = str(self.id).zfill(6)
+            generate_application_id = f"NFET-2026-{formatted}"  # 000001
+            
             query = StudentProfile(
                 user = User.objects.filter(id = validate_data.get('user')).first(),
                 last_name = validate_data.get('last_name'),
@@ -373,7 +376,8 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                 aadhaar = validate_data.get('aadhaar'),
                 dob_certificate = validate_data.get('dob_certificate'),
                 photo = validate_data.get('photo'),
-                signature = validate_data.get('signature')
+                signature = validate_data.get('signature'),
+                application_id=generate_application_id
 
             )
             query.save()

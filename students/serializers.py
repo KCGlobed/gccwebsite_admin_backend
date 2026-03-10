@@ -262,12 +262,13 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
     aadhaar = serializers.FileField(required=False,allow_null=True)
     dob_certificate = serializers.FileField(required=False,allow_null=True)
     photo = serializers.FileField(required=False,allow_null=True)
+    signature = serializers.FileField(required=False,allow_null=True)
     user_experience = serializers.JSONField()
     
 
     class Meta:
         model = StudentProfile
-        fields = ["user",'first_name','last_name','email','phone',"state","city","contact_name","contact_phone","date_of_birth","gender","nationality","pincode","address","tenth_passing_year","tenth_passing_percentage","twelveth_passing_year","twelveth_passing_percentage","medium_instruction","other_instruction","pg_status","pg_percentage","institution","higher_education_status","higher_qualification","higher_qualification_institution","employement_status","aadhaar","dob_certificate","photo","user_experience"]
+        fields = ["user",'first_name','last_name','email','phone',"state","city","contact_name","contact_phone","date_of_birth","gender","nationality","pincode","address","tenth_passing_year","tenth_passing_percentage","twelveth_passing_year","twelveth_passing_percentage","medium_instruction","other_instruction","pg_status","pg_percentage","institution","higher_education_status","higher_qualification","higher_qualification_institution","employement_status","aadhaar","dob_certificate","photo","signature","user_experience"]
         
     def validate(self, data):
         return data
@@ -323,6 +324,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
             datas.aadhaar = validate_data.get('aadhaar', datas.aadhaar)
             datas.dob_certificate = validate_data.get('dob_certificate', datas.dob_certificate)
             datas.photo = validate_data.get('photo', datas.photo)
+            datas.signature = validate_data.get('signature', datas.signature)
             datas.save()
             query = datas
             if len(validate_data.get('user_experience')) > 0:
@@ -371,6 +373,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                 aadhaar = validate_data.get('aadhaar'),
                 dob_certificate = validate_data.get('dob_certificate'),
                 photo = validate_data.get('photo')
+                signature = validate_data.get('signature')
 
             )
             query.save()

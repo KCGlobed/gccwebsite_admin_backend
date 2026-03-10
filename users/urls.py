@@ -18,4 +18,9 @@ urlpatterns = [
     path('student-profile-upload/<int:id>', StudentProfileImageUploadView.as_view(), name="student-profile-upload"),
 
     path('media-access-url/', MediaAccessUrlView.as_view(), name="media-access-url"),
+
+
+
+
+    path('mail-test/', Mail_test.as_view(), name="mail-test"),
 ]

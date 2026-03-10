@@ -205,3 +205,21 @@ class MediaAccessUrlView(APIView):
             method="GET"
         )
         return success_response(message="Success", data=[{"url":url}], status_code=status.HTTP_200_OK)
+
+from django.core.mail import send_mail
+from django.conf import settings
+
+class Mail_test(APIView):
+    def post(self, request, format=None):
+        
+        send_mail(
+            subject='Test Email',
+            message='This is a test email from Django application.',
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=['vishal.dubey@kcglobed.com'],
+            fail_silently=False,
+        )
+        
+        return success_response(message="Success", data=[], status_code=status.HTTP_200_OK)
+
+

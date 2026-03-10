@@ -110,7 +110,7 @@ class CreateStudentSerializer(serializers.ModelSerializer):
         user.phone1 = validate_data.get('phone1')
         user.save()
         num = user.id
-        formatted = str(num).zfill(5)
+        formatted = str(num).zfill(6)
         subject = 'GCC School – Payment Confirmation & Next Steps for NFET 2026'
 
         message = f''

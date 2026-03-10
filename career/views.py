@@ -100,8 +100,8 @@ class DossierDataForm_List(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPageNumberPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['id']
-    ordering_fields = ['id']
+    search_fields = ['id',"full_name","email","phone","city","state"]
+    ordering_fields = ['id',"full_name","email","phone","city","state"]
     def get(self, request):
         datas = DossierData.objects.all().order_by('-id')
 

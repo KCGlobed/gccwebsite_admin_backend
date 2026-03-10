@@ -344,7 +344,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
         else:
             formatted = str(self.id).zfill(6)
             generate_application_id = f"NFET-2026-{formatted}"  # 000001
-            
+
             query = StudentProfile(
                 user = User.objects.filter(id = validate_data.get('user')).first(),
                 last_name = validate_data.get('last_name'),
@@ -431,7 +431,7 @@ class StudentSlotBookSerializer(serializers.ModelSerializer):
         if slot_datetime - now <= timedelta(hours=48):
             raise serializers.ValidationError({
                 "status": 400,
-                "message": "Slot can only be changed if more than 48 hours remain before the scheduled time.",
+                "message": "Slot can be changed once, at least 48 hours before the scheduled time.",
                 "data": []
             })
         instance.slot_date = validated_data.get("slot_date", instance.slot_date)

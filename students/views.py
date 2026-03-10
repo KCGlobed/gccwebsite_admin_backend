@@ -474,7 +474,7 @@ class GetStudentAdmitCardView(APIView):
         context = {
             "username": request.user.email,
             "user_id": request.user.id,
-            "application_id": request.data.application_id,
+            "application_id": request.user.application_id,
             "student_name": std_data.first_name+" "+std_data.last_name,
             "slot_date": std_data.slot_date,
             "slot_time": std_data.slot_time,

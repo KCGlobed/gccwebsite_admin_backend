@@ -473,7 +473,7 @@ class StudentSlotBookView(APIView):
                     "photo": std_data.photo.url,
                     "barcode":"",
                     "report_date": datetime.now(),
-                    "test_link":"",
+                    "test_link":"https://cocubes.in/gccschool-nfet",
                     "bucket_static_logo":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/gcc-admit-card-logo.jpeg",
                     # "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/admit_card_signature.png"
                     "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/gcc_admit_card_sign.png"

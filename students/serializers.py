@@ -413,27 +413,7 @@ class StudentSlotBookSerializer(serializers.ModelSerializer):
                     "data":[]
                 }
             )
-        # Extract start time from slot_time range
-        start_time_str = instance.slot_time.split("-")[0].strip()
-
-        # Convert to time object
-        start_time = datetime.strptime(start_time_str, "%I:%M %p").time()
-
-        # Combine date and time
-        slot_datetime = datetime.combine(instance.slot_date, start_time)
-
-        # Make timezone aware
-        slot_datetime = timezone.make_aware(slot_datetime)
-
-        now = timezone.now()
-        print(now)
-        # Check 48 hour condition
-        if slot_datetime - now <= timedelta(hours=48):
-            raise serializers.ValidationError({
-                "status": 400,
-                "message": "Slot can be changed once, at least 48 hours before the scheduled time.",
-                "data": []
-            })
+        
         instance.slot_date = validated_data.get("slot_date", instance.slot_date)
         instance.slot_time = validated_data.get("slot_time", instance.slot_time)
 

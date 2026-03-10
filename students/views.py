@@ -471,6 +471,7 @@ class StudentSlotBookView(APIView):
                     "slot_date": std_data.slot_date,
                     "slot_time": std_data.slot_time,
                     "photo": std_data.photo.url,
+                    "signature": std_data.signature.url,
                     "barcode":"",
                     "report_date": datetime.now(),
                     "test_link":"https://cocubes.in/gccschool-nfet",

@@ -105,6 +105,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     banner_image = models.ImageField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
+    #Added
+    application_id = models.CharField(max_length=50, blank=True, null=True)
 
     objects = UserManager()
 

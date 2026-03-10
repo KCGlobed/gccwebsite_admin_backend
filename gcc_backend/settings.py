@@ -88,12 +88,12 @@ TEMPLATES = [
 ]
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.hostinger.com'
-EMAIL_HOST_USER = 'kamalchhabra@kcglobed.com'
-EMAIL_HOST_PASSWORD = '@Dud40354'
-EMAIL_PORT = 465
-EMAIL_USE_SSL = True
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.hostinger.com'
+# EMAIL_HOST_USER = 'kamalchhabra@kcglobed.com'
+# EMAIL_HOST_PASSWORD = '@Dud40354'
+# EMAIL_PORT = 465
+# EMAIL_USE_SSL = True
 
 
 
@@ -181,7 +181,7 @@ STATIC_URL = 'https://storage.googleapis.com/{}/static/'.format(GS_STATIC_BUCKET
 MEDIA_URL = 'https://storage.googleapis.com/{}/media/'.format(GS_BUCKET_NAME)
 SECURE_MEDIA_URL = 'https://storage.googleapis.com/{}/media/'.format(GS_BUCKET_NAME_2)
 
-SIGNED_URL_EXPIRY = 1 #minutes
+SIGNED_URL_EXPIRY = 10 #minutes
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -207,23 +207,23 @@ SIMPLE_JWT = {
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = os.getenv("EMAIL_HOST")
-# EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-# EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-# EMAIL_PORT = 465
-# EMAIL_USE_SSL = True
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
 
 
-EMAIL_HOST = 'smtp.office365.com'
-EMAIL_PORT = 587
+# EMAIL_HOST = 'smtp.office365.com'
+# EMAIL_PORT = 587
 
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
+# EMAIL_USE_TLS = True
+# EMAIL_USE_SSL = False
 
-EMAIL_HOST_USER = 'info@gccschool.com'
-EMAIL_HOST_PASSWORD = 'KCglobed@123'
+# EMAIL_HOST_USER = 'info@gccschool.com'
+# EMAIL_HOST_PASSWORD = 'KCglobed@123'
 
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
 # BASE_URL = 'https://gccschool.com'

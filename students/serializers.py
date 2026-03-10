@@ -323,7 +323,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
             datas.employement_status = validate_data.get('employement_status', datas.employement_status)
             datas.aadhaar = validate_data.get('aadhaar', datas.aadhaar)
             datas.dob_certificate = validate_data.get('dob_certificate', datas.dob_certificate)
-            datas.photo = validate_data.get('photo', datas.photo),
+            datas.photo = validate_data.get('photo', datas.photo)
             datas.signature = validate_data.get('signature', datas.signature)
             datas.save()
             query = datas

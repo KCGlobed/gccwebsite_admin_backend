@@ -474,9 +474,9 @@ class StudentSlotBookView(APIView):
                     "barcode":"",
                     "report_date": datetime.now(),
                     "test_link":"",
-                    "bucket_static_logo":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/gcc_school_pdf_logo.jpeg",
+                    "bucket_static_logo":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/gcc-admit-card-logo.jpeg",
                     # "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/admit_card_signature.png"
-                    "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/admit_card_signature_new.png"
+                    "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/gcc_admit_card_sign.png"
                 }
                 # print(context)
                 # return Response({"":""})

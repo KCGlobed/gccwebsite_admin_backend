@@ -404,7 +404,7 @@ class StudentExperienceRelationSerializer(serializers.ModelSerializer):
 
 class StudentProfileSerializer(serializers.ModelSerializer):
     student_experience = serializers.SerializerMethodField()
-    created_at = serializers.DateTimeField(read_only=True, format="%Y-%m-%d")
+    created_at = serializers.DateTimeField(read_only=True, format="%Y-%m-%d %H:%M:%S")
 
     def get_student_experience(self, obj):
         answe = StudentExperience.objects.filter(student_profile_id =obj.id).order_by("id")

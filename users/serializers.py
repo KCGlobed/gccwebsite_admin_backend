@@ -100,7 +100,8 @@ class CreateStudentSerializer(serializers.ModelSerializer):
         info = { "first_name": validate_data.get('full_name'), "last_name":"", 'email': validate_data.get('email').lower(), 'password': password}
         user = User.objects.create_user(**info)
         # assign_role(user, "Student")
-
+        formatted = str(user.id).zfill(6)
+        generate_application_id = f"NFET-2026-{formatted}"  # 000001
         user.role = User.Student
         user.email_verified = 1
         user.is_active = True
@@ -108,9 +109,9 @@ class CreateStudentSerializer(serializers.ModelSerializer):
         user.state = validate_data.get('state')
         user.city = validate_data.get('city')
         user.phone1 = validate_data.get('phone1')
+        user.application_id = generate_application_id
         user.save()
         num = user.id
-        formatted = str(num).zfill(6)
         subject = 'GCC School – Payment Confirmation & Next Steps for NFET 2026'
 
         message = f''
@@ -120,7 +121,7 @@ class CreateStudentSerializer(serializers.ModelSerializer):
             'user_login_detail_email.html',
             {
                 'name': user.first_name,
-                'candidate_id': f"NFET-2026-{formatted}",
+                'candidate_id': generate_application_id,
                 'slot_booking': 'https://forms.gle/UQqKnCsmJzVLK6qU8',
                 'website_url': settings.WEBSITE_BASE_URL,
                 'login_url': settings.WEBSITE_BASE_URL+"/login",

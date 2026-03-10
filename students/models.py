@@ -163,8 +163,8 @@ class CampusStudent(models.Model):
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
     #added
-    student_body_description = models.TextField(blank=True)
-    campus_ambassador_description = models.TextField(blank=True)
+    student_body_description = models.TextField(blank=True, null=True)
+    campus_ambassador_description = models.TextField(blank=True, null=True)
 
 
     class Meta:

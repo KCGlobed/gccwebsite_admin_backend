@@ -198,43 +198,47 @@ REST_FRAMEWORK = {
 # }
 
 
-ACCESS_TIME_FORMAT=os.getenv("ACCESS_TIME_FORMAT")
-ACCESS_TIME=os.getenv("ACCESS_TIME")
-REFRESH_TIME_FORMAT=os.getenv("REFRESH_TIME_FORMAT")
-REFRESH_TIME=os.getenv("REFRESH_TIME")
+ACCESS_TIME_FORMAT = os.getenv("ACCESS_TIME_FORMAT")
+ACCESS_TIME = int(os.getenv("ACCESS_TIME"))
 
+REFRESH_TIME_FORMAT = os.getenv("REFRESH_TIME_FORMAT")
+REFRESH_TIME = int(os.getenv("REFRESH_TIME"))
 
-# SIMPLE_JWT = {
-#     "ACCESS_TOKEN_LIFETIME": timedelta(ACCESS_TIME_FORMAT=ACCESS_TIME),
-#     "REFRESH_TOKEN_LIFETIME": timedelta(REFRESH_TIME_FORMAT=REFRESH_TIME),
-#     "AUTH_HEADER_TYPES": ("Bearer",),
-# }
+ACCESS_TOKEN_LIFETIME = timedelta(**{ACCESS_TIME_FORMAT: ACCESS_TIME})
+REFRESH_TOKEN_LIFETIME = timedelta(**{REFRESH_TIME_FORMAT: REFRESH_TIME})
+
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=40),
-    "REFRESH_TOKEN_LIFETIME": timedelta(minutes=59),
+    "ACCESS_TOKEN_LIFETIME": ACCESS_TOKEN_LIFETIME,
+    "REFRESH_TOKEN_LIFETIME": REFRESH_TOKEN_LIFETIME,
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
+# SIMPLE_JWT = {
+#     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=40),
+#     "REFRESH_TOKEN_LIFETIME": timedelta(minutes=59),
+#     "AUTH_HEADER_TYPES": ("Bearer",),
+# }
 
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = os.getenv("EMAIL_HOST")
-# EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-# EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-# EMAIL_PORT = 465
-# EMAIL_USE_SSL = True
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.office365.com'
-EMAIL_PORT = 587
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
 
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.office365.com'
+# EMAIL_PORT = 587
 
-EMAIL_HOST_USER = 'info@gccschool.com'
-EMAIL_HOST_PASSWORD = 'KCglobed@123'
+# EMAIL_USE_TLS = True
+# EMAIL_USE_SSL = False
 
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# EMAIL_HOST_USER = 'info@gccschool.com'
+# EMAIL_HOST_PASSWORD = 'KCglobed@123'
+
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
 # BASE_URL = 'https://gccschool.com'

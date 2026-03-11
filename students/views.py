@@ -136,9 +136,6 @@ class StudentPayment_list(APIView):
         if city:
             datas = datas.filter(dossier_form__city__icontains=city)
 
-        city = request.GET.get('city')
-        if city:
-            datas = datas.filter(dossier_form__city__icontains=city)
         
         # Date range filter
         start_date = request.GET.get('start_date')
@@ -412,7 +409,7 @@ class GetContactUSView(APIView):
     pagination_class = CustomPageNumberPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['first_name',"last_name","email","phone","state","city"]
-    ordering_fields = ['first_name',"last_name","email","phone","state","city","created_at"]
+    ordering_fields = ["id",'first_name',"last_name","email","phone","state","city","created_at"]
     def get(self, request):
         datas = ContactUs.objects.all().order_by("-id")
 
@@ -472,7 +469,7 @@ class GetContactusReportPDFView(APIView):
     permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['first_name',"last_name","email","phone","state","city"]
-    ordering_fields = ['first_name',"last_name","email","phone","state","city","created_at"]
+    ordering_fields = ["id",'first_name',"last_name","email","phone","state","city","created_at"]
     def get(self, request):
         datas = ContactUs.objects.all().order_by("-id")
 
@@ -571,7 +568,7 @@ class GetContactusReportExcelView(APIView):
     permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['first_name',"last_name","email","phone","state","city"]
-    ordering_fields = ['first_name',"last_name","email","phone","state","city","created_at"]
+    ordering_fields = ["id",'first_name',"last_name","email","phone","state","city","created_at"]
     def get(self, request):
         datas = ContactUs.objects.all().order_by("-id")
 

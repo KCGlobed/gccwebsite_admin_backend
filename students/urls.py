@@ -28,6 +28,8 @@ urlpatterns = [
 
     path('contact-us/', ContactUsView.as_view(), name="contact-us"),
     path('get-contact-us-list/', GetContactUSView.as_view(), name="get-contact-us-list"),
+    path('get-contact-us-report-pdf/', GetContactusReportPDFView.as_view(), name="get-contact-us-report-pdf"),
+    path('get-contact-us-report-excel/', GetContactusReportExcelView.as_view(), name="get-contact-us-report-pdf"),
 
     path('create-update-student-profile/', CreateStudentProfileView.as_view(), name="create-update-student-profile"),
     path('student-slot-upload/', StudentSlotBookView.as_view(), name="student-slot-upload"),

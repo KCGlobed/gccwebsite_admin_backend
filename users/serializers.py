@@ -38,6 +38,9 @@ class WebsiteUserLoginSerializer(serializers.ModelSerializer):
         if user:
             if not user.check_password(data.get('password')):
                 raise serializers.ValidationError("Invalid Password!")
+            
+        if str(user.get_role_display()).lower() != str(data.get('role')).lower():
+            raise serializers.ValidationError("Invalid Account")
         
         return data
 
@@ -67,6 +70,8 @@ class UserLoginSerializer(serializers.ModelSerializer):
         if user:
             if not user.check_password(data.get('password')):
                 raise serializers.ValidationError("Invalid Password!")
+        if str(user.get_role_display()).lower() != str(data.get('role')).lower():
+            raise serializers.ValidationError("Invalid Account")
         
         return data
 
@@ -229,3 +234,12 @@ class StudentProfileDetailSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id','first_name','last_name', 'email','phone1','phone2','address','city','state','country','image','banner_image','pincode',"dob","application_id"]
 
+
+class AdminProfileDetailSerializer(serializers.ModelSerializer):
+    role = serializers.SerializerMethodField('get_role')
+    class Meta:
+        model = User
+        fields = ['id','first_name','last_name', 'email','phone1','role']
+
+    def get_role(get, data):
+        return data.get_role_display()

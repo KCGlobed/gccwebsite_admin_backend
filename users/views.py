@@ -86,6 +86,7 @@ class UserLoginView(APIView):
             email = serializer.data.get('email').lower()
             password = serializer.data.get('password')
             user = authenticate(email = email, password = password)
+            print(user)
             if user is not None:
                 
                 token = get_tokens_for_user(user)
@@ -101,7 +102,7 @@ class UserLoginView(APIView):
                 # user.save()
 
 
-                return success_response(message="Login Success", data={'token': token, 'user_role': serializer.data.get('role'), "user_id":user.id}, status_code=status.HTTP_200_OK)
+                return success_response(message="Login Success", data={'token': token, 'user_role': user.get_role_display(), "user_id":user.id}, status_code=status.HTTP_200_OK)
             else:
                 return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
         
@@ -131,7 +132,7 @@ class WebsiteUserLoginView(APIView):
                 # user.save()
 
 
-                return success_response(message="Login Success", data={'token': token, 'user_role': serializer.data.get('role'), "user_id":user.id}, status_code=status.HTTP_200_OK)
+                return success_response(message="Login Success", data={'token': token, 'user_role': user.get_role_display(), "user_id":user.id}, status_code=status.HTTP_200_OK)
             else:
                 return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
         
@@ -173,6 +174,12 @@ class GetStudentDetailView(APIView):
     def get(self, request, id=None, format=None):
         subadmin_list = User.objects.filter(role = User.Student, id=id).first()
         serializer = StudentProfileDetailSerializer(subadmin_list)
+        return success_response(message="Success", data=serializer.data, status_code=status.HTTP_200_OK)
+
+class GetAdminDetailView(APIView):
+    def get(self, request, id=None, format=None):
+        subadmin_list = User.objects.filter(id=id).first()
+        serializer = AdminProfileDetailSerializer(subadmin_list)
         return success_response(message="Success", data=serializer.data, status_code=status.HTTP_200_OK)
 
 

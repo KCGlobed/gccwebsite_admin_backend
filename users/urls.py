@@ -8,6 +8,7 @@ urlpatterns = [
     path("login/", UserLoginView.as_view()),
     path("website_login/", WebsiteUserLoginView.as_view()),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('view-admin-detail/<int:id>', GetAdminDetailView.as_view(), name="get-admin-detail"),
 
 
     path('create_student/', CreateStudentView.as_view(), name='create_student'),

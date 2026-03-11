@@ -111,7 +111,7 @@ class DossierDataForm_List(APIView):
     pagination_class = CustomPageNumberPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['id',"full_name","email","phone","city","state"]
-    ordering_fields = ['id',"full_name","email","phone","city","state"]
+    ordering_fields = ['id',"full_name","email","phone","city","state","created_at"]
     def get(self, request):
         datas = DossierData.objects.all().order_by('-id')
 
@@ -204,7 +204,7 @@ class GetDossierReportPDFView(APIView):
     permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['id',"full_name","email","phone","city","state"]
-    ordering_fields = ['id',"full_name","email","phone","city","state"]
+    ordering_fields = ['id',"full_name","email","phone","city","state","created_at"]
     def get(self, request, sid=None):
         
         datas = DossierData.objects.all().order_by('-id')
@@ -300,7 +300,7 @@ class GetDossierReportExcelView(APIView):
     permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['id',"full_name","email","phone","city","state"]
-    ordering_fields = ['id',"full_name","email","phone","city","state"]
+    ordering_fields = ['id',"full_name","email","phone","city","state","created_at"]
 
     def get(self, request, sid=None):
         

@@ -222,7 +222,8 @@ class Mail_test(APIView):
         send_mail(
             subject='Test Email',
             message='This is a test email from Django application.',
-            from_email=settings.EMAIL_HOST_USER,
+            # from_email=settings.EMAIL_HOST_USER,
+            from_email = settings.DEFAULT_FROM_EMAIL,
             recipient_list=['vishal.dubey@kcglobed.com'],
             fail_silently=False,
         )

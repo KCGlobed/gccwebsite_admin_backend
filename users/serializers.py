@@ -120,7 +120,7 @@ class CreateStudentSerializer(serializers.ModelSerializer):
         subject = 'GCC School – Payment Confirmation & Next Steps for NFET 2026'
 
         message = f''
-        email_from = settings.EMAIL_HOST_USER
+        email_from = settings.DEFAULT_FROM_EMAIL,
         recipient_list = [user.email, ]
         html_message = loader.render_to_string(
             'user_login_detail_email.html',
@@ -172,7 +172,7 @@ class UserForgotPasswordSerializer(serializers.ModelSerializer):
             message = f'Hi {user.first_name} {user.last_name}, Here is the your reset password link: '+url
             
             message = f'Hi you have got a quick contact us'
-            email_from = settings.EMAIL_HOST_USER
+            email_from = settings.DEFAULT_FROM_EMAIL,
             recipient_list = [user.email, ]
             html_message = loader.render_to_string(
                 'reset_email.html',

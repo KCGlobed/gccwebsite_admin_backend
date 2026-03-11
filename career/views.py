@@ -115,6 +115,28 @@ class DossierDataForm_List(APIView):
     def get(self, request):
         datas = DossierData.objects.all().order_by('-id')
 
+        full_name = request.GET.get('full_name')
+        if full_name:
+            datas = datas.filter(full_name__icontains=full_name)
+
+        email = request.GET.get('email')
+        if email:
+            datas = datas.filter(email__icontains=email)
+
+
+        phone = request.GET.get('phone')
+        if phone:
+            datas = datas.filter(phone__icontains=phone)
+
+
+        state = request.GET.get('state')
+        if state:
+            datas = datas.filter(state__icontains=state)
+
+        city = request.GET.get('city')
+        if city:
+            datas = datas.filter(city__icontains=city)
+
         # Date range filter
         start_date = request.GET.get('start_date')
         end_date = request.GET.get('end_date')
@@ -179,12 +201,35 @@ class NewsletterSubscribers_List(APIView):
 
 
 class GetDossierReportPDFView(APIView):
+    permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['id',"full_name","email","phone","city","state"]
     ordering_fields = ['id',"full_name","email","phone","city","state"]
     def get(self, request, sid=None):
         
         datas = DossierData.objects.all().order_by('-id')
+
+        full_name = request.GET.get('full_name')
+        if full_name:
+            datas = datas.filter(full_name__icontains=full_name)
+
+        email = request.GET.get('email')
+        if email:
+            datas = datas.filter(email__icontains=email)
+
+
+        phone = request.GET.get('phone')
+        if phone:
+            datas = datas.filter(phone__icontains=phone)
+
+
+        state = request.GET.get('state')
+        if state:
+            datas = datas.filter(state__icontains=state)
+
+        city = request.GET.get('city')
+        if city:
+            datas = datas.filter(city__icontains=city)
 
         # Date range filter
         start_date = request.GET.get('start_date')
@@ -211,7 +256,7 @@ class GetDossierReportPDFView(APIView):
 
         data = {
                     "user_data":serializers.data,
-                    "report_date": datetime.now().strftime("%d-%m-%y, %H:%M")
+                    "report_date": datetime.now().strftime("%d-%m-%Y, %H:%M")
                 }
         
 
@@ -260,6 +305,28 @@ class GetDossierReportExcelView(APIView):
     def get(self, request, sid=None):
         
         datas = DossierData.objects.all().order_by('-id')
+
+        full_name = request.GET.get('full_name')
+        if full_name:
+            datas = datas.filter(full_name__icontains=full_name)
+
+        email = request.GET.get('email')
+        if email:
+            datas = datas.filter(email__icontains=email)
+
+
+        phone = request.GET.get('phone')
+        if phone:
+            datas = datas.filter(phone__icontains=phone)
+
+
+        state = request.GET.get('state')
+        if state:
+            datas = datas.filter(state__icontains=state)
+
+        city = request.GET.get('city')
+        if city:
+            datas = datas.filter(city__icontains=city)
 
         # Date range filter
         start_date = request.GET.get('start_date')

@@ -12,6 +12,7 @@ from io import BytesIO
 from django.template.loader import get_template
 from google.cloud import storage
 import os
+from gcc_backend.utils import *
 import pandas as pd
 import tempfile
 import re
@@ -413,7 +414,33 @@ class GetContactUSView(APIView):
     search_fields = ['first_name',"last_name","email","phone","state","city"]
     ordering_fields = ['first_name',"last_name","email","phone","state","city","created_at"]
     def get(self, request):
-        datas = ContactUs.objects.all()
+        datas = ContactUs.objects.all().order_by("-id")
+
+        first_name = request.GET.get('first_name')
+        if first_name:
+            datas = datas.filter(first_name__icontains=first_name)
+
+        last_name = request.GET.get('last_name')
+        if last_name:
+            datas = datas.filter(last_name__icontains=last_name)
+
+        email = request.GET.get('email')
+        if email:
+            datas = datas.filter(email__icontains=email)
+
+
+        phone = request.GET.get('phone')
+        if phone:
+            datas = datas.filter(phone__icontains=phone)
+
+
+        state = request.GET.get('state')
+        if state:
+            datas = datas.filter(state__icontains=state)
+
+        city = request.GET.get('city')
+        if city:
+            datas = datas.filter(city__icontains=city)
 
         # Date range filter
         start_date = request.GET.get('start_date')
@@ -440,6 +467,237 @@ class GetContactUSView(APIView):
         
         return paginator.get_paginated_response(serializers.data)
     
+
+class GetContactusReportPDFView(APIView):
+    permission_classes = [IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['first_name',"last_name","email","phone","state","city"]
+    ordering_fields = ['first_name',"last_name","email","phone","state","city","created_at"]
+    def get(self, request):
+        datas = ContactUs.objects.all().order_by("-id")
+
+        first_name = request.GET.get('first_name')
+        if first_name:
+            datas = datas.filter(first_name__icontains=first_name)
+
+        last_name = request.GET.get('last_name')
+        if last_name:
+            datas = datas.filter(last_name__icontains=last_name)
+
+        email = request.GET.get('email')
+        if email:
+            datas = datas.filter(email__icontains=email)
+
+
+        phone = request.GET.get('phone')
+        if phone:
+            datas = datas.filter(phone__icontains=phone)
+
+
+        state = request.GET.get('state')
+        if state:
+            datas = datas.filter(state__icontains=state)
+
+        city = request.GET.get('city')
+        if city:
+            datas = datas.filter(city__icontains=city)
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+
+        search_filter = filters.SearchFilter()
+        datas = search_filter.filter_queryset(request, datas, self)
+
+        ordering_filter = filters.OrderingFilter()
+        datas = ordering_filter.filter_queryset(request, datas, self)
+
+        serializers = ContactListSerializer(datas, many=True)
+
+
+        data = {
+                    "user_data":serializers.data,
+                    "report_date": datetime.now().strftime("%d-%m-%Y, %H:%M")
+                }
+        
+
+        template = get_template('pdf/contact_us_report.html')
+        html  = template.render(data)
+        with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as temp_file:
+            pdf_path = temp_file.name
+            
+            # Encode HTML and create PDF
+            html = html.encode('latin-1', 'replace').decode('latin-1')
+            pdf = pisa.CreatePDF(BytesIO(html.encode("ISO-8859-1")), dest=temp_file)
+
+            if pdf.err:
+                raise Exception("PDF generation error!")
+        
+        # After the 'with' block, the file is closed, but not deleted yet
+        try:
+            # GCS file naming logic
+            timestamp = datetime.now().strftime("%d_%m_%y_%H_%M")
+            report_name = "contact_us_report"
+            gcs_folder_name = "media/gcc_reports"
+            gcs_file_name = f"{gcs_folder_name}/{report_name}_{timestamp}.pdf"
+
+            # Upload the temporary file to GCS
+            bucket = client.get_bucket(settings.GS_BUCKET_NAME)
+            blob = bucket.blob(gcs_file_name)
+            blob.upload_from_filename(pdf_path)
+
+            return success_response(
+                message="Success",
+                data={"report_url": blob.public_url},
+                status_code=status.HTTP_200_OK
+            )
+        finally:
+            # Ensure the temporary file is deleted from the server's disk
+            os.remove(pdf_path)
+    
+
+
+class GetContactusReportExcelView(APIView):
+    permission_classes = [IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['first_name',"last_name","email","phone","state","city"]
+    ordering_fields = ['first_name',"last_name","email","phone","state","city","created_at"]
+    def get(self, request):
+        datas = ContactUs.objects.all().order_by("-id")
+
+        first_name = request.GET.get('first_name')
+        if first_name:
+            datas = datas.filter(first_name__icontains=first_name)
+
+        last_name = request.GET.get('last_name')
+        if last_name:
+            datas = datas.filter(last_name__icontains=last_name)
+
+        email = request.GET.get('email')
+        if email:
+            datas = datas.filter(email__icontains=email)
+
+
+        phone = request.GET.get('phone')
+        if phone:
+            datas = datas.filter(phone__icontains=phone)
+
+
+        state = request.GET.get('state')
+        if state:
+            datas = datas.filter(state__icontains=state)
+
+        city = request.GET.get('city')
+        if city:
+            datas = datas.filter(city__icontains=city)
+            
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+
+        search_filter = filters.SearchFilter()
+        datas = search_filter.filter_queryset(request, datas, self)
+
+        ordering_filter = filters.OrderingFilter()
+        datas = ordering_filter.filter_queryset(request, datas, self)
+
+        serializers = ContactListSerializer(datas, many=True)
+
+        lis = []
+        
+        lis.append({
+                "name":"Contact Us Report",
+                "last_name":'',
+                "email":'',
+                "subject":'',
+                "Chapter":'',
+                "Topic":'',
+                "total_questions":''
+            })
+
+       
+        lis.append({
+                "name":"",
+                "last_name":'',
+                "email":'',
+                "subject":'',
+                "Chapter":'',
+                "Topic":'',
+                "total_questions":''
+            })
+        
+        lis.append({
+                "name":"First Name",
+                "last_name":'Last Name',
+                "email":'Email',
+                "subject":'Phone Number',
+                "Chapter":'City',
+                "Topic":'State',
+                "total_questions":'Created At',
+            })
+        
+        
+        for chapter_data in serializers.data:
+            lis.append({
+                "name":chapter_data['first_name'],
+                "last_name":chapter_data['last_name'],
+                "email":chapter_data['email'],
+                "subject":chapter_data['phone'],
+                "Chapter":chapter_data['city'],
+                "Topic":chapter_data['state'],
+                "total_questions":chapter_data['created_at'],
+            })
+
+
+        with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as temp_file:
+            pdf_path = temp_file.name
+            
+            # Create DataFrame and save to the temporary file
+            df = pd.DataFrame.from_dict(lis)
+            df.to_excel(pdf_path, header=False, index=False)
+        
+        # After the 'with' block, the file is closed but not deleted
+        try:
+            # GCS file naming logic
+            timestamp = datetime.now().strftime("%d_%m_%y_%H_%M")
+            report_name = "contact_us_report"
+            gcs_folder_name = "media/gcc_reports"
+            gcs_file_name = f"{gcs_folder_name}/{report_name}_{timestamp}.xlsx"
+
+            # Upload the temporary file to GCS
+            bucket = client.get_bucket(settings.GS_BUCKET_NAME)
+            blob = bucket.blob(gcs_file_name)
+            blob.upload_from_filename(pdf_path)
+
+            return success_response(
+                message="Success",
+                data={"report_url": blob.public_url},
+                status_code=status.HTTP_200_OK
+            )
+        finally:
+            # Ensure the temporary file is deleted
+            os.remove(pdf_path)
+
 
 
 class CreateStudentProfileView(APIView):

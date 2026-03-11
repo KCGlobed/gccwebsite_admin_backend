@@ -325,11 +325,34 @@ class CampusFaculty_list(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPageNumberPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['id']
-    ordering_fields = ['id']
+    search_fields = ['full_name',"email","mobile","state","city"]
+    ordering_fields = ["id",'full_name',"email","mobile","state","city","created_at"]
     def get(self, request):
         datas = CampusFaculty.objects.all().order_by('-id')
 
+        full_name = request.GET.get('full_name')
+        if full_name:
+            datas = datas.filter(full_name__icontains=full_name)
+
+        email = request.GET.get('email')
+        if email:
+            datas = datas.filter(email__icontains=email)
+
+
+        mobile = request.GET.get('mobile')
+        if mobile:
+            datas = datas.filter(mobile__icontains=mobile)
+
+
+        state = request.GET.get('state')
+        if state:
+            datas = datas.filter(state__icontains=state)
+
+        city = request.GET.get('city')
+        if city:
+            datas = datas.filter(city__icontains=city)
+
+            
         # Date range filter
         start_date = request.GET.get('start_date')
         end_date = request.GET.get('end_date')
@@ -361,10 +384,32 @@ class CampusStudent_list(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPageNumberPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['id']
-    ordering_fields = ['id']
+    search_fields = ['full_name',"email","mobile","state","city"]
+    ordering_fields = ["id",'full_name',"email","mobile","state","city","created_at"]
     def get(self, request):
         datas = CampusStudent.objects.all().order_by('-id')
+
+        full_name = request.GET.get('full_name')
+        if full_name:
+            datas = datas.filter(full_name__icontains=full_name)
+
+        email = request.GET.get('email')
+        if email:
+            datas = datas.filter(email__icontains=email)
+
+
+        mobile = request.GET.get('mobile')
+        if mobile:
+            datas = datas.filter(mobile__icontains=mobile)
+
+
+        state = request.GET.get('state')
+        if state:
+            datas = datas.filter(state__icontains=state)
+
+        city = request.GET.get('city')
+        if city:
+            datas = datas.filter(city__icontains=city)
 
         # Date range filter
         start_date = request.GET.get('start_date')

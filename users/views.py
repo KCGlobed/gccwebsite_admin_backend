@@ -243,21 +243,36 @@ class MediaAccessUrlView(APIView):
         )
         return success_response(message="Success", data=[{"url":url}], status_code=status.HTTP_200_OK)
 
+
 from django.core.mail import send_mail
 from django.conf import settings
+import threading
+
+
+def send_email_async(subject, message, email_from, recipient_list, html_message):
+    print("start calling")
+    send_mail(
+        subject,
+        message,
+        email_from,
+        recipient_list,
+        html_message=html_message,
+        fail_silently=False
+    )
+    print("end calling")
 
 class Mail_test(APIView):
     def post(self, request, format=None):
-        
-        send_mail(
-            subject='Test Email',
-            message='This is a test email from Django application.',
-            # from_email=settings.EMAIL_HOST_USER,
-            from_email = settings.DEFAULT_FROM_EMAIL,
-            recipient_list=['vishal.dubey@kcglobed.com'],
-            fail_silently=False,
-        )
+        subject = 'Test Email'
+        message = 'This is a test email from Django application.'
+        email_from = settings.DEFAULT_FROM_EMAIL
+        recipient_list = ['vishal.dubey@kcglobed.com']
+        html_message = ''
+        # fail_silently=False
+        threading.Thread(
+            target=send_email_async,
+            args=(subject, message, email_from, recipient_list, html_message)
+        ).start()
+       
         
         return success_response(message="Success", data=[], status_code=status.HTTP_200_OK)
-
-

@@ -198,6 +198,9 @@ class NewsletterSubscribers_List(APIView):
         
         return paginator.get_paginated_response(serializers.data)
     
+from gcc_backend.utils import send_email_async
+import threading
+from django.conf import settings
 
 class CreateSupportFormView(APIView):
     # permission_classes = [IsAuthenticated]
@@ -205,6 +208,25 @@ class CreateSupportFormView(APIView):
         serializer = CreateSupportFormSerializer(data = request.data)
         if serializer.is_valid(raise_exception = True):
             obj = serializer.save()
+            subject = f'Feedback - {obj.subject}'
+            message = obj.message
+            email_from = settings.DEFAULT_FROM_EMAIL
+            recipient_list = ['info@gccschool.com','support@gccschool.com']
+            html_message = ""
+            # html_message = loader.render_to_string(
+            #         'user_login_detail_email.html',
+            #         {
+            #             "name":"testing kwargs",
+            #             "desc":"testing descs"
+
+            #         }
+            #     )
+            # subject = obj.subject
+            # subject = obj.subject
+            threading.Thread(
+                target=send_email_async,
+                args=(subject, message, email_from, recipient_list, html_message)
+            ).start()
             return success_response(message="success", data={"id":obj.id, "data":CreateSupportFormSerializer(obj).data}, status_code=status.HTTP_200_OK)
         else:
             return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)

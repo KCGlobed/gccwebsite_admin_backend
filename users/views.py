@@ -214,13 +214,13 @@ class CheckEmail(APIView):
         if User.objects.filter(email=email).exists():
             return success_response(
                 message="Email exists",
-                data={},
+                data={"isExist":True},
                 status_code=status.HTTP_200_OK
             )
 
         return error_response(
             message="Email not found",
-            data={},
+            data={"isExist":False},
             status_code=status.HTTP_404_NOT_FOUND
         )
 

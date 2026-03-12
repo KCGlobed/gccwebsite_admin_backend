@@ -199,6 +199,53 @@ class NewsletterSubscribers_List(APIView):
         return paginator.get_paginated_response(serializers.data)
     
 
+class CreateSupportFormView(APIView):
+    # permission_classes = [IsAuthenticated]
+    def post(self, request, format=None):
+        serializer = CreateSupportFormSerializer(data = request.data)
+        if serializer.is_valid(raise_exception = True):
+            obj = serializer.save()
+            return success_response(message="success", data={"id":obj.id, "data":CreateSupportFormSerializer(obj).data}, status_code=status.HTTP_200_OK)
+        else:
+            return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
+
+
+class SupportForm_list(APIView):
+    # permission_classes = [IsAuthenticated]
+    pagination_class = CustomPageNumberPagination
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['id']
+    ordering_fields = ['id']
+    def get(self, request):
+        datas = SupportForm.objects.all().order_by('-id')
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+
+        search_filter = filters.SearchFilter()
+        datas = search_filter.filter_queryset(request, datas, self)
+
+        ordering_filter = filters.OrderingFilter()
+        datas = ordering_filter.filter_queryset(request, datas, self)
+
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(datas, request, view=self)
+        serializers = ListSupportFormSerializer(page, many=True)
+        
+        return paginator.get_paginated_response(serializers.data)
+    
+
 
 class GetDossierReportPDFView(APIView):
     permission_classes = [IsAuthenticated]

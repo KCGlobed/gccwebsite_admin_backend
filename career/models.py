@@ -72,3 +72,14 @@ class DossierData(models.Model):
     updated_at = models.DateTimeField(auto_now = True)
 
 
+
+class SupportForm(models.Model):
+    name = models.CharField(max_length=200, blank=True, null=True)
+    email = models.EmailField(max_length=50, blank=True, null=True)
+    phone = models.CharField(max_length=200, blank=True, null=True)
+    subject = models.CharField(max_length=200, blank=True, null=True)
+    message = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
+
+

@@ -231,10 +231,14 @@ class UserResetPasswordSerializer(serializers.ModelSerializer):
 
 
 class StudentProfileDetailSerializer(serializers.ModelSerializer):
+    exam_status = serializers.SerializerMethodField('get_exam_status')
     class Meta:
         model = User
-        fields = ['id','first_name','last_name', 'email','phone1','phone2','address','city','state','country','image','banner_image','pincode',"dob","application_id"]
+        fields = ['id','first_name','last_name', 'email','phone1','phone2','address','city','state','country','image','banner_image','pincode',"dob","application_id","exam_status"]
 
+    def get_exam_status(get, data):
+        # std_profile = StudentPro
+        return False
 
 class AdminProfileDetailSerializer(serializers.ModelSerializer):
     role = serializers.SerializerMethodField('get_role')

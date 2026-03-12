@@ -172,12 +172,14 @@ class UserResetPasswordView(APIView):
 
 
 class GetStudentDetailView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request, id=None, format=None):
         subadmin_list = User.objects.filter(role = User.Student, id=id).first()
         serializer = StudentProfileDetailSerializer(subadmin_list)
         return success_response(message="Success", data=serializer.data, status_code=status.HTTP_200_OK)
 
 class GetAdminDetailView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request, id=None, format=None):
         subadmin_list = User.objects.filter(id=id).first()
         serializer = AdminProfileDetailSerializer(subadmin_list)
@@ -185,6 +187,7 @@ class GetAdminDetailView(APIView):
 
 
 class StudentProfileImageUploadView(APIView):
+    permission_classes = [IsAuthenticated]
     def post(self, request, id=None, format=None):
         subadmin_list = User.objects.filter(role = User.Student, id=id).first()
         if subadmin_list:
@@ -195,6 +198,32 @@ class StudentProfileImageUploadView(APIView):
             return error_response(message="failed", data = serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
         else:
             return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
+
+
+class CheckEmail(APIView):
+    def post(self, request, format=None):
+        email = request.data.get("email")
+
+        if not email:
+            return error_response(
+                message="Email is required",
+                data={},
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        if User.objects.filter(email=email).exists():
+            return success_response(
+                message="Email exists",
+                data={},
+                status_code=status.HTTP_200_OK
+            )
+
+        return error_response(
+            message="Email not found",
+            data={},
+            status_code=status.HTTP_404_NOT_FOUND
+        )
+
 
 from google.cloud import storage
 from datetime import timedelta

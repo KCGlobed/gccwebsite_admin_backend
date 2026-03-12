@@ -5,7 +5,7 @@ from career.models import DossierData
 from career.serializers import ListDossierDataSerializer
 from django.utils import timezone
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 
 
@@ -434,11 +434,29 @@ class StudentExperienceRelationSerializer(serializers.ModelSerializer):
 
 class StudentProfileSerializer(serializers.ModelSerializer):
     student_experience = serializers.SerializerMethodField()
+    exam_status = serializers.SerializerMethodField()
     created_at = serializers.DateTimeField(read_only=True, format="%Y-%m-%d %H:%M:%S")
 
     def get_student_experience(self, obj):
         answe = StudentExperience.objects.filter(student_profile_id =obj.id).order_by("id")
         return StudentExperienceRelationSerializer(answe, many=True).data
+    
+    def get_exam_status(self, obj):
+        status=False
+        if obj.slot_date:
+            print(datetime.now().date())
+            if obj.slot_date == datetime.now().date():
+                start_str, end_str = obj.slot_time.split(" - ")
+                current_time = datetime.now().time().replace(microsecond=0)
+                target_time = datetime.strptime(start_str, "%I:%M %p").time()
+                dt1 = datetime.combine(date.today(), current_time)
+                dt2 = datetime.combine(date.today(), target_time)
+
+                diff = abs((dt1 - dt2).total_seconds())
+                print(diff)
+                if diff <= 3600:   # 3600 seconds = 1 hour
+                    status=True
+        return status
     
     class Meta:
         model = StudentProfile

@@ -258,6 +258,11 @@ class StudentProfile(models.Model):
     slot_date = models.DateField(null=True, blank=True)
     slot_time = models.CharField(max_length=200, blank=True, null=True)
     slot_update_count = models.IntegerField(default=0)
+    tenth_score_type = models.CharField(max_length=20, blank=True, null=True)
+    tenth_medium = models.IntegerField(choices=Medium.choices,default=Medium.ENGLISH)
+    twelveth_score_type = models.CharField(max_length=20, blank=True, null=True)
+    twelveth_medium = models.IntegerField(choices=Medium.choices,default=Medium.ENGLISH)
+    ug_score_type = models.CharField(max_length=20, blank=True, null=True)
     
     class Meta:
         verbose_name = 'Student Profile'

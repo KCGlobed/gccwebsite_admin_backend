@@ -248,17 +248,23 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
     address = serializers.CharField(required=False, allow_blank=True)
     tenth_passing_year = serializers.IntegerField(required=False, allow_null = True)
     tenth_passing_percentage = serializers.FloatField(required=False, allow_null = True)
+    tenth_score_type = serializers.CharField(required=False, allow_null = True)
+    tenth_medium = serializers.IntegerField(required=False, allow_null = True)
     twelveth_passing_year = serializers.IntegerField(required=False, allow_null = True)
     twelveth_passing_percentage = serializers.FloatField(required=False, allow_null = True)
+    twelveth_score_type = serializers.CharField(required=False, allow_null = True)
+    twelveth_medium = serializers.IntegerField(required=False, allow_null = True)
     medium_instruction = serializers.IntegerField(required=False)
     other_instruction = serializers.CharField(required=False, allow_blank=True)
     pg_status = serializers.IntegerField(required=False)
     pg_percentage = serializers.FloatField(required=False, allow_null = True)
+    ug_score_type = serializers.CharField(required=False, allow_null = True)
     institution = serializers.CharField(required=False, allow_blank=True)
     higher_education_status = serializers.IntegerField(required=False)
     higher_qualification = serializers.CharField(required=False, allow_blank=True)
     higher_qualification_institution = serializers.CharField(required=False, allow_blank=True)
     employement_status = serializers.IntegerField(required=False)
+    higher_qualification_institution = serializers.CharField(required=False, allow_blank=True)
     aadhaar = serializers.FileField(required=False,allow_null=True)
     dob_certificate = serializers.FileField(required=False,allow_null=True)
     photo = serializers.FileField(required=False,allow_null=True)
@@ -268,7 +274,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
 
     class Meta:
         model = StudentProfile
-        fields = ["user",'first_name','last_name','email','phone',"state","city","contact_name","contact_phone","date_of_birth","gender","nationality","pincode","address","tenth_passing_year","tenth_passing_percentage","twelveth_passing_year","twelveth_passing_percentage","medium_instruction","other_instruction","pg_status","pg_percentage","institution","higher_education_status","higher_qualification","higher_qualification_institution","employement_status","aadhaar","dob_certificate","photo","signature","user_experience"]
+        fields = ["user",'first_name','last_name','email','phone',"state","city","contact_name","contact_phone","date_of_birth","gender","nationality","pincode","address","tenth_passing_year","tenth_passing_percentage","tenth_score_type","tenth_medium","twelveth_passing_year","twelveth_passing_percentage","twelveth_score_type","twelveth_medium","medium_instruction","other_instruction","pg_status","pg_percentage","ug_score_type","institution","higher_education_status","higher_qualification","higher_qualification_institution","employement_status","aadhaar","dob_certificate","photo","signature","user_experience"]
         
     def validate(self, data):
         return data
@@ -310,12 +316,17 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
             datas.address = validate_data.get('address', datas.address)
             datas.tenth_passing_year = validate_data.get('tenth_passing_year', datas.tenth_passing_year)
             datas.tenth_passing_percentage = validate_data.get('tenth_passing_percentage', datas.tenth_passing_percentage)
+            datas.tenth_score_type = validate_data.get('tenth_score_type', datas.tenth_score_type)
+            datas.tenth_medium = validate_data.get('tenth_medium', datas.tenth_medium)
             datas.twelveth_passing_year = validate_data.get('twelveth_passing_year', datas.twelveth_passing_year)
             datas.twelveth_passing_percentage = validate_data.get('twelveth_passing_percentage', datas.twelveth_passing_percentage)
+            datas.twelveth_score_type = validate_data.get('twelveth_score_type', datas.twelveth_score_type)
+            datas.twelveth_medium = validate_data.get('twelveth_medium', datas.twelveth_medium)
             datas.medium_instruction = validate_data.get('medium_instruction', datas.medium_instruction)
             datas.other_instruction = validate_data.get('other_instruction', datas.other_instruction)
             datas.pg_status = validate_data.get('pg_status', datas.pg_status)
             datas.pg_percentage = validate_data.get('pg_percentage', datas.pg_percentage)
+            datas.ug_score_type = validate_data.get('ug_score_type', datas.ug_score_type)
             datas.institution = validate_data.get('institution', datas.institution)
             datas.higher_education_status = validate_data.get('higher_education_status', datas.higher_education_status)
             datas.higher_qualification = validate_data.get('higher_qualification', datas.higher_qualification)
@@ -359,12 +370,17 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                 address = validate_data.get('address'),
                 tenth_passing_year = validate_data.get('tenth_passing_year'),
                 tenth_passing_percentage = validate_data.get('tenth_passing_percentage'),
+                tenth_score_type = validate_data.get('tenth_score_type'),
+                tenth_medium = validate_data.get('tenth_medium'),
                 twelveth_passing_year = validate_data.get('twelveth_passing_year'),
                 twelveth_passing_percentage = validate_data.get('twelveth_passing_percentage'),
+                twelveth_score_type = validate_data.get('twelveth_score_type'),
+                twelveth_medium = validate_data.get('twelveth_medium'),
                 medium_instruction = validate_data.get('medium_instruction'),
                 other_instruction = validate_data.get('other_instruction'),
                 pg_status = validate_data.get('pg_status'),
                 pg_percentage = validate_data.get('pg_percentage'),
+                ug_score_type = validate_data.get('ug_score_type'),
                 institution = validate_data.get('institution'),
                 higher_education_status = validate_data.get('higher_education_status'),
                 higher_qualification = validate_data.get('higher_qualification'),

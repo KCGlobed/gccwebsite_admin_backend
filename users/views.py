@@ -146,7 +146,8 @@ class CreateStudentView(APIView):
         serializer = CreateStudentSerializer(data = request.data)
         if serializer.is_valid(raise_exception = True):
             user  = serializer.save()
-            return success_response(message="User Created Successfully", data={}, status_code=status.HTTP_200_OK)
+            generated_password = serializer.generated_password
+            return success_response(message="User Created Successfully", data={"email":user.email,"password":generated_password}, status_code=status.HTTP_200_OK)
         return error_response(message="failed", data = serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
     
 

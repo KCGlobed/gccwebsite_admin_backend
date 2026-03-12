@@ -104,6 +104,7 @@ class CreateStudentSerializer(serializers.ModelSerializer):
         password = generate_random_password(8)
         info = { "first_name": validate_data.get('full_name'), "last_name":"", 'email': validate_data.get('email').lower(), 'password': password}
         user = User.objects.create_user(**info)
+        self.generated_password = password
         # assign_role(user, "Student")
         formatted = str(user.id).zfill(6)
         generate_application_id = f"NFET-2026-{formatted}"  # 000001

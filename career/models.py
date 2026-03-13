@@ -61,6 +61,16 @@ class NewsletterSubscribers(models.Model):
         db_table = 'newsletter_subscribers'
 
 
+class SourceType(models.IntegerChoices):
+    Website = 1, 'Website'
+    Efos = 2, 'Efos'
+
+class SourceFormType(models.IntegerChoices):
+    ApplyNow = 1, 'ApplyNow'
+    Dossier = 2, 'Dossier'
+    Program = 3, 'Program'
+
+
 
 class DossierData(models.Model):
     full_name = models.CharField(max_length=200, blank=True, null=True)
@@ -68,6 +78,8 @@ class DossierData(models.Model):
     phone = models.CharField(max_length=200, blank=True, null=True)
     city = models.CharField(max_length=200, blank=True, null=True)
     state = models.CharField(max_length=200, blank=True, null=True)
+    source = models.IntegerField(choices=SourceType.choices,default=SourceType.Website)
+    source_form = models.IntegerField(choices=SourceFormType.choices,default=SourceFormType.ApplyNow)
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
 

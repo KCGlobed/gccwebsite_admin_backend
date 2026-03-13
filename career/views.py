@@ -96,7 +96,7 @@ class PartnerWithUs_list(APIView):
 class DossierDataForm_Create(APIView):
     # permission_classes = [IsAuthenticated]
     def post(self, request, format=None):
-        serializer = ListDossierDataSerializer(data = request.data)
+        serializer = CreateDossierDataSerializer(data = request.data)
         if serializer.is_valid(raise_exception = True):
             obj = serializer.save()
             pdf_url = f"{settings.STATIC_URL}files/GCC%20SCHOOL%20Dossier.pdf"
@@ -233,7 +233,7 @@ class CreateSupportFormView(APIView):
 
 
 class SupportForm_list(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     pagination_class = CustomPageNumberPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['id']

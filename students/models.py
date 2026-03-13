@@ -1,5 +1,4 @@
 from django.db import models
-
 # Create your models here.
 
 
@@ -92,6 +91,9 @@ class FormType(models.IntegerChoices):
     Payment = 1, 'Payment'
     Dossier = 2, 'Dossier'
 
+class SourceType(models.IntegerChoices):
+    Website = 1, 'Website'
+    Efos = 2, 'Efos'
 
 class Payments(models.Model):
     razorpay_order_id = models.CharField(max_length=255, blank=True, null=True)
@@ -107,6 +109,7 @@ class Payments(models.Model):
     form_type = models.IntegerField(choices=FormType.choices, default=FormType.Payment)
     form_id   = models.CharField(max_length=50, blank=True, null=True)
     dossier_form = models.ForeignKey('career.DossierData', null=True, blank=True, on_delete=models.CASCADE)
+    source = models.IntegerField(choices=SourceType.choices,default=SourceType.Website)
 
     class Meta:
         db_table = 'payments'

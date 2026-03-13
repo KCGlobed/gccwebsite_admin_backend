@@ -21,6 +21,12 @@ class ListPartnerWithUsSerializer(serializers.ModelSerializer):
         
 
 
+class CreateDossierDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DossierData
+        fields = ["full_name","email","phone","city","state","source","source_form"]
+        
+
 class ListDossierDataSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(read_only=True, format="%Y-%m-%d %H:%M:%S")
 

@@ -590,6 +590,11 @@ class GetFacultyCampusReportExcelView(APIView):
         
         
         for chapter_data in serializers.data:
+
+            activities = chapter_data['support_activities']
+            activities_str = ", ".join(map(str, activities)) if isinstance(activities, list) else str(activities)
+
+
             lis.append({
                 "name":chapter_data['full_name'],
                 "email":chapter_data['email'],
@@ -604,7 +609,7 @@ class GetFacultyCampusReportExcelView(APIView):
                 "industrial_experience":chapter_data['industrial_experience'],
                 "highest_qualification":chapter_data['highest_qualification'],
                 "motivation":chapter_data['motivation'],
-                "support_activities":chapter_data['support_activities'],
+                "support_activities":activities_str,
                 "student_reach":chapter_data['student_reach'],
                 "created_at":chapter_data['created_at']
             })
@@ -908,6 +913,9 @@ class GetStudentCampusReportExcelView(APIView):
         
         
         for chapter_data in serializers.data:
+            activities = chapter_data['promotion_channels']
+            activities_str = ", ".join(map(str, activities)) if isinstance(activities, list) else str(activities)
+
             lis.append({
                 "name":chapter_data['full_name'],
                 "email":chapter_data['email'],
@@ -922,7 +930,7 @@ class GetStudentCampusReportExcelView(APIView):
                 "industrial_experience":chapter_data['student_body_member'],
                 "highest_qualification":chapter_data['campus_ambassador_history'],
                 "motivation":chapter_data['inspiration'],
-                "support_activities":chapter_data['promotion_channels'],
+                "support_activities":activities_str,
                 "student_reach":chapter_data['student_reach'],
                 "created_at":chapter_data['created_at']
             })

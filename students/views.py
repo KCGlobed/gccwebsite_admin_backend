@@ -721,6 +721,32 @@ class StudentSlotBookView(APIView):
         return Response({'message':'failed','status':400, 'data':[]})
     
 
+class StudentMockTestCompleteStatusView(APIView):
+    def post(self, request):
+        datas = StudentProfile.objects.filter(email=request.data["email"])
+        if not datas:
+            return Response({'message':'Invalid Account','status':400,'data':[]})
+        datas = datas.first()
+        serializers = StudentMockTestCompleteStatusSerializer(datas, data=request.data, partial=True)
+        if serializers.is_valid():
+            serializers.save()
+            return Response({"message": "Success","status":200, "data": []})
+        return Response({'message':'failed','status':400, 'data':[serializers.errors]})
+    
+
+class StudentMockTestStartStatusView(APIView):
+    def post(self, request):
+        datas = StudentProfile.objects.filter(email=request.data["email"])
+        if not datas:
+            return Response({'message':'Invalid Account','status':400,'data':[]})
+        datas = datas.first()
+        serializers = StudentMockTestStartStatusSerializer(datas, data=request.data, partial=True)
+        if serializers.is_valid():
+            serializers.save()
+            return Response({"message": "Success","status":200, "data": []})
+        return Response({'message':'failed','status':400, 'data':[serializers.errors]})
+    
+
 class GetStudentAdmitCardView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):

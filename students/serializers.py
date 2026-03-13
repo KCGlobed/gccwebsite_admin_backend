@@ -471,3 +471,50 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentProfile
         fields = "__all__"
+
+
+
+
+class StudentMockTestCompleteStatusSerializer(serializers.ModelSerializer):
+    email  = serializers.EmailField(required=True)
+    status = serializers.BooleanField(required=True)
+
+    class Meta:
+        model = StudentProfile
+        fields = ["email","status"]
+    
+    def update(self, instance, validated_data):
+        if validated_data.get("status") != True:
+            raise serializers.ValidationError(
+                {
+                    "status": 400,
+                    "message": "Please Select Valid Status.",
+                    "data":[]
+                }
+            )
+        instance.mock_test_status = 2 if validated_data.get("status") == True else 1
+        instance.save()
+
+        return instance
+
+class StudentMockTestStartStatusSerializer(serializers.ModelSerializer):
+    email  = serializers.EmailField(required=True)
+    status = serializers.BooleanField(required=True)
+
+    class Meta:
+        model = StudentProfile
+        fields = ["email","status"]
+    
+    def update(self, instance, validated_data):
+        if validated_data.get("status") != True:
+            raise serializers.ValidationError(
+                {
+                    "status": 400,
+                    "message": "Please Select Valid Status.",
+                    "data":[]
+                }
+            )
+        instance.mock_test_status = 1 if validated_data.get("status") == True else 0
+        instance.save()
+
+        return instance

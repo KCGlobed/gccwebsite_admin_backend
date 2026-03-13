@@ -13,14 +13,13 @@ urlpatterns = [
 
     path('create_student/', CreateStudentView.as_view(), name='create_student'),
     path('forgot-password/', UserForgotPasswordView.as_view(), name="forgot-password"),
+    path('check_email/', CheckEmail.as_view(), name="check_email"),
 
     path('reset-password/', UserResetPasswordView.as_view(), name="reset-password"),
     path('view-student-detail/<int:id>', GetStudentDetailView.as_view(), name="get-student-detail"),
     path('student-profile-upload/<int:id>', StudentProfileImageUploadView.as_view(), name="student-profile-upload"),
 
     path('media-access-url/', MediaAccessUrlView.as_view(), name="media-access-url"),
-
-
 
 
     path('mail-test/', Mail_test.as_view(), name="mail-test"),

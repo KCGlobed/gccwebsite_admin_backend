@@ -146,7 +146,8 @@ class CreateStudentView(APIView):
         serializer = CreateStudentSerializer(data = request.data)
         if serializer.is_valid(raise_exception = True):
             user  = serializer.save()
-            return success_response(message="User Created Successfully", data={}, status_code=status.HTTP_200_OK)
+            generated_password = serializer.generated_password
+            return success_response(message="User Created Successfully", data={"email":user.email,"password":generated_password}, status_code=status.HTTP_200_OK)
         return error_response(message="failed", data = serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
     
 
@@ -171,12 +172,14 @@ class UserResetPasswordView(APIView):
 
 
 class GetStudentDetailView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request, id=None, format=None):
         subadmin_list = User.objects.filter(role = User.Student, id=id).first()
         serializer = StudentProfileDetailSerializer(subadmin_list)
         return success_response(message="Success", data=serializer.data, status_code=status.HTTP_200_OK)
 
 class GetAdminDetailView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request, id=None, format=None):
         subadmin_list = User.objects.filter(id=id).first()
         serializer = AdminProfileDetailSerializer(subadmin_list)
@@ -184,6 +187,7 @@ class GetAdminDetailView(APIView):
 
 
 class StudentProfileImageUploadView(APIView):
+    permission_classes = [IsAuthenticated]
     def post(self, request, id=None, format=None):
         subadmin_list = User.objects.filter(role = User.Student, id=id).first()
         if subadmin_list:
@@ -194,6 +198,32 @@ class StudentProfileImageUploadView(APIView):
             return error_response(message="failed", data = serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
         else:
             return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
+
+
+class CheckEmail(APIView):
+    def post(self, request, format=None):
+        email = request.data.get("email")
+
+        if not email:
+            return error_response(
+                message="Email is required",
+                data={},
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        if User.objects.filter(email=email).exists():
+            return success_response(
+                message="Email exists",
+                data={"isExist":True},
+                status_code=status.HTTP_200_OK
+            )
+
+        return error_response(
+            message="Email not found",
+            data={"isExist":False},
+            status_code=status.HTTP_404_NOT_FOUND
+        )
+
 
 from google.cloud import storage
 from datetime import timedelta
@@ -213,21 +243,36 @@ class MediaAccessUrlView(APIView):
         )
         return success_response(message="Success", data=[{"url":url}], status_code=status.HTTP_200_OK)
 
+
 from django.core.mail import send_mail
 from django.conf import settings
+import threading
+
+
+def send_email_async(subject, message, email_from, recipient_list, html_message):
+    print("start calling")
+    send_mail(
+        subject,
+        message,
+        email_from,
+        recipient_list,
+        html_message=html_message,
+        fail_silently=False
+    )
+    print("end calling")
 
 class Mail_test(APIView):
     def post(self, request, format=None):
-        
-        send_mail(
-            subject='Test Email',
-            message='This is a test email from Django application.',
-            # from_email=settings.EMAIL_HOST_USER,
-            from_email = settings.DEFAULT_FROM_EMAIL,
-            recipient_list=['vishal.dubey@kcglobed.com'],
-            fail_silently=False,
-        )
+        subject = 'Test Email'
+        message = 'This is a test email from Django application.'
+        email_from = settings.DEFAULT_FROM_EMAIL
+        recipient_list = ['vishal.dubey@kcglobed.com']
+        html_message = ''
+        # fail_silently=False
+        threading.Thread(
+            target=send_email_async,
+            args=(subject, message, email_from, recipient_list, html_message)
+        ).start()
+       
         
         return success_response(message="Success", data=[], status_code=status.HTTP_200_OK)
-
-

@@ -77,6 +77,43 @@ class UserLoginSerializer(serializers.ModelSerializer):
 
 
 
+# def send_email_async(subject, message, email_from, recipient_list, html_message):
+#     print("start calling")
+#     # send_mail(
+#     #     subject,
+#     #     message,
+#     #     email_from,
+#     #     recipient_list,
+#     #     html_message=html_message,
+#     #     fail_silently=False
+#     # )
+#     subject = 'GCC School – Payment Confirmation & Next Steps for NFET 2026'
+
+#     message = f''
+#     email_from = settings.DEFAULT_FROM_EMAIL
+#     recipient_list = [user.email, ]
+#     html_message = loader.render_to_string(
+#         'user_login_detail_email.html',
+#         {
+#             'name': user.first_name,
+#             'candidate_id': generate_application_id,
+#             'slot_booking': 'https://forms.gle/UQqKnCsmJzVLK6qU8',
+#             'website_url': settings.WEBSITE_BASE_URL,
+#             'login_url': settings.WEBSITE_BASE_URL+"/login",
+#             "email": user.email,
+#             "password": password,               
+
+#         }
+#     )
+
+#     send_mail( subject, message, email_from, recipient_list,html_message=html_message )
+
+#     print("end calling")
+
+
+
+
+
 
 
 
@@ -104,6 +141,7 @@ class CreateStudentSerializer(serializers.ModelSerializer):
         password = generate_random_password(8)
         info = { "first_name": validate_data.get('full_name'), "last_name":"", 'email': validate_data.get('email').lower(), 'password': password}
         user = User.objects.create_user(**info)
+        self.generated_password = password
         # assign_role(user, "Student")
         formatted = str(user.id).zfill(6)
         generate_application_id = f"NFET-2026-{formatted}"  # 000001
@@ -117,6 +155,9 @@ class CreateStudentSerializer(serializers.ModelSerializer):
         user.application_id = generate_application_id
         user.save()
         num = user.id
+
+
+
         subject = 'GCC School – Payment Confirmation & Next Steps for NFET 2026'
 
         message = f''
@@ -230,10 +271,14 @@ class UserResetPasswordSerializer(serializers.ModelSerializer):
 
 
 class StudentProfileDetailSerializer(serializers.ModelSerializer):
+    exam_status = serializers.SerializerMethodField('get_exam_status')
     class Meta:
         model = User
-        fields = ['id','first_name','last_name', 'email','phone1','phone2','address','city','state','country','image','banner_image','pincode',"dob","application_id"]
+        fields = ['id','first_name','last_name', 'email','phone1','phone2','address','city','state','country','image','banner_image','pincode',"dob","application_id","exam_status"]
 
+    def get_exam_status(get, data):
+        # std_profile = StudentPro
+        return False
 
 class AdminProfileDetailSerializer(serializers.ModelSerializer):
     role = serializers.SerializerMethodField('get_role')

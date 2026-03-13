@@ -791,9 +791,9 @@ class GetStudentProfileView(APIView):
         datas = StudentProfile.objects.filter(user = request.user).first()
         if datas is not None:
             serializers = StudentProfileSerializer(datas)
-            return Response({'message':'','data':serializers.data})
+            return Response({'message':'success',"status":200,'data':serializers.data})
 
-        return Response({'message':'','data':[]})
+        return Response({'message':'failed',"status":400,'data':[]})
     
 
 

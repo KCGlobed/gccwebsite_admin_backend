@@ -35,4 +35,16 @@ class ListNewsletterSubscriberSerializer(serializers.ModelSerializer) :
         fields = "__all__"
         
 
+class CreateSupportFormSerializer(serializers.ModelSerializer) :
+    class Meta:
+        model = SupportForm
+        fields = ["name","email","phone","subject","message"]
+        
+
+class ListSupportFormSerializer(serializers.ModelSerializer) :
+    class Meta:
+        model = SupportForm
+        fields = "__all__"
+        
+
 

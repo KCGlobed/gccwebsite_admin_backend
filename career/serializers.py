@@ -4,7 +4,7 @@ from django.conf import settings
 
 
 
-class ListCareerApplicationSerializer(serializers.ModelSerializer) :
+class ListCareerApplicationSerializer(serializers.ModelSerializer):
     resume_path = serializers.SerializerMethodField('get_resume_path')
     class Meta:
         model = CareerApplication
@@ -14,14 +14,14 @@ class ListCareerApplicationSerializer(serializers.ModelSerializer) :
         url = f'https://storage.googleapis.com/{settings.GS_BUCKET_NAME}/{obj.resume_path}'
         return url
 
-class ListPartnerWithUsSerializer(serializers.ModelSerializer) :
+class ListPartnerWithUsSerializer(serializers.ModelSerializer):
     class Meta:
         model = PartnerWithUs
         fields = "__all__"
         
 
 
-class ListDossierDataSerializer(serializers.ModelSerializer) :
+class ListDossierDataSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(read_only=True, format="%Y-%m-%d %H:%M:%S")
 
     class Meta:
@@ -29,19 +29,24 @@ class ListDossierDataSerializer(serializers.ModelSerializer) :
         fields = "__all__"
         
 
-class ListNewsletterSubscriberSerializer(serializers.ModelSerializer) :
+class ListNewsletterSubscriberSerializer(serializers.ModelSerializer):
     class Meta:
         model = NewsletterSubscribers
         fields = "__all__"
         
 
-class CreateSupportFormSerializer(serializers.ModelSerializer) :
+class CreateSupportFormSerializer(serializers.ModelSerializer):
     class Meta:
         model = SupportForm
-        fields = ["name","email","phone","subject","message"]
-        
+        fields = ["subject","message"]
 
-class ListSupportFormSerializer(serializers.ModelSerializer) :
+    def create(self, validated_data):
+        request = self.context.get('request')
+        validated_data['user'] = request.user
+        return super().create(validated_data)    
+
+
+class ListSupportFormSerializer(serializers.ModelSerializer):
     class Meta:
         model = SupportForm
         fields = "__all__"

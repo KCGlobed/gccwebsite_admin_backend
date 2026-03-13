@@ -74,9 +74,7 @@ class DossierData(models.Model):
 
 
 class SupportForm(models.Model):
-    name = models.CharField(max_length=200, blank=True, null=True)
-    email = models.EmailField(max_length=50, blank=True, null=True)
-    phone = models.CharField(max_length=200, blank=True, null=True)
+    user = models.ForeignKey('users.User', null=True, blank=True, on_delete=models.CASCADE)
     subject = models.CharField(max_length=200, blank=True, null=True)
     message = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add = True)

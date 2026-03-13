@@ -394,12 +394,6 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
             )
             query.save()
 
-            std = StudentProfile.objects.get(id=query.id)
-            formatted = str(query.id).zfill(6)
-            generate_application_id = f"NFET-2026-{formatted}"  # 000001
-            std.application_id = generate_application_id
-            std.save()
-
             if len(validate_data.get('user_experience')) > 0:
                 for exp in validate_data.get('user_experience'):
                     experience = StudentExperience(

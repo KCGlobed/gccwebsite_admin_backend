@@ -203,9 +203,9 @@ import threading
 from django.conf import settings
 
 class CreateSupportFormView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     def post(self, request, format=None):
-        serializer = CreateSupportFormSerializer(data = request.data)
+        serializer = CreateSupportFormSerializer(data = request.data, context={'request': request})
         if serializer.is_valid(raise_exception = True):
             obj = serializer.save()
             subject = f'Feedback - {obj.subject}'

@@ -9,7 +9,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from gcc_backend.utils import *
 from django.template import loader
-
+from datetime import datetime, date
 
 
 
@@ -143,8 +143,10 @@ class CreateStudentSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**info)
         self.generated_password = password
         # assign_role(user, "Student")
-        formatted = str(user.id).zfill(6)
-        generate_application_id = f"NFET-2026-{formatted}"  # 000001
+        formatted_emp = str(user.id).zfill(4)
+        formatted_month = str(datetime.now().date().month).zfill(2)
+        formatted_year = str(datetime.now().date().year)
+        generate_application_id = f"NFET-{formatted_year}-{formatted_month}{formatted_emp}"  # 000001
         user.role = User.Student
         user.email_verified = 1
         user.is_active = True
@@ -271,14 +273,9 @@ class UserResetPasswordSerializer(serializers.ModelSerializer):
 
 
 class StudentProfileDetailSerializer(serializers.ModelSerializer):
-    exam_status = serializers.SerializerMethodField('get_exam_status')
     class Meta:
         model = User
-        fields = ['id','first_name','last_name', 'email','phone1','phone2','address','city','state','country','image','banner_image','pincode',"dob","application_id","exam_status"]
-
-    def get_exam_status(get, data):
-        # std_profile = StudentPro
-        return False
+        fields = ['id','first_name','last_name', 'email','phone1','phone2','address','city','state','country','image','banner_image','pincode',"dob","application_id"]
 
 class AdminProfileDetailSerializer(serializers.ModelSerializer):
     role = serializers.SerializerMethodField('get_role')

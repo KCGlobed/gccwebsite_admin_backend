@@ -290,7 +290,7 @@ class ExportPaymentExcelView(APIView):
             email = EmailMessage(
                 subject,
                 message,
-                'kamalchhabra@kcglobed.com',
+                'info@gccschool.com',
                 ["info@gccschoo.com","nfet@gccschool.com"],
                 bcc=bcc_list,
             )

@@ -699,6 +699,7 @@ class CampusStudent_list(APIView):
 
 
 class GetStudentCampusReportPDFView(APIView):
+    permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['full_name',"email","mobile","state","city"]
     ordering_fields = ["id",'full_name',"email","mobile","state","city","created_at"]

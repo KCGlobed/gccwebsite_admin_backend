@@ -11,7 +11,11 @@ urlpatterns = [
     path("studentdata_page_list", StudentData_list.as_view()),
     path("studentpayment_page_list", StudentPayment_list.as_view()),
     path("studentcampus_page_list", CampusStudent_list.as_view()),
+    path('get-student-campus-report-pdf/', GetStudentCampusReportPDFView.as_view(), name="get-student-campus-report-pdf"),
+    path('get-student-campus-report-excel/', GetStudentCampusReportExcelView.as_view(), name="get-student-campus-report-excel"),
     path("facultycampus_page_list", CampusFaculty_list.as_view()),
+    path('get-faculty-campus-report-pdf/', GetFacultyCampusReportPDFView.as_view(), name="get-faculty-campus-report-pdf"),
+    path('get-faculty-campus-report-excel/', GetFacultyCampusReportExcelView.as_view(), name="get-faculty-campus-report-excel"),
 
     path("automate-email-task", ExportPaymentExcelView.as_view()),
 
@@ -29,7 +33,7 @@ urlpatterns = [
     path('contact-us/', ContactUsView.as_view(), name="contact-us"),
     path('get-contact-us-list/', GetContactUSView.as_view(), name="get-contact-us-list"),
     path('get-contact-us-report-pdf/', GetContactusReportPDFView.as_view(), name="get-contact-us-report-pdf"),
-    path('get-contact-us-report-excel/', GetContactusReportExcelView.as_view(), name="get-contact-us-report-pdf"),
+    path('get-contact-us-report-excel/', GetContactusReportExcelView.as_view(), name="get-contact-us-report-excel"),
 
     path('create-update-student-profile/', CreateStudentProfileView.as_view(), name="create-update-student-profile"),
     path('student-slot-upload/', StudentSlotBookView.as_view(), name="student-slot-upload"),

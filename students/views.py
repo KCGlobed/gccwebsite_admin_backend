@@ -378,7 +378,267 @@ class CampusFaculty_list(APIView):
         serializers = ListCampusFacultySerializer(page, many=True)
         
         return paginator.get_paginated_response(serializers.data)
+
+
+class GetFacultyCampusReportPDFView(APIView):
+    permission_classes = [IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['full_name',"email","mobile","state","city"]
+    ordering_fields = ["id",'full_name',"email","mobile","state","city","created_at"]
+    def get(self, request):
+        datas = CampusFaculty.objects.all().order_by('-id')
+
+        full_name = request.GET.get('full_name')
+        if full_name:
+            datas = datas.filter(full_name__icontains=full_name)
+
+        email = request.GET.get('email')
+        if email:
+            datas = datas.filter(email__icontains=email)
+
+
+        mobile = request.GET.get('mobile')
+        if mobile:
+            datas = datas.filter(mobile__icontains=mobile)
+
+
+        state = request.GET.get('state')
+        if state:
+            datas = datas.filter(state__icontains=state)
+
+        city = request.GET.get('city')
+        if city:
+            datas = datas.filter(city__icontains=city)
+
+            
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+
+        search_filter = filters.SearchFilter()
+        datas = search_filter.filter_queryset(request, datas, self)
+
+        ordering_filter = filters.OrderingFilter()
+        datas = ordering_filter.filter_queryset(request, datas, self)
+
+        serializers = ListCampusFacultySerializer(datas, many=True)
+
+        data = {
+                    "user_data":serializers.data,
+                    "report_date": datetime.now().strftime("%d-%m-%Y, %H:%M")
+                }
+        
+
+        template = get_template('pdf/faculty_campus_report.html')
+        html  = template.render(data)
+        with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as temp_file:
+            pdf_path = temp_file.name
+            
+            # Encode HTML and create PDF
+            html = html.encode('latin-1', 'replace').decode('latin-1')
+            pdf = pisa.CreatePDF(BytesIO(html.encode("ISO-8859-1")), dest=temp_file)
+
+            if pdf.err:
+                raise Exception("PDF generation error!")
+        
+        # After the 'with' block, the file is closed, but not deleted yet
+        try:
+            # GCS file naming logic
+            timestamp = datetime.now().strftime("%d_%m_%y_%H_%M")
+            report_name = "faculty_campus_report"
+            gcs_folder_name = "media/gcc_reports"
+            gcs_file_name = f"{gcs_folder_name}/{report_name}_{timestamp}.pdf"
+
+            # Upload the temporary file to GCS
+            bucket = client.get_bucket(settings.GS_BUCKET_NAME)
+            blob = bucket.blob(gcs_file_name)
+            blob.upload_from_filename(pdf_path)
+
+            return success_response(
+                message="Success",
+                data={"report_url": blob.public_url},
+                status_code=status.HTTP_200_OK
+            )
+        finally:
+            # Ensure the temporary file is deleted from the server's disk
+            os.remove(pdf_path)
     
+
+
+class GetFacultyCampusReportExcelView(APIView):
+    permission_classes = [IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['full_name',"email","mobile","state","city"]
+    ordering_fields = ["id",'full_name',"email","mobile","state","city","created_at"]
+    def get(self, request):
+        datas = CampusFaculty.objects.all().order_by('-id')
+
+        full_name = request.GET.get('full_name')
+        if full_name:
+            datas = datas.filter(full_name__icontains=full_name)
+
+        email = request.GET.get('email')
+        if email:
+            datas = datas.filter(email__icontains=email)
+
+
+        mobile = request.GET.get('mobile')
+        if mobile:
+            datas = datas.filter(mobile__icontains=mobile)
+
+
+        state = request.GET.get('state')
+        if state:
+            datas = datas.filter(state__icontains=state)
+
+        city = request.GET.get('city')
+        if city:
+            datas = datas.filter(city__icontains=city)
+
+            
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+
+        search_filter = filters.SearchFilter()
+        datas = search_filter.filter_queryset(request, datas, self)
+
+        ordering_filter = filters.OrderingFilter()
+        datas = ordering_filter.filter_queryset(request, datas, self)
+
+        serializers = ListCampusFacultySerializer(datas, many=True)
+
+        lis = []
+        
+        lis.append({
+                "name":"Faculty Campus Report",
+                "email":'',
+                "subject":'',
+                "Chapter":'',
+                "Topic":'',
+                "total_questions":'',
+                "institution_name":"",
+                "department":"",
+                "designation":"",
+                "teaching_experience":"",
+                "industrial_experience":"",
+                "highest_qualification":"",
+                "motivation":"",
+                "support_activities":"",
+                "student_reach":"",
+                "created_at":""
+            })
+
+       
+        lis.append({
+                "name":"",
+                "email":'',
+                "subject":'',
+                "Chapter":'',
+                "Topic":'',
+                "total_questions":'',
+                "institution_name":"",
+                "department":"",
+                "designation":"",
+                "teaching_experience":"",
+                "industrial_experience":"",
+                "highest_qualification":"",
+                "motivation":"",
+                "support_activities":"",
+                "student_reach":"",
+                "created_at":""
+            })
+        
+        lis.append({
+                "name":"Full Name",
+                "email":'Email',
+                "subject":'Phone Number',
+                "Chapter":'City',
+                "Topic":'State',
+                "total_questions":'Address',
+                "institution_name":"Institution Name",
+                "department":"Department",
+                "designation":"Designation",
+                "teaching_experience":"Teaching Experience",
+                "industrial_experience":"Industrial Experience",
+                "highest_qualification":"Highest Qualification",
+                "motivation":"Motivation",
+                "support_activities":"Support Activities",
+                "student_reach":"Student Reach",
+                "created_at":"Created At"
+            })
+        
+        
+        for chapter_data in serializers.data:
+            lis.append({
+                "name":chapter_data['full_name'],
+                "email":chapter_data['email'],
+                "subject":chapter_data['mobile'],
+                "Chapter":chapter_data['city'],
+                "Topic":chapter_data['state'],
+                "total_questions":chapter_data['address'],
+                "institution_name":chapter_data['institution_name'],
+                "department":chapter_data['department'],
+                "designation":chapter_data['designation'],
+                "teaching_experience":chapter_data['teaching_experience'],
+                "industrial_experience":chapter_data['industrial_experience'],
+                "highest_qualification":chapter_data['highest_qualification'],
+                "motivation":chapter_data['motivation'],
+                "support_activities":chapter_data['support_activities'],
+                "student_reach":chapter_data['student_reach'],
+                "created_at":chapter_data['created_at']
+            })
+
+
+        with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as temp_file:
+            pdf_path = temp_file.name
+            
+            # Create DataFrame and save to the temporary file
+            df = pd.DataFrame.from_dict(lis)
+            df.to_excel(pdf_path, header=False, index=False)
+        
+        # After the 'with' block, the file is closed but not deleted
+        try:
+            # GCS file naming logic
+            timestamp = datetime.now().strftime("%d_%m_%y_%H_%M")
+            report_name = "faculty_campus_report"
+            gcs_folder_name = "media/gcc_reports"
+            gcs_file_name = f"{gcs_folder_name}/{report_name}_{timestamp}.xlsx"
+
+            # Upload the temporary file to GCS
+            bucket = client.get_bucket(settings.GS_BUCKET_NAME)
+            blob = bucket.blob(gcs_file_name)
+            blob.upload_from_filename(pdf_path)
+
+            return success_response(
+                message="Success",
+                data={"report_url": blob.public_url},
+                status_code=status.HTTP_200_OK
+            )
+        finally:
+            # Ensure the temporary file is deleted
+            os.remove(pdf_path)
+
 
 class CampusStudent_list(APIView):
     permission_classes = [IsAuthenticated]
@@ -436,6 +696,265 @@ class CampusStudent_list(APIView):
         
         return paginator.get_paginated_response(serializers.data)
     
+
+
+class GetStudentCampusReportPDFView(APIView):
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['full_name',"email","mobile","state","city"]
+    ordering_fields = ["id",'full_name',"email","mobile","state","city","created_at"]
+    def get(self, request):
+        datas = CampusStudent.objects.all().order_by('-id')
+
+        full_name = request.GET.get('full_name')
+        if full_name:
+            datas = datas.filter(full_name__icontains=full_name)
+
+        email = request.GET.get('email')
+        if email:
+            datas = datas.filter(email__icontains=email)
+
+
+        mobile = request.GET.get('mobile')
+        if mobile:
+            datas = datas.filter(mobile__icontains=mobile)
+
+
+        state = request.GET.get('state')
+        if state:
+            datas = datas.filter(state__icontains=state)
+
+        city = request.GET.get('city')
+        if city:
+            datas = datas.filter(city__icontains=city)
+
+            
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+
+        search_filter = filters.SearchFilter()
+        datas = search_filter.filter_queryset(request, datas, self)
+
+        ordering_filter = filters.OrderingFilter()
+        datas = ordering_filter.filter_queryset(request, datas, self)
+
+        serializers = ListCampusStudentSerializer(datas, many=True)
+
+        data = {
+                    "user_data":serializers.data,
+                    "report_date": datetime.now().strftime("%d-%m-%Y, %H:%M")
+                }
+        
+
+        template = get_template('pdf/student_campus_report.html')
+        html  = template.render(data)
+        with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as temp_file:
+            pdf_path = temp_file.name
+            
+            # Encode HTML and create PDF
+            html = html.encode('latin-1', 'replace').decode('latin-1')
+            pdf = pisa.CreatePDF(BytesIO(html.encode("ISO-8859-1")), dest=temp_file)
+
+            if pdf.err:
+                raise Exception("PDF generation error!")
+        
+        # After the 'with' block, the file is closed, but not deleted yet
+        try:
+            # GCS file naming logic
+            timestamp = datetime.now().strftime("%d_%m_%y_%H_%M")
+            report_name = "student_campus_report"
+            gcs_folder_name = "media/gcc_reports"
+            gcs_file_name = f"{gcs_folder_name}/{report_name}_{timestamp}.pdf"
+
+            # Upload the temporary file to GCS
+            bucket = client.get_bucket(settings.GS_BUCKET_NAME)
+            blob = bucket.blob(gcs_file_name)
+            blob.upload_from_filename(pdf_path)
+
+            return success_response(
+                message="Success",
+                data={"report_url": blob.public_url},
+                status_code=status.HTTP_200_OK
+            )
+        finally:
+            # Ensure the temporary file is deleted from the server's disk
+            os.remove(pdf_path)
+    
+
+
+class GetStudentCampusReportExcelView(APIView):
+    permission_classes = [IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['full_name',"email","mobile","state","city"]
+    ordering_fields = ["id",'full_name',"email","mobile","state","city","created_at"]
+    def get(self, request):
+        datas = CampusStudent.objects.all().order_by('-id')
+
+        full_name = request.GET.get('full_name')
+        if full_name:
+            datas = datas.filter(full_name__icontains=full_name)
+
+        email = request.GET.get('email')
+        if email:
+            datas = datas.filter(email__icontains=email)
+
+
+        mobile = request.GET.get('mobile')
+        if mobile:
+            datas = datas.filter(mobile__icontains=mobile)
+
+
+        state = request.GET.get('state')
+        if state:
+            datas = datas.filter(state__icontains=state)
+
+        city = request.GET.get('city')
+        if city:
+            datas = datas.filter(city__icontains=city)
+
+            
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+
+        search_filter = filters.SearchFilter()
+        datas = search_filter.filter_queryset(request, datas, self)
+
+        ordering_filter = filters.OrderingFilter()
+        datas = ordering_filter.filter_queryset(request, datas, self)
+
+        serializers = ListCampusStudentSerializer(datas, many=True)
+
+        lis = []
+        
+        lis.append({
+                "name":"Student Campus Report",
+                "email":'',
+                "subject":'',
+                "Chapter":'',
+                "Topic":'',
+                "total_questions":'',
+                "institution_name":"",
+                "department":"",
+                "designation":"",
+                "teaching_experience":"",
+                "industrial_experience":"",
+                "highest_qualification":"",
+                "motivation":"",
+                "support_activities":"",
+                "student_reach":"",
+                "created_at":""
+            })
+
+       
+        lis.append({
+                "name":"",
+                "email":'',
+                "subject":'',
+                "Chapter":'',
+                "Topic":'',
+                "total_questions":'',
+                "institution_name":"",
+                "department":"",
+                "designation":"",
+                "teaching_experience":"",
+                "industrial_experience":"",
+                "highest_qualification":"",
+                "motivation":"",
+                "support_activities":"",
+                "student_reach":"",
+                "created_at":""
+            })
+        
+        lis.append({
+                "name":"Full Name",
+                "email":'Email',
+                "subject":'Phone Number',
+                "Chapter":'City',
+                "Topic":'State',
+                "total_questions":'Address',
+                "institution_name":"College Name",
+                "department":"Study Program",
+                "designation":"Study Program Other",
+                "teaching_experience":"Semester",
+                "industrial_experience":"Student Body Member",
+                "highest_qualification":"Campus Ambassador History",
+                "motivation":"Inspiration",
+                "support_activities":"Promotion Channels",
+                "student_reach":"Student Reach",
+                "created_at":"Created At"
+            })
+        
+        
+        for chapter_data in serializers.data:
+            lis.append({
+                "name":chapter_data['full_name'],
+                "email":chapter_data['email'],
+                "subject":chapter_data['mobile'],
+                "Chapter":chapter_data['city'],
+                "Topic":chapter_data['state'],
+                "total_questions":chapter_data['address'],
+                "institution_name":chapter_data['college_name'],
+                "department":chapter_data['program_of_study'],
+                "designation":chapter_data['program_other'],
+                "teaching_experience":chapter_data['semester'],
+                "industrial_experience":chapter_data['student_body_member'],
+                "highest_qualification":chapter_data['campus_ambassador_history'],
+                "motivation":chapter_data['inspiration'],
+                "support_activities":chapter_data['promotion_channels'],
+                "student_reach":chapter_data['student_reach'],
+                "created_at":chapter_data['created_at']
+            })
+
+
+        with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as temp_file:
+            pdf_path = temp_file.name
+            
+            # Create DataFrame and save to the temporary file
+            df = pd.DataFrame.from_dict(lis)
+            df.to_excel(pdf_path, header=False, index=False)
+        
+        # After the 'with' block, the file is closed but not deleted
+        try:
+            # GCS file naming logic
+            timestamp = datetime.now().strftime("%d_%m_%y_%H_%M")
+            report_name = "student_campus_report"
+            gcs_folder_name = "media/gcc_reports"
+            gcs_file_name = f"{gcs_folder_name}/{report_name}_{timestamp}.xlsx"
+
+            # Upload the temporary file to GCS
+            bucket = client.get_bucket(settings.GS_BUCKET_NAME)
+            blob = bucket.blob(gcs_file_name)
+            blob.upload_from_filename(pdf_path)
+
+            return success_response(
+                message="Success",
+                data={"report_url": blob.public_url},
+                status_code=status.HTTP_200_OK
+            )
+        finally:
+            # Ensure the temporary file is deleted
+            os.remove(pdf_path)
 
 
 

@@ -111,6 +111,8 @@ class ListPaymentExcelReportSerializer(serializers.ModelSerializer) :
 
 
 class ListCampusFacultySerializer(serializers.ModelSerializer) :
+    created_at = serializers.DateTimeField(read_only=True, format="%Y-%m-%d")
+
     class Meta:
         model = CampusFaculty
         fields = "__all__"
@@ -123,6 +125,7 @@ class ListCampusFacultyPDFSerializer(serializers.ModelSerializer):
 
 
 class ListCampusStudentSerializer(serializers.ModelSerializer) :
+    created_at = serializers.DateTimeField(read_only=True, format="%Y-%m-%d")
     class Meta:
         model = CampusStudent
         fields = "__all__"

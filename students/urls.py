@@ -10,6 +10,7 @@ urlpatterns = [
     path("query_page_list", StudentQuery_list.as_view()),
     path("studentdata_page_list", StudentData_list.as_view()),
     path("studentpayment_page_list", StudentPayment_list.as_view()),
+    path("studentefospayment_page_list", StudentEfosPayment_list.as_view()),
     path("studentcampus_page_list", CampusStudent_list.as_view()),
     path('get-student-campus-report-pdf/', GetStudentCampusReportPDFView.as_view(), name="get-student-campus-report-pdf"),
     path('get-student-campus-report-excel/', GetStudentCampusReportExcelView.as_view(), name="get-student-campus-report-excel"),

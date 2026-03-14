@@ -449,6 +449,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     student_experience = serializers.SerializerMethodField()
     exam_status = serializers.SerializerMethodField()
     created_at = serializers.DateTimeField(read_only=True, format="%Y-%m-%d %H:%M:%S")
+    application_id = serializers.SerializerMethodField("get_application_id")
 
     def get_student_experience(self, obj):
         answe = StudentExperience.objects.filter(student_profile_id =obj.id).order_by("id")
@@ -471,6 +472,12 @@ class StudentProfileSerializer(serializers.ModelSerializer):
                     status=True
         return status
     
+    def get_application_id(self, obj):
+        app_id = "--"
+        if obj.user:
+            app_id = obj.user.application_id
+        return app_id
+
     class Meta:
         model = StudentProfile
         fields = "__all__"

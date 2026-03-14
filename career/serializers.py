@@ -52,10 +52,22 @@ class CreateSupportFormSerializer(serializers.ModelSerializer):
         return super().create(validated_data)    
 
 
+from users.models import User
+from users.serializers import StudentProfileDetailSerializer
+
 class ListSupportFormSerializer(serializers.ModelSerializer):
+    user_detail = serializers.SerializerMethodField()
     class Meta:
         model = SupportForm
         fields = "__all__"
+
+    def get_user_detail(self, obj):
+        if obj.user:
+            user_obj = User.objects.filter(id=obj.user.id)
+            user_ser = StudentProfileDetailSerializer(user_obj, many=True).data
+        else:
+            user_ser = []
+        return user_ser
         
 
 

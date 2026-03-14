@@ -164,6 +164,64 @@ class DossierDataForm_List(APIView):
         return paginator.get_paginated_response(serializers.data)
     
 
+class DossierDataEfosForm_List(APIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = CustomPageNumberPagination
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['id',"full_name","email","phone","city","state"]
+    ordering_fields = ['id',"full_name","email","phone","city","state","created_at"]
+    def get(self, request):
+        datas = DossierData.objects.filter(source=SourceType.Efos).order_by('-id')
+
+        full_name = request.GET.get('full_name')
+        if full_name:
+            datas = datas.filter(full_name__icontains=full_name)
+
+        email = request.GET.get('email')
+        if email:
+            datas = datas.filter(email__icontains=email)
+
+
+        phone = request.GET.get('phone')
+        if phone:
+            datas = datas.filter(phone__icontains=phone)
+
+
+        state = request.GET.get('state')
+        if state:
+            datas = datas.filter(state__icontains=state)
+
+        city = request.GET.get('city')
+        if city:
+            datas = datas.filter(city__icontains=city)
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+
+        search_filter = filters.SearchFilter()
+        datas = search_filter.filter_queryset(request, datas, self)
+
+        ordering_filter = filters.OrderingFilter()
+        datas = ordering_filter.filter_queryset(request, datas, self)
+
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(datas, request, view=self)
+        serializers = ListDossierDataSerializer(page, many=True)
+        
+        return paginator.get_paginated_response(serializers.data)
+    
+
 class NewsletterSubscribers_List(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPageNumberPagination
@@ -232,8 +290,8 @@ class CreateSupportFormView(APIView):
             return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
 
 
-class SupportForm_list(APIView):
-    permission_classes = [IsAuthenticated]
+class SupportForm_page_list(APIView):
+    # permission_classes = [IsAuthenticated]
     pagination_class = CustomPageNumberPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['id']

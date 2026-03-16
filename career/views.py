@@ -22,6 +22,11 @@ from xhtml2pdf import pisa
 from io import BytesIO
 from django.template.loader import get_template
 
+from gcc_backend.utils import send_email_async
+import threading
+from django.conf import settings
+
+
 class CareerApplication_list(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPageNumberPagination
@@ -256,9 +261,7 @@ class NewsletterSubscribers_List(APIView):
         
         return paginator.get_paginated_response(serializers.data)
     
-from gcc_backend.utils import send_email_async
-import threading
-from django.conf import settings
+
 
 class CreateSupportFormView(APIView):
     permission_classes = [IsAuthenticated]
@@ -270,17 +273,18 @@ class CreateSupportFormView(APIView):
             message = obj.message
             email_from = settings.DEFAULT_FROM_EMAIL
             recipient_list = ['info@gccschool.com','support@gccschool.com']
-            html_message = ""
-            # html_message = loader.render_to_string(
-            #         'user_login_detail_email.html',
-            #         {
-            #             "name":"testing kwargs",
-            #             "desc":"testing descs"
-
-            #         }
-            #     )
-            # subject = obj.subject
-            # subject = obj.subject
+            # html_message = ""
+            html_message = loader.render_to_string(
+                    'feedback_mail.html',
+                    {
+                        "full_name":obj.user.first_name,
+                        "email":obj.user.email,
+                        "application_id":obj.user.application_id,
+                        "subject":obj.subject,
+                        "message":obj.message,
+                        "created_at":obj.created_at
+                    }
+                )
             threading.Thread(
                 target=send_email_async,
                 args=(subject, message, email_from, recipient_list, html_message)

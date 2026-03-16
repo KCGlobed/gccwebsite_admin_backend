@@ -60,33 +60,11 @@ from django.template import loader
 
 def send_email_async(subject, message, email_from, recipient_list, html_message):
     print("start calling")
-    # send_mail(
-    #     subject,
-    #     message,
-    #     email_from,
-    #     recipient_list,
-    #     html_message=html_message,
-    #     fail_silently=False
-    # )
     subject = subject
-
     message = message
     email_from = email_from
     recipient_list = recipient_list
-    html_message = ""
-    # html_message = loader.render_to_string(
-    #     'user_login_detail_email.html',
-    #     {
-    #         'name': user.first_name,
-    #         'candidate_id': generate_application_id,
-    #         'slot_booking': 'https://forms.gle/UQqKnCsmJzVLK6qU8',
-    #         'website_url': settings.WEBSITE_BASE_URL,
-    #         'login_url': settings.WEBSITE_BASE_URL+"/login",
-    #         "email": user.email,
-    #         "password": password,               
-
-    #     }
-    # )
+    html_message = html_message
 
     send_mail( subject, message, email_from, recipient_list,html_message=html_message )
 

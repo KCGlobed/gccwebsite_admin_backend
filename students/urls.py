@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import *
 from .views_reports import *
-
+from .views_admin import *
 
 
 
@@ -44,4 +44,8 @@ urlpatterns = [
 
     path('start_mock_test_status/', StudentMockTestStartStatusView.as_view(), name="start_mock_test_status"),
     path('complete_mock_test_status/', StudentMockTestCompleteStatusView.as_view(), name="complete_mock_test_status"),
+
+
+    path('update-student-verification-status/', CampusStudentVerifiedStatusView.as_view(), name="update-student-verification-status"),
+    path('update-student-mail-status/', CampusStudentAccountMailStatusView.as_view(), name="update-student-mail-status"),
 ]

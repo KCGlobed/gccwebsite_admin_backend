@@ -168,6 +168,9 @@ class CampusStudent(models.Model):
     #added
     student_body_description = models.TextField(blank=True, null=True)
     campus_ambassador_description = models.TextField(blank=True, null=True)
+    mail_status = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
+
 
 
     class Meta:

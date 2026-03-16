@@ -6,7 +6,8 @@ from career.serializers import ListDossierDataSerializer
 from django.utils import timezone
 import json
 from datetime import datetime, timedelta, date
-
+import requests
+from django.conf import settings
 
 
 class ListStudentQuerySerializer(serializers.ModelSerializer) :
@@ -528,3 +529,94 @@ class StudentMockTestStartStatusSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+
+
+
+class CampusStudentAccountEmailStatusSerializer(serializers.ModelSerializer):
+    status = serializers.BooleanField(required=True)
+
+    class Meta:
+        model = CampusStudent
+        fields = ["status"]
+
+    def update(self, instance, validated_data):
+
+        if validated_data.get("status") is not True:
+            raise serializers.ValidationError({
+                "status": 400,
+                "message": "Please Select Valid Status.",
+                "data": {}
+            })
+        if instance.is_verified is not True:
+            raise serializers.ValidationError({
+                "status": 400,
+                "message": "Account is not verified yet.",
+                "data": {}
+            })
+
+        url = settings.CSRF_TRUSTED_ORIGINS[0] + "/api/users/create_student/"
+
+        payload = {
+            "full_name": instance.full_name,
+            "email": instance.email,
+            "phone1": instance.mobile,
+            "city": instance.city,
+            "state": instance.state,
+            "country": "India"
+        }
+
+        try:
+            response = requests.post(url, json=payload, timeout=5)
+
+            data = response.json()
+
+            if response.status_code != 200:
+                raise serializers.ValidationError({
+                    "status": 400,
+                    "message": "Student creation API failed",
+                    "data": data
+                })
+
+            if data.get("non_field_errors"):
+                raise serializers.ValidationError({
+                    "status": 400,
+                    "message": data["non_field_errors"][0],
+                    "data": {}
+                })
+
+        except requests.exceptions.RequestException as e:
+            raise serializers.ValidationError({
+                "status": 500,
+                "message": f"External API Error: {str(e)}",
+                "data": {}
+            })
+        
+        instance.mail_status = True
+        instance.save()
+
+        return instance
+
+class CampusStudentVerifiedStatusSerializer(serializers.ModelSerializer):
+    status = serializers.BooleanField(required=True)
+
+    class Meta:
+        model = CampusStudent
+        fields = ["status"]
+
+    def update(self, instance, validated_data):
+        if validated_data.get("status") is not True:
+            raise serializers.ValidationError({
+                "status": 400,
+                "message": "Please Select Valid Status.",
+                "data": {}
+            })
+        instance.is_verified = True
+        instance.save()
+
+        return instance
+
+
+
+
+

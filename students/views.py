@@ -411,7 +411,16 @@ class CampusFaculty_list(APIView):
         if city:
             datas = datas.filter(city__icontains=city)
 
-            
+        
+        address = request.GET.get('address')
+        if address:
+            datas = datas.filter(address__icontains=address)
+
+        institution_name = request.GET.get('institution_name')
+        if institution_name:
+            datas = datas.filter(institution_name__icontains=institution_name)
+
+
         # Date range filter
         start_date = request.GET.get('start_date')
         end_date = request.GET.get('end_date')
@@ -469,7 +478,14 @@ class GetFacultyCampusReportPDFView(APIView):
         if city:
             datas = datas.filter(city__icontains=city)
 
-            
+        address = request.GET.get('address')
+        if address:
+            datas = datas.filter(address__icontains=address)
+
+        institution_name = request.GET.get('institution_name')
+        if institution_name:
+            datas = datas.filter(institution_name__icontains=institution_name)
+
         # Date range filter
         start_date = request.GET.get('start_date')
         end_date = request.GET.get('end_date')
@@ -564,7 +580,14 @@ class GetFacultyCampusReportExcelView(APIView):
         if city:
             datas = datas.filter(city__icontains=city)
 
-            
+        address = request.GET.get('address')
+        if address:
+            datas = datas.filter(address__icontains=address)
+
+        institution_name = request.GET.get('institution_name')
+        if institution_name:
+            datas = datas.filter(institution_name__icontains=institution_name)
+               
         # Date range filter
         start_date = request.GET.get('start_date')
         end_date = request.GET.get('end_date')
@@ -735,6 +758,14 @@ class CampusStudent_list(APIView):
         if city:
             datas = datas.filter(city__icontains=city)
 
+        address = request.GET.get('address')
+        if address:
+            datas = datas.filter(address__icontains=address)
+
+        college_name = request.GET.get('college_name')
+        if college_name:
+            datas = datas.filter(college_name__icontains=college_name)
+
         # Date range filter
         start_date = request.GET.get('start_date')
         end_date = request.GET.get('end_date')
@@ -792,7 +823,14 @@ class GetStudentCampusReportPDFView(APIView):
         if city:
             datas = datas.filter(city__icontains=city)
 
-            
+        address = request.GET.get('address')
+        if address:
+            datas = datas.filter(address__icontains=address)
+
+        college_name = request.GET.get('college_name')
+        if college_name:
+            datas = datas.filter(college_name__icontains=college_name)
+
         # Date range filter
         start_date = request.GET.get('start_date')
         end_date = request.GET.get('end_date')
@@ -887,7 +925,14 @@ class GetStudentCampusReportExcelView(APIView):
         if city:
             datas = datas.filter(city__icontains=city)
 
-            
+        address = request.GET.get('address')
+        if address:
+            datas = datas.filter(address__icontains=address)
+
+        college_name = request.GET.get('college_name')
+        if college_name:
+            datas = datas.filter(college_name__icontains=college_name)
+
         # Date range filter
         start_date = request.GET.get('start_date')
         end_date = request.GET.get('end_date')

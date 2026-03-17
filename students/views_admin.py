@@ -35,7 +35,7 @@ class CampusStudentVerifiedStatusView(APIView):
         if request.data.get("status") is None or request.data.get("id") is None:
             return error_response(message="failed", data = {"error":"Invalid request"}, status_code=status.HTTP_400_BAD_REQUEST)
         campus_std = CampusStudent.objects.filter(id=request.data.get("id")).first()
-        serializer = CampusStudentVerifiedStatusSerializer(campus_std, data = request.data, partial=True)
+        serializer = CampusStudentVerifiedStatusSerializer(campus_std, data = request.data)
         if serializer.is_valid(raise_exception = True):
             serializer.save()
             return success_response(message="User Verified Successfully", data={}, status_code=status.HTTP_200_OK)

@@ -170,6 +170,7 @@ class CampusStudent(models.Model):
     campus_ambassador_description = models.TextField(blank=True, null=True)
     mail_status = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
+    remarks = models.TextField(null=True, blank=True)
 
 
 

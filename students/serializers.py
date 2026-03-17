@@ -596,27 +596,36 @@ class CampusStudentAccountEmailStatusSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+    
+
+
 
 class CampusStudentVerifiedStatusSerializer(serializers.ModelSerializer):
     status = serializers.BooleanField(required=True)
+    remarks = serializers.CharField(required=True)
 
     class Meta:
         model = CampusStudent
-        fields = ["status"]
+        fields = ["status", "remarks"]
+
+    def validate_status(self, value):
+        if value is not True:
+            raise serializers.ValidationError("Please select a valid status.")
+        return value
+
+    def validate_remarks(self, value):
+        if not value or value.strip() == "":
+            raise serializers.ValidationError("Remarks cannot be empty.")
+
+        if len(value.strip()) < 10:
+            raise serializers.ValidationError("Remarks must be at least 5 characters long.")
+
+        return value.strip()
 
     def update(self, instance, validated_data):
-        if validated_data.get("status") is not True:
-            raise serializers.ValidationError({
-                "status": 400,
-                "message": "Please Select Valid Status.",
-                "data": {}
-            })
         instance.is_verified = True
+        instance.remarks = validated_data.get("remarks")
         instance.save()
-
         return instance
-
-
-
 
 

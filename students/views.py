@@ -112,7 +112,7 @@ class StudentPayment_list(APIView):
     ordering_fields = ['id',"created_at","dossier_form__full_name","dossier_form__email","dossier_form__phone","dossier_form__state","dossier_form__city","razorpay_order_id","razorpay_payment_id","amount"]
     def get(self, request):
 
-        datas = Payments.objects.all().order_by('-id')
+        datas = Payments.objects.filter(source=SourceType.Website).order_by('-id')
 
         full_name = request.GET.get('full_name')
         if full_name:
@@ -1485,7 +1485,71 @@ class GetStudentAdmitCardView(APIView):
         finally:
             os.remove(pdf_path)
 
-    
+
+
+class GetStudentAdmitCardAdminView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, id):
+        user_obj = User.objects.filter(id=id).first()
+        std_data = StudentProfile.objects.filter(user = user_obj).first()
+        static_selected_bucket = settings.GS_BUCKET_NAME
+        context = {
+            "username": user_obj.email,
+            "user_id": user_obj.id,
+            "application_id": user_obj.application_id,
+            "student_name": std_data.first_name+" "+std_data.last_name,
+            "slot_date": std_data.slot_date,
+            "slot_time": std_data.slot_time,
+            "photo": std_data.photo.url,
+            "signature": std_data.signature.url,
+            "barcode":"",
+            "report_date": datetime.now(),
+            "test_link":"https://cocubes.in/gccschool-nfet",
+            "bucket_static_logo":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/gcc-admit-card-logo.jpeg",
+            # "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/admit_card_signature.png"
+            "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/gcc_admit_card_sign.png"
+        }
+        # Render template
+        template = get_template("pdf/student_admit_card.html")
+        html = template.render(context)
+
+        # xhtml2pdf needs ISO-8859-1
+        html = html.encode("ISO-8859-1", "ignore").decode("ISO-8859-1")
+
+        # Create temp file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+            pdf_path = tmp.name
+            pisa_status = pisa.CreatePDF(BytesIO(html.encode("ISO-8859-1")), dest=tmp)
+
+        if pisa_status.err:
+            os.remove(pdf_path)
+            return Response({"error": "PDF generation failed"}, status=500)
+        try:
+            # Upload to GCS
+            username = re.sub(r"\s+", "_", user_obj.email)
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            gcs_file = f"media/admit_card/{username}_{user_obj.id}.pdf"
+
+            bucket = client.bucket(settings.GS_BUCKET_NAME_2)
+            blob = bucket.blob(gcs_file)
+            blob.upload_from_filename(pdf_path, content_type="application/pdf")
+            # ---------- Generate signed URL ----------
+            url = blob.generate_signed_url(
+                version="v4",
+                expiration=timedelta(minutes=settings.SIGNED_URL_EXPIRY),
+                method="GET"
+            )
+            return Response({
+                "message": "Success",
+                "data": {
+                    "report_url": url
+                }
+            })
+
+        finally:
+            os.remove(pdf_path)
+
+
 
 
 class GetStudentProfileView(APIView):

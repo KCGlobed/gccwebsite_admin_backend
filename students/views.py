@@ -136,6 +136,10 @@ class StudentPayment_list(APIView):
         if city:
             datas = datas.filter(dossier_form__city__icontains=city)
 
+        status = request.GET.get('status')
+        if status:
+            datas = datas.filter(status__icontains=status)
+
         
         # Date range filter
         start_date = request.GET.get('start_date')
@@ -195,7 +199,10 @@ class StudentEfosPayment_list(APIView):
         if city:
             datas = datas.filter(dossier_form__city__icontains=city)
 
-        
+        status = request.GET.get('status')
+        if status:
+            datas = datas.filter(status__icontains=status)
+            
         # Date range filter
         start_date = request.GET.get('start_date')
         end_date   = request.GET.get('end_date')

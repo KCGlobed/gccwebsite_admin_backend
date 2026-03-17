@@ -108,7 +108,7 @@ class StudentPayment_list(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPageNumberPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['id',"razorpay_order_id","razorpay_payment_id","amount","dossier_form__full_name","dossier_form__email","dossier_form__phone","dossier_form__state","dossier_form__city"]
+    search_fields = ['id',"razorpay_order_id","razorpay_payment_id","amount","dossier_form__full_name","dossier_form__email","dossier_form__phone","dossier_form__state","dossier_form__city","status"]
     ordering_fields = ['id',"created_at","dossier_form__full_name","dossier_form__email","dossier_form__phone","dossier_form__state","dossier_form__city","razorpay_order_id","razorpay_payment_id","amount"]
     def get(self, request):
 
@@ -171,7 +171,7 @@ class StudentEfosPayment_list(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPageNumberPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['id',"razorpay_order_id","razorpay_payment_id","amount","dossier_form__full_name","dossier_form__email","dossier_form__phone","dossier_form__state","dossier_form__city"]
+    search_fields = ['id',"razorpay_order_id","razorpay_payment_id","amount","dossier_form__full_name","dossier_form__email","dossier_form__phone","dossier_form__state","dossier_form__city","status"]
     ordering_fields = ['id',"created_at","dossier_form__full_name","dossier_form__email","dossier_form__phone","dossier_form__state","dossier_form__city","razorpay_order_id","razorpay_payment_id","amount"]
     def get(self, request):
 
@@ -202,7 +202,7 @@ class StudentEfosPayment_list(APIView):
         status = request.GET.get('status')
         if status:
             datas = datas.filter(status__icontains=status)
-            
+
         # Date range filter
         start_date = request.GET.get('start_date')
         end_date   = request.GET.get('end_date')

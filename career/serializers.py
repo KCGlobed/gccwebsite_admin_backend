@@ -1,8 +1,9 @@
 from rest_framework import serializers
 from .models import *
 from django.conf import settings
-
-
+from users.models import User
+from users.serializers import StudentProfileDetailSerializer
+import requests
 
 class ListCareerApplicationSerializer(serializers.ModelSerializer):
     resume_path = serializers.SerializerMethodField('get_resume_path')
@@ -26,6 +27,37 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
         model = DossierData
         fields = ["full_name","email","phone","city","state","source","source_form"]
         
+    def create(self, validated_data):
+        instance = super().create(validated_data)
+
+        # API URL
+        url = settings.MERITO_BASE_URL+"/lead/v1/createOrUpdate"
+
+        headers = {
+            "Content-Type": "application/json",
+            "secret-key": settings.MERITO_SECRETE_KEY,
+            "access-key": settings.MERITO_ACCESS_KEY
+        }
+
+        payload = {
+            "name": instance.full_name,
+            "email": instance.email,
+            "lead_stage": "hot",
+            "search_criteria": "email"
+            # "city": instance.city,
+            # "state": instance.state
+        }
+
+        try:
+            response = requests.post(url, headers=headers, json=payload)
+            print(response.status_code)
+            print(response.text)
+        except Exception as e:
+            print("API Error:", str(e))
+        
+        return instance
+
+
 
 class ListDossierDataSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(read_only=True, format="%Y-%m-%d %H:%M:%S")
@@ -52,8 +84,6 @@ class CreateSupportFormSerializer(serializers.ModelSerializer):
         return super().create(validated_data)    
 
 
-from users.models import User
-from users.serializers import StudentProfileDetailSerializer
 
 class ListSupportFormSerializer(serializers.ModelSerializer):
     user_detail = serializers.SerializerMethodField()

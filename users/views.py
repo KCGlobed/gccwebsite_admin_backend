@@ -8,6 +8,17 @@ from gcc_backend.utils import *
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated
 
+from django.core.mail import send_mail
+from django.conf import settings
+import threading
+
+from google.cloud import storage
+from datetime import timedelta
+client = storage.Client(project=settings.GS_PROJECT_ID)
+
+
+
+
 def welcome(request):
     return HttpResponse("""
     <!DOCTYPE html>
@@ -225,10 +236,6 @@ class CheckEmail(APIView):
         )
 
 
-from google.cloud import storage
-from datetime import timedelta
-client = storage.Client(project=settings.GS_PROJECT_ID)
-
 class MediaAccessUrlView(APIView):
     def post(self, request, format=None):
         gcs_file = request.data.get("url")
@@ -242,11 +249,6 @@ class MediaAccessUrlView(APIView):
             method="GET"
         )
         return success_response(message="Success", data=[{"url":url}], status_code=status.HTTP_200_OK)
-
-
-from django.core.mail import send_mail
-from django.conf import settings
-import threading
 
 
 def send_email_async(subject, message, email_from, recipient_list, html_message):

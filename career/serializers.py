@@ -29,7 +29,13 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
         
     def create(self, validated_data):
         instance = super().create(validated_data)
-
+        src_type = instance.source
+        if src_type == 1:
+            m_source = "gccwebsite"
+        elif src_type == 2:
+            m_source = "gccefos"
+        else:
+            m_source = "gcc"
         # API URL
         url = settings.MERITO_BASE_URL+"/lead/v1/createOrUpdate"
 
@@ -47,7 +53,8 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
             "search_criteria": "email",
             "city": instance.city,
             "state": instance.state,
-            "country": "India"
+            "country": "India",
+            "cf_source":m_source
         }
 
         try:

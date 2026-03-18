@@ -42,10 +42,12 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
         payload = {
             "name": instance.full_name,
             "email": instance.email,
+            "mobile": instance.phone,
             "lead_stage": "hot",
-            "search_criteria": "email"
-            # "city": instance.city,
-            # "state": instance.state
+            "search_criteria": "email",
+            "city": instance.city,
+            "state": instance.state,
+            "country": "India"
         }
 
         try:

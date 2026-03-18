@@ -618,7 +618,7 @@ class CampusStudentVerifiedStatusSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Remarks cannot be empty.")
 
         if len(value.strip()) < 10:
-            raise serializers.ValidationError("Remarks must be at least 5 characters long.")
+            raise serializers.ValidationError("Remarks must be at least 10 characters long.")
 
         return value.strip()
 

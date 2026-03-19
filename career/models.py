@@ -64,6 +64,11 @@ class NewsletterSubscribers(models.Model):
 class SourceType(models.IntegerChoices):
     Website = 1, 'Website'
     Efos = 2, 'Efos'
+    Affiliate1 = 3, 'Affiliate1'
+    Affiliate2 = 4, 'Affiliate2'
+    Affiliate3 = 5, 'Affiliate3'
+    Affiliate4 = 6, 'Affiliate4'
+    Affiliate5 = 7, 'Affiliate5'
 
 class SourceFormType(models.IntegerChoices):
     ApplyNow = 1, 'ApplyNow'

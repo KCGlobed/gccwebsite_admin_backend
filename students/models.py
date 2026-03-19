@@ -94,6 +94,11 @@ class FormType(models.IntegerChoices):
 class SourceType(models.IntegerChoices):
     Website = 1, 'Website'
     Efos = 2, 'Efos'
+    Affiliate1 = 3, 'Affiliate1'
+    Affiliate2 = 4, 'Affiliate2'
+    Affiliate3 = 5, 'Affiliate3'
+    Affiliate4 = 6, 'Affiliate4'
+    Affiliate5 = 7, 'Affiliate5'
 
 class Payments(models.Model):
     razorpay_order_id = models.CharField(max_length=255, blank=True, null=True)

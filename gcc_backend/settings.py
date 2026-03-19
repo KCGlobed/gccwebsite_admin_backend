@@ -88,15 +88,6 @@ TEMPLATES = [
 ]
 
 
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.hostinger.com'
-# EMAIL_HOST_USER = 'kamalchhabra@kcglobed.com'
-# EMAIL_HOST_PASSWORD = '@Dud40354'
-# EMAIL_PORT = 465
-# EMAIL_USE_SSL = True
-
-
-
 WSGI_APPLICATION = 'gcc_backend.wsgi.application'
 
 # Database

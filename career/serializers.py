@@ -29,40 +29,51 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
         
     def create(self, validated_data):
         instance = super().create(validated_data)
-        src_type = instance.source
-        if src_type == 1:
-            m_source = "gccwebsite"
-        elif src_type == 2:
-            m_source = "gccefos"
-        else:
-            m_source = "gcc"
-        # API URL
-        url = settings.MERITO_BASE_URL+"/lead/v1/createOrUpdate"
+        if settings.MERITO_STATUS == "True":
+            src_type = instance.source
+            if src_type == 1:
+                m_source = "gccwebsite"
+            elif src_type == 2:
+                m_source = "gccefos"
+            elif src_type == 3:
+                m_source = "gccaffiliate1"
+            elif src_type == 4:
+                m_source = "gccaffiliate2"
+            elif src_type == 5:
+                m_source = "gccaffiliate3"
+            elif src_type == 6:
+                m_source = "gccaffiliate4"
+            elif src_type == 7:
+                m_source = "gccaffiliate5"
+            else:
+                m_source = "gcc"
+            # API URL
+            url = settings.MERITO_BASE_URL+"/lead/v1/createOrUpdate"
 
-        headers = {
-            "Content-Type": "application/json",
-            "secret-key": settings.MERITO_SECRETE_KEY,
-            "access-key": settings.MERITO_ACCESS_KEY
-        }
+            headers = {
+                "Content-Type": "application/json",
+                "secret-key": settings.MERITO_SECRETE_KEY,
+                "access-key": settings.MERITO_ACCESS_KEY
+            }
 
-        payload = {
-            "name": instance.full_name,
-            "email": instance.email,
-            "mobile": instance.phone,
-            "lead_stage": "hot",
-            "search_criteria": "email",
-            "city": instance.city,
-            "state": instance.state,
-            "country": "India",
-            "cf_source":m_source
-        }
+            payload = {
+                "name": instance.full_name,
+                "email": instance.email,
+                "mobile": instance.phone,
+                "lead_stage": "hot",
+                "search_criteria": "email",
+                "city": instance.city,
+                "state": instance.state,
+                "country": "India",
+                "cf_source":m_source
+            }
 
-        try:
-            response = requests.post(url, headers=headers, json=payload)
-            print(response.status_code)
-            print(response.text)
-        except Exception as e:
-            print("API Error:", str(e))
+            try:
+                response = requests.post(url, headers=headers, json=payload)
+                print(response.status_code)
+                print(response.text)
+            except Exception as e:
+                print("API Error:", str(e))
         
         return instance
 

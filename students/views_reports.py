@@ -147,11 +147,15 @@ class GetPaymentReportPDFView(APIView):
 
 
 
-class GetEfosPaymentReportPDFView(APIView): 
+class GetSourcePaymentReportPDFView(APIView): 
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        data_objs = Payments.objects.filter(source=SourceType.Efos).order_by("-id")
-
+        
+        source_type = request.GET.get("source")
+        if source_type:
+            data_objs = Payments.objects.filter(source=source_type).order_by('-id')
+        else:
+            data_objs = Payments.objects.filter(source=SourceType.Website).order_by('-id')
         # Date range filter
         start_date = request.GET.get('start_date')
         end_date = request.GET.get('end_date')
@@ -433,10 +437,14 @@ class GetPaymentReportExcelView(APIView):
 
 
 
-class GetEfosPaymentReportExcelView(APIView):
+class GetSourcePaymentReportExcelView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        data_objs = Payments.objects.filter(source=SourceType.Efos).order_by("-id")
+        source_type = request.GET.get("source")
+        if source_type:
+            data_objs = Payments.objects.filter(source=source_type).order_by('-id')
+        else:
+            data_objs = Payments.objects.filter(source=SourceType.Website).order_by('-id')
 
         # Date range filter
         start_date = request.GET.get('start_date')

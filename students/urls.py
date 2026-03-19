@@ -10,7 +10,7 @@ urlpatterns = [
     path("query_page_list", StudentQuery_list.as_view()),
     path("studentdata_page_list", StudentData_list.as_view()),
     path("studentpayment_page_list", StudentPayment_list.as_view()),
-    path("studentefospayment_page_list", StudentEfosPayment_list.as_view()),
+    path("studentsourcepayment_page_list", StudentSourcePayment_list.as_view()),
     path("studentcampus_page_list", CampusStudent_list.as_view()),
     path('get-student-campus-report-pdf/', GetStudentCampusReportPDFView.as_view(), name="get-student-campus-report-pdf"),
     path('get-student-campus-report-excel/', GetStudentCampusReportExcelView.as_view(), name="get-student-campus-report-excel"),
@@ -28,8 +28,8 @@ urlpatterns = [
     path("payment_reports_pdf", GetPaymentReportPDFView.as_view()),
     path("payment_report_excel", GetPaymentReportExcelView.as_view()),
 
-    path("efos_payment_reports_pdf", GetEfosPaymentReportPDFView.as_view()),
-    path("efos_payment_report_excel", GetEfosPaymentReportExcelView.as_view()),
+    path("source_payment_reports_pdf", GetSourcePaymentReportPDFView.as_view()),
+    path("source_payment_report_excel", GetSourcePaymentReportExcelView.as_view()),
 
     path("campusfaculty_reports_pdf", GetCampusFacultyReportPDFView.as_view()),
     # path("payment_report_excel", GetPaymentReportExcelView.as_view()),

@@ -118,7 +118,7 @@ class DossierDataForm_List(APIView):
     search_fields = ['id',"full_name","email","phone","city","state"]
     ordering_fields = ['id',"full_name","email","phone","city","state","created_at"]
     def get(self, request):
-        datas = DossierData.objects.all().order_by('-id')
+        datas = DossierData.objects.filter(source=SourceType.Website).order_by('-id')
 
         full_name = request.GET.get('full_name')
         if full_name:
@@ -338,7 +338,7 @@ class GetDossierReportPDFView(APIView):
     ordering_fields = ['id',"full_name","email","phone","city","state","created_at"]
     def get(self, request, sid=None):
         
-        datas = DossierData.objects.all().order_by('-id')
+        datas = DossierData.objects.filter(source=SourceType.Website).order_by('-id')
 
         full_name = request.GET.get('full_name')
         if full_name:
@@ -435,7 +435,7 @@ class GetDossierReportExcelView(APIView):
 
     def get(self, request, sid=None):
         
-        datas = DossierData.objects.all().order_by('-id')
+        datas = DossierData.objects.filter(source=SourceType.Website).order_by('-id')
 
         full_name = request.GET.get('full_name')
         if full_name:

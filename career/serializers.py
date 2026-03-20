@@ -36,15 +36,15 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
             elif src_type == 2:
                 m_source = "gccefos"
             elif src_type == 3:
-                m_source = "gccaffiliate1"
+                m_source = "gccaffiliateOne"
             elif src_type == 4:
-                m_source = "gccaffiliate2"
+                m_source = "gccaffiliateTwo"
             elif src_type == 5:
-                m_source = "gccaffiliate3"
+                m_source = "gccaffiliateThree"
             elif src_type == 6:
-                m_source = "gccaffiliate4"
+                m_source = "gccaffiliateFour"
             elif src_type == 7:
-                m_source = "gccaffiliate5"
+                m_source = "gccaffiliateFive"
             else:
                 m_source = "gcc"
             # API URL

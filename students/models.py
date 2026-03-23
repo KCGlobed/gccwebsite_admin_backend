@@ -307,3 +307,20 @@ class StudentExperience(models.Model):
 
     def __str__(self):
         return '%s' % self.id
+
+
+
+class StudentSlotBooking(models.Model):
+    student_profile = models.ForeignKey('StudentProfile', null=True, blank=True, on_delete=models.CASCADE)
+    slot_date = models.DateField(null=True, blank=True)
+    slot_time = models.CharField(max_length=200, blank=True, null=True)
+    slot_count = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
+
+    class Meta:
+        verbose_name = 'User Slot Booking'
+        verbose_name_plural = 'User Slot Booking'
+
+    def __str__(self):
+        return '%s' % self.id

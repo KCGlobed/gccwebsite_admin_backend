@@ -436,6 +436,10 @@ class StudentSlotBookSerializer(serializers.ModelSerializer):
         instance.slot_update_count += 1
         instance.save()
 
+        slot_count = StudentSlotBooking.objects.filter(student_profile=instance).count()
+        std_booking = StudentSlotBooking(student_profile=instance, slot_date=validated_data.get("slot_date", instance.slot_date), slot_time=validated_data.get("slot_time", instance.slot_time), slot_count=slot_count)
+        std_booking.save()
+
         return instance
 
 
@@ -469,6 +473,9 @@ class StudentReAttemptSerializer(serializers.ModelSerializer):
                 }
             )
         instance.re_attempt_btn = 2 if validated_data.get("status") == True else 1
+        instance.slot_date = None
+        instance.slot_time = ""
+        instance.slot_update_count = 0
         instance.save()
 
         return instance

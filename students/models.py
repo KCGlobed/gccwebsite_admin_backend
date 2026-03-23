@@ -275,6 +275,7 @@ class StudentProfile(models.Model):
     twelveth_medium = models.IntegerField(choices=Medium.choices,default=Medium.ENGLISH)
     ug_score_type = models.CharField(max_length=20, blank=True, null=True)
     mock_test_status = models.IntegerField(default=0, null=True)
+    re_attempt = models.IntegerField(default=0, null=True)
 
     
     

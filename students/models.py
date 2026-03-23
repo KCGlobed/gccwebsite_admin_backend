@@ -115,6 +115,7 @@ class Payments(models.Model):
     form_id   = models.CharField(max_length=50, blank=True, null=True)
     dossier_form = models.ForeignKey('career.DossierData', null=True, blank=True, on_delete=models.CASCADE)
     source = models.IntegerField(choices=SourceType.choices,default=SourceType.Website, null=True)
+    re_attempt_status = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'payments'
@@ -276,6 +277,7 @@ class StudentProfile(models.Model):
     ug_score_type = models.CharField(max_length=20, blank=True, null=True)
     mock_test_status = models.IntegerField(default=0, null=True)
     re_attempt = models.IntegerField(default=0, null=True)
+    re_attempt_btn = models.IntegerField(default=0, null=True)
 
     
     

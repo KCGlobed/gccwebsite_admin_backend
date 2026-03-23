@@ -1573,6 +1573,28 @@ class GetStudentProfileView(APIView):
         return Response({'message':'failed',"status":400,'data':[]})
     
 
+class GetStudentReAttemptView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        st = request.data.get("status")
+
+        if not st:
+            return Response({
+                "message":"Status is required",
+                "status":status.HTTP_400_BAD_REQUEST,
+                "data":{}
+            })
+        datas = StudentProfile.objects.filter(user = request.user).first()
+        if datas is not None:
+            serializers = StudentReAttemptSerializer(datas, data=request.data, partial=True)
+            if serializers.is_valid():
+                serializers.save()
+                return Response({'message':'success',"status":200,'data':[]})
+            else:
+                return Response({'message':'success',"status":400,'data':serializers.errors})
+        return Response({'message':'failed',"status":400,'data':[]})
+    
+
 
 class GetStudentProfileListingView(APIView):
     permission_classes = [IsAuthenticated]

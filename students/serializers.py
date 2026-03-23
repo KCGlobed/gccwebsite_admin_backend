@@ -445,6 +445,38 @@ class StudentExperienceRelationSerializer(serializers.ModelSerializer):
         model = StudentExperience
         fields = "__all__"
 
+class StudentReAttemptSerializer(serializers.ModelSerializer):
+    status = serializers.BooleanField(required=True)
+    class Meta:
+        model = StudentProfile
+        fields = ["status"]
+    
+    def update(self, instance, validated_data):
+        if validated_data.get("status") != True:
+            raise serializers.ValidationError(
+                {
+                    "status": 400,
+                    "message": "Please Select Valid Status.",
+                    "data":{}
+                }
+            )
+        elif instance.re_attempt != 1 or instance.re_attempt_btn != 1 :
+            raise serializers.ValidationError(
+                {
+                    "status": 400,
+                    "message": "Invalid Request.",
+                    "data":{}
+                }
+            )
+        instance.re_attempt_btn = 2 if validated_data.get("status") == True else 1
+        instance.save()
+
+        return instance
+    
+    class Meta:
+        model = StudentProfile
+        fields = ["status"]
+
 
 class StudentProfileSerializer(serializers.ModelSerializer):
     student_experience = serializers.SerializerMethodField()
@@ -471,6 +503,11 @@ class StudentProfileSerializer(serializers.ModelSerializer):
                 print(diff)
                 if diff <= 3600:   # 3600 seconds = 1 hour
                     status=True
+                elif dt1>dt2:
+                    if diff >=5400:
+                        obj.re_attempt = 1
+                        obj.re_attempt_btn = 1
+                        obj.save()
         return status
     
     def get_application_id(self, obj):
@@ -478,7 +515,8 @@ class StudentProfileSerializer(serializers.ModelSerializer):
         if obj.user:
             app_id = obj.user.application_id
         return app_id
-
+    
+    
     class Meta:
         model = StudentProfile
         fields = "__all__"

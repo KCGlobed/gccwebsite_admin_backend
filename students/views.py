@@ -1589,10 +1589,10 @@ class GetStudentReAttemptView(APIView):
             serializers = StudentReAttemptSerializer(datas, data=request.data, partial=True)
             if serializers.is_valid():
                 serializers.save()
-                return Response({'message':'success',"status":200,'data':[]})
+                return Response({'message':'success',"status":200,'data':{}})
             else:
                 return Response({'message':'success',"status":400,'data':serializers.errors})
-        return Response({'message':'failed',"status":400,'data':[]})
+        return Response({'message':'failed',"status":400,'data':{}})
     
 
 

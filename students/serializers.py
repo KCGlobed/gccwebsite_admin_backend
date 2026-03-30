@@ -575,7 +575,22 @@ class StudentSlotBookSerializer(serializers.ModelSerializer):
                     "data":[]
                 }
             )
-        
+        elif instance.slot_date and instance.slot_date <= datetime.now().date():
+                start_str, end_str = instance.slot_time.split(" - ")
+                current_time = datetime.now().time().replace(microsecond=0)
+                target_time = datetime.strptime(start_str, "%I:%M %p").time()
+                dt1 = datetime.combine(date.today(), current_time)
+                dt2 = datetime.combine(date.today(), target_time)
+                diff = abs((dt1 - dt2).total_seconds())
+                if dt1>dt2:
+                    raise serializers.ValidationError(
+                        {
+                            "status": 400,
+                            "message": "No longer to change the slot.",
+                            "data":[]
+                        }
+                    )
+
         instance.slot_date = validated_data.get("slot_date", instance.slot_date)
         instance.slot_time = validated_data.get("slot_time", instance.slot_time)
 
@@ -688,6 +703,18 @@ class StudentProfileSerializer(serializers.ModelSerializer):
                 if diff <= 3600:   # 3600 seconds = 1 hour
                     status=True
                 elif dt1>dt2:
+                    if diff >=5400:
+                        obj.re_attempt = 1
+                        obj.re_attempt_btn = 1
+                        obj.save()
+            elif obj.slot_date <= datetime.now().date():
+                start_str, end_str = obj.slot_time.split(" - ")
+                current_time = datetime.now().time().replace(microsecond=0)
+                target_time = datetime.strptime(start_str, "%I:%M %p").time()
+                dt1 = datetime.combine(date.today(), current_time)
+                dt2 = datetime.combine(date.today(), target_time)
+                diff = abs((dt1 - dt2).total_seconds())
+                if dt1>dt2:
                     if diff >=5400:
                         obj.re_attempt = 1
                         obj.re_attempt_btn = 1

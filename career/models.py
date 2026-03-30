@@ -69,6 +69,11 @@ class SourceType(models.IntegerChoices):
     Affiliate3 = 5, 'Affiliate3'
     Affiliate4 = 6, 'Affiliate4'
     Affiliate5 = 7, 'Affiliate5'
+    IPUniversity = 8, 'IPUniversity'
+    DelhiUniversity = 9, 'DelhiUniversity'
+    CCS = 10, 'CCS'
+    Kuk = 11, 'Kuk'
+    Vsl = 12, 'Vsl'
 
 class SourceFormType(models.IntegerChoices):
     ApplyNow = 1, 'ApplyNow'

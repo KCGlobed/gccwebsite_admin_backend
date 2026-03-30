@@ -300,7 +300,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
 
 
     def create(self , validate_data):
-        
+        print(validate_data)
         datas = StudentProfile.objects.filter(user_id = validate_data.get('user')).first()
         exp_payload = {"have_work_ex":"Fresher (Currently Studying or Recently Graduated)"}
         print(validate_data.get('user_experience'))
@@ -488,6 +488,9 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
             else:
                 mthmedium = "Other"
 
+            tenth_score_type = query.tenth_score_type if query.tenth_score_type == "Percentage" else "CGPA out of 10"
+            twelveth_score_type = query.twelveth_score_type if query.twelveth_score_type == "Percentage" else "CGPA out of 10"
+
             meritto_payload = {
                 "form_id": 22144,
                 "email": query.email,
@@ -509,12 +512,12 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                         "field_340065":query.contact_name,
                         "field_340066":f"+91-{query.contact_phone}",
                         "field_333993_1_1":query.tenth_passing_year,
-                        "field_333993_1_2":query.tenth_passing_percentage,
-                        "field_333993_1_3":f"10th {query.tenth_score_type}",
+                        "field_333993_1_2":tenth_score_type,
+                        "field_333993_1_3":query.tenth_passing_percentage,
                         "field_333993_1_4":mtmedium,
                         "field_333994_1_1":query.twelveth_passing_year,
-                        "field_333994_1_2":query.twelveth_passing_percentage,
-                        "field_333994_1_3":f"12th {query.twelveth_score_type}",
+                        "field_333994_1_2":twelveth_score_type,
+                        "field_333994_1_3":query.twelveth_passing_percentage,
                         "field_333994_1_4":mthmedium,
                         "field_340097_1_1":query.institution,
                         "field_342113":query.user.application_id

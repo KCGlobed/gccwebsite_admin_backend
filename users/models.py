@@ -62,14 +62,16 @@ class User(AbstractBaseUser, PermissionsMixin):
     Student = 4
     Other = 5
     Efos = 6
-
+    Vsl = 7
+    
     ROLE_CHOICES = (
         (SuperAdmin, 'SuperAdmin'),
         (SubAdmin, 'SubAdmin'),
         (Manager, 'Manager'),
         (Student, 'Student'),
         (Other,'Other'),
-        (Efos,'Efos')
+        (Efos,'Efos'),
+        (Vsl,'Vsl')
     )
 
     SOCIAL_LOGIN_CHOICES = (

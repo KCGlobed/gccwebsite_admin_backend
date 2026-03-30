@@ -368,16 +368,18 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                     key4 = f"field_334047_{num}_4"
                     value4 = exp.get('start_date').strftime("%d/%m/%Y")
                     key5 = f"field_334047_{num}_5"
-                    value5 = exp.get('end_date').strftime("%d/%m/%Y")
+                    print("experience.end_date....",experience.end_date)
+                    value5 = exp.get('end_date').strftime("%d/%m/%Y") if experience.end_date else exp.get('start_date').strftime("%d/%m/%Y")
                     key6 = f"field_334047_{num}_6"
                     value6 = ""
-
+                    print("values5...",value5)
                     exp_payload[key1] = value1
                     exp_payload[key2] = value2
                     exp_payload[key3] = value3
                     exp_payload[key4] = value4
                     exp_payload[key5] = value5
                     exp_payload[key6] = value6
+                    print(exp_payload)
                     num+=1
 
         else:
@@ -421,7 +423,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
 
             )
             query.save()
-            
+            print(validate_data)
             if len(validate_data.get('user_experience')) > 0:
                 num = 1
                 exp_payload["have_work_ex"] = "Experienced (Currently Working or Have Past Experience)"
@@ -446,9 +448,12 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                     key4 = f"field_334047_{num}_4"
                     value4 = exp.get('start_date').strftime("%d/%m/%Y")
                     key5 = f"field_334047_{num}_5"
-                    value5 = exp.get('end_date').strftime("%d/%m/%Y")
+                    print("experience.end_date....",experience.end_date)
+                    value5 = exp.get('end_date').strftime("%d/%m/%Y") if experience.end_date else exp.get('start_date').strftime("%d/%m/%Y")
                     key6 = f"field_334047_{num}_6"
                     value6 = ""
+
+                    print("values5...",value5)
 
                     exp_payload[key1] = value1
                     exp_payload[key2] = value2
@@ -456,6 +461,9 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                     exp_payload[key4] = value4
                     exp_payload[key5] = value5
                     exp_payload[key6] = value6
+
+                    print(exp_payload)
+                    
                     num+=1
 
         if settings.MERITO_STATUS == "True":
@@ -502,11 +510,11 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                         "field_340066":f"+91-{query.contact_phone}",
                         "field_333993_1_1":query.tenth_passing_year,
                         "field_333993_1_2":query.tenth_passing_percentage,
-                        "field_333993_1_3":query.tenth_score_type,
+                        "field_333993_1_3":f"10th {query.tenth_score_type}",
                         "field_333993_1_4":mtmedium,
                         "field_333994_1_1":query.twelveth_passing_year,
                         "field_333994_1_2":query.twelveth_passing_percentage,
-                        "field_333994_1_3":query.twelveth_score_type,
+                        "field_333994_1_3":f"12th {query.twelveth_score_type}",
                         "field_333994_1_4":mthmedium,
                         "field_340097_1_1":query.institution,
                         "field_342113":query.user.application_id
@@ -522,7 +530,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                     "field_342107":pay.razorpay_signature,
                     "field_342105":pay.razorpay_order_id,
                     "field_342106":pay.razorpay_payment_id,
-                    "field_342108":pay.amount,
+                    "field_342108":int(pay.amount),
                     "field_342111":"INR",
                     "field_342110":pay.created_at.strftime("%d/%m/%Y %I:%M:%S %p"),
                     "field_342109":"success"

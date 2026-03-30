@@ -302,6 +302,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
     def create(self , validate_data):
         
         datas = StudentProfile.objects.filter(user_id = validate_data.get('user')).first()
+        exp_payload = {"have_work_ex":"Fresher (Currently Studying or Recently Graduated)"}
         print(validate_data.get('user_experience'))
         print(type(validate_data.get('user_experience')))
         if datas is not None:
@@ -343,6 +344,8 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
             datas.save()
             query = datas
             if len(validate_data.get('user_experience')) > 0:
+                num = 1
+                exp_payload["have_work_ex"] = "Experienced (Currently Working or Have Past Experience)"
                 StudentExperience.objects.filter(student_profile = query).delete()
                 for exp in validate_data.get('user_experience'):
                     experience = StudentExperience(
@@ -355,6 +358,27 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
 
                     )
                     experience.save()
+
+                    key1 = f"field_334047_{num}_1"
+                    value1 = exp.get('company_name')
+                    key2 = f"field_334047_{num}_2"
+                    value2 = exp.get('position')
+                    key3 = f"field_334047_{num}_3"
+                    value3 = exp.get('area')
+                    key4 = f"field_334047_{num}_4"
+                    value4 = exp.get('start_date').strftime("%d/%m/%Y")
+                    key5 = f"field_334047_{num}_5"
+                    value5 = exp.get('end_date').strftime("%d/%m/%Y")
+                    key6 = f"field_334047_{num}_6"
+                    value6 = ""
+
+                    exp_payload[key1] = value1
+                    exp_payload[key2] = value2
+                    exp_payload[key3] = value3
+                    exp_payload[key4] = value4
+                    exp_payload[key5] = value5
+                    exp_payload[key6] = value6
+                    num+=1
 
         else:
             query = StudentProfile(
@@ -397,8 +421,10 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
 
             )
             query.save()
-
+            
             if len(validate_data.get('user_experience')) > 0:
+                num = 1
+                exp_payload["have_work_ex"] = "Experienced (Currently Working or Have Past Experience)"
                 for exp in validate_data.get('user_experience'):
                     experience = StudentExperience(
                         student_profile = query,
@@ -410,14 +436,123 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
 
                     )
                     experience.save()
+
+                    key1 = f"field_334047_{num}_1"
+                    value1 = exp.get('company_name')
+                    key2 = f"field_334047_{num}_2"
+                    value2 = exp.get('position')
+                    key3 = f"field_334047_{num}_3"
+                    value3 = exp.get('area')
+                    key4 = f"field_334047_{num}_4"
+                    value4 = exp.get('start_date').strftime("%d/%m/%Y")
+                    key5 = f"field_334047_{num}_5"
+                    value5 = exp.get('end_date').strftime("%d/%m/%Y")
+                    key6 = f"field_334047_{num}_6"
+                    value6 = ""
+
+                    exp_payload[key1] = value1
+                    exp_payload[key2] = value2
+                    exp_payload[key3] = value3
+                    exp_payload[key4] = value4
+                    exp_payload[key5] = value5
+                    exp_payload[key6] = value6
+                    num+=1
+
+        if settings.MERITO_STATUS == "True":
+            if int(query.gender) == 1:
+                mgender = "Male"
+            elif int(query.gender) == 2:
+                mgender = "Female"
+            else:
+                mgender = "Other"
+
+            if int(query.tenth_medium) == 1:
+                mtmedium = "English"
+            elif int(query.tenth_medium) == 2:
+                mtmedium = "Hindi"
+            else:
+                mtmedium = "Other"
+
+            if int(query.twelveth_medium) == 1:
+                mthmedium = "English"
+            elif int(query.twelveth_medium) == 2:
+                mthmedium = "Hindi"
+            else:
+                mthmedium = "Other"
+
+            meritto_payload = {
+                "form_id": 22144,
+                "email": query.email,
+                "search_criteria":"email",
+                "data": {
+                        "first_name":query.first_name,
+                        "last_name":query.last_name,
+                        "email":query.email,
+                        "mobile_no":f"+91-{query.phone}",
+                        "father_first_name":"",
+                        "father_mobile_no":"",
+                        "date_of_birth":query.date_of_birth.strftime("%d/%m/%Y"),
+                        "gender":mgender,
+                        "nationality":"Indian",
+                        "field_339552":query.state,
+                        "field_339553":query.city,
+                        "field_337926":query.pincode,
+                        "field_340085":query.address,
+                        "field_340065":query.contact_name,
+                        "field_340066":f"+91-{query.contact_phone}",
+                        "field_333993_1_1":query.tenth_passing_year,
+                        "field_333993_1_2":query.tenth_passing_percentage,
+                        "field_333993_1_3":query.tenth_score_type,
+                        "field_333993_1_4":mtmedium,
+                        "field_333994_1_1":query.twelveth_passing_year,
+                        "field_333994_1_2":query.twelveth_passing_percentage,
+                        "field_333994_1_3":query.twelveth_score_type,
+                        "field_333994_1_4":mthmedium,
+                        "field_340097_1_1":query.institution,
+                        "field_342113":query.user.application_id
+                }
+            }
+            print(exp_payload)
+            meritto_payload["data"].update(exp_payload) 
+            leads = list(DossierData.objects.filter(email=query.email).values_list('id'))
+            payment_obj = Payments.objects.filter(dossier_form__in=leads, status="success")
+            if payment_obj:
+                pay = payment_obj.first()
+                payment_payload = {
+                    "field_342107":pay.razorpay_signature,
+                    "field_342105":pay.razorpay_order_id,
+                    "field_342106":pay.razorpay_payment_id,
+                    "field_342108":pay.amount,
+                    "field_342111":"INR",
+                    "field_342110":pay.created_at.strftime("%d/%m/%Y %I:%M:%S %p"),
+                    "field_342109":"success"
+                }
+                meritto_payload["data"].update(payment_payload)
+
             
+            print("meritto_payload...",meritto_payload)
+            url = settings.MERITO_BASE_URL+"/application/v1/createOrUpdate"
+
+            headers = {
+                    "Content-Type": "application/json",
+                    "secret-key": settings.MERITO_SECRETE_KEY,
+                    "access-key": settings.MERITO_ACCESS_KEY
+                }
+
+            try:
+                response = requests.post(url, headers=headers, json=meritto_payload)
+                print(response.status_code)
+                print(response.text)
+            except Exception as e:
+                print("API Error:", str(e))
+
         return query
     
 
 
 class StudentSlotBookSerializer(serializers.ModelSerializer):
     class Meta:
-        model = StudentProfile
+        model = StudentProfile  
         fields = ["slot_date", "slot_time"]
     
     def update(self, instance, validated_data):
@@ -439,6 +574,31 @@ class StudentSlotBookSerializer(serializers.ModelSerializer):
         slot_count = StudentSlotBooking.objects.filter(student_profile=instance).count()
         std_booking = StudentSlotBooking(student_profile=instance, slot_date=validated_data.get("slot_date", instance.slot_date), slot_time=validated_data.get("slot_time", instance.slot_time), slot_count=slot_count)
         std_booking.save()
+        
+
+        if settings.MERITO_STATUS == "True":
+            url = settings.MERITO_BASE_URL+"/application/v1/createOrUpdate"
+
+            headers = {
+                    "Content-Type": "application/json",
+                    "secret-key": settings.MERITO_SECRETE_KEY,
+                    "access-key": settings.MERITO_ACCESS_KEY
+                }
+            meritto_payload = {
+                "form_id": 22144,
+                "email": instance.email,
+                "search_criteria":"email",
+                "data": {
+                        "field_342101":instance.slot_date.strftime("%d/%m/%Y"),
+                        # "field_342102":instance.slot_time
+                }
+            }
+            try:
+                response = requests.post(url, headers=headers, json=meritto_payload)
+                print(response.status_code)
+                print(response.text)
+            except Exception as e:
+                print("API Error:", str(e))
 
         return instance
 
@@ -522,7 +682,6 @@ class StudentProfileSerializer(serializers.ModelSerializer):
         if obj.user:
             app_id = obj.user.application_id
         return app_id
-    
     
     class Meta:
         model = StudentProfile

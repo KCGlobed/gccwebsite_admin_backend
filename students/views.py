@@ -1385,7 +1385,7 @@ class GetContactusReportExcelView(APIView):
 
 
 class CreateStudentProfileView(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     def post(self, request, format=None):
         serializer = CompleteStudentSerializer(data = request.data)
         if serializer.is_valid(raise_exception = True):

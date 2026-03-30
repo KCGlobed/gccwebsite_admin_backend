@@ -595,13 +595,19 @@ class StudentSlotBookSerializer(serializers.ModelSerializer):
                     "secret-key": settings.MERITO_SECRETE_KEY,
                     "access-key": settings.MERITO_ACCESS_KEY
                 }
+            start_str, end_str = instance.slot_time.split(" - ")
+            start_time = datetime.strptime(start_str, "%I:%M %p")
+            # Format to HH:mm:ss
+            start_formatted = start_time.strftime("%H:%M:%S")
             meritto_payload = {
                 "form_id": 22144,
                 "email": instance.email,
                 "search_criteria":"email",
                 "data": {
                         "field_342101":instance.slot_date.strftime("%d/%m/%Y"),
-                        # "field_342102":instance.slot_time
+                        "field_342102":start_formatted,
+                        "field_340093":instance.slot_date.strftime("%d/%m/%Y")
+                        # "field_340094":instance.slot_time
                 }
             }
             try:

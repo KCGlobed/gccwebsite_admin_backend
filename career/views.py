@@ -109,6 +109,16 @@ class DossierDataForm_Create(APIView):
         else:
             return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
 
+class VslDataForm_Create(APIView):
+    # permission_classes = [IsAuthenticated]
+    def post(self, request, format=None):
+        serializer = CreateVslDataSerializer(data = request.data)
+        if serializer.is_valid(raise_exception = True):
+            obj = serializer.save()
+            return success_response(message="success", data={"id":obj.id, "data":ListDossierDataSerializer(obj).data}, status_code=status.HTTP_200_OK)
+        else:
+            return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
+
 
 
 class DossierDataForm_List(APIView):

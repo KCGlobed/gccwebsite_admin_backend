@@ -82,6 +82,7 @@ class SourceFormType(models.IntegerChoices):
 
 
 
+
 class DossierData(models.Model):
     full_name = models.CharField(max_length=200, blank=True, null=True)
     email = models.EmailField(max_length=50, blank=True, null=True)
@@ -92,7 +93,9 @@ class DossierData(models.Model):
     source_form = models.IntegerField(choices=SourceFormType.choices,default=SourceFormType.ApplyNow)
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
-
+    # Added for VSL
+    degree = models.CharField(max_length=50, blank=True, null=True)
+    degree_stage = models.CharField(max_length=50, blank=True, null=True)
 
 
 class SupportForm(models.Model):
@@ -101,5 +104,4 @@ class SupportForm(models.Model):
     message = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
-
 

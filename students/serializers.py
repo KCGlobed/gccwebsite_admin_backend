@@ -520,6 +520,8 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                         "field_333994_1_3":query.twelveth_passing_percentage,
                         "field_333994_1_4":mthmedium,
                         "field_340097_1_1":query.institution,
+                        # "field_340097_1_1":query.pg_status,
+                        # "field_340097_1_1":query.pg_status,
                         "field_342113":query.user.application_id
                 }
             }

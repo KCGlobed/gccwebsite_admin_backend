@@ -301,6 +301,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
 
     def create(self , validate_data):
         print(validate_data)
+        user_obj = User.objects.filter(id = validate_data.get('user')).first()
         datas = StudentProfile.objects.filter(user_id = validate_data.get('user')).first()
         exp_payload = {"have_work_ex":"Fresher (Currently Studying or Recently Graduated)"}
         print(validate_data.get('user_experience'))
@@ -341,6 +342,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
             datas.dob_certificate = validate_data.get('dob_certificate', datas.dob_certificate)
             datas.photo = validate_data.get('photo', datas.photo)
             datas.signature = validate_data.get('signature', datas.signature)
+            datas.application_id = user_obj.application_id
             datas.save()
             query = datas
             if len(validate_data.get('user_experience')) > 0:
@@ -419,8 +421,8 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                 aadhaar = validate_data.get('aadhaar'),
                 dob_certificate = validate_data.get('dob_certificate'),
                 photo = validate_data.get('photo'),
-                signature = validate_data.get('signature')
-
+                signature = validate_data.get('signature'),
+                application_id = user_obj.application_id
             )
             query.save()
             print(validate_data)

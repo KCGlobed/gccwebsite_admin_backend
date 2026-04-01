@@ -45,6 +45,18 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 m_source = "gccaffiliateFour"
             elif src_type == 7:
                 m_source = "gccaffiliateFive"
+            elif src_type == 8:
+                m_source = "gccipuniversity"
+            elif src_type == 9:
+                m_source = "gccdelhiuniversity"
+            elif src_type == 10:
+                m_source = "gccccs"
+            elif src_type == 11:
+                m_source = "gcckuk"
+            elif src_type == 12:
+                m_source = "gccvsloptin"
+            elif src_type == 13:
+                m_source = "gccvslfinal"
             else:
                 m_source = "gcc"
             # API URL
@@ -159,7 +171,7 @@ class CreateSupportFormSerializer(serializers.ModelSerializer):
         fields = ["subject","message"]
 
     def create(self, validated_data):
-        request = self.context.get('request')
+        request = self.context.get('request')   
         validated_data['user'] = request.user
         return super().create(validated_data)    
 

@@ -49,6 +49,7 @@ urlpatterns = [
 
     path('start_mock_test_status/', StudentMockTestStartStatusView.as_view(), name="start_mock_test_status"),
     path('complete_mock_test_status/', StudentMockTestCompleteStatusView.as_view(), name="complete_mock_test_status"),
+    path('student_app_update/', StudentApplicationIdUpdateView.as_view(), name="student_app_update"),
 
 
     path('update-student-verification-status/', CampusStudentVerifiedStatusView.as_view(), name="update-student-verification-status"),

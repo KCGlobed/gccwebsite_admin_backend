@@ -284,6 +284,7 @@ class StudentProfile(models.Model):
     mock_test_status = models.IntegerField(default=0, null=True)
     re_attempt = models.IntegerField(default=0, null=True)
     re_attempt_btn = models.IntegerField(default=0, null=True)
+    application_id = models.CharField(max_length=200, blank=True, null=True)
 
     
     
@@ -296,7 +297,7 @@ class StudentProfile(models.Model):
     
 
 
-    
+
 class StudentExperience(models.Model):
     student_profile = models.ForeignKey('StudentProfile', null=True, blank=True, on_delete=models.CASCADE)
     position = models.CharField(max_length=255, null=True, blank=True)

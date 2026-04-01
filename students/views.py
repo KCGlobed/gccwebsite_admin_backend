@@ -1421,6 +1421,15 @@ class StudentMockTestCompleteStatusView(APIView):
         return Response({'message':'failed','status':400, 'data':[serializers.errors]})
     
 
+class StudentApplicationIdUpdateView(APIView):
+    def post(self, request):
+        usr = User.objects.all()
+        for i in usr:
+            StudentProfile.objects.filter(user=i).update(application_id=i.application_id)
+            # print(std_profile)
+        return Response({"message": "Success","status":200, "data": []})
+    
+
 class StudentMockTestStartStatusView(APIView):
     def post(self, request):
         datas = StudentProfile.objects.filter(email=request.data["email"])

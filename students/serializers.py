@@ -879,3 +879,12 @@ class CampusStudentVerifiedStatusSerializer(serializers.ModelSerializer):
         return instance
 
 
+class StudentCreatePaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payments
+        fields = ["razorpay_order_id", "razorpay_payment_id","razorpay_signature","amount","currency","status","response","created_at","updated_at","form_type","form_id","dossier_form","source"]
+
+    
+
+
+

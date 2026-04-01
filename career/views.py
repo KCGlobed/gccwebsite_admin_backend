@@ -673,6 +673,103 @@ class GetDossierSourceReportPDFView(APIView):
             os.remove(pdf_path)
     
 
+class GetDossierVSLSourceReportPDFView(APIView):
+    permission_classes = [IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['id',"full_name","email","degree","degree_stage","phone"]
+    ordering_fields = ['id',"full_name","email","phone","degree","degree_stage","created_at"]
+    def get(self, request, sid=None):
+        source_type = request.GET.get('source')
+        if source_type:
+            datas = DossierData.objects.filter(source=source_type).order_by('-id')
+        else:
+            datas = DossierData.objects.filter(source=SourceType.Website).order_by('-id')
+
+        full_name = request.GET.get('full_name')
+        if full_name:
+            datas = datas.filter(full_name__icontains=full_name)
+
+        email = request.GET.get('email')
+        if email:
+            datas = datas.filter(email__icontains=email)
+
+
+        phone = request.GET.get('phone')
+        if phone:
+            datas = datas.filter(phone__icontains=phone)
+
+        degree = request.GET.get('degree')
+        if degree:
+            datas = datas.filter(degree__icontains=degree)
+
+        degree_stage = request.GET.get('degree_stage')
+        if degree_stage:
+            datas = datas.filter(degree_stage__icontains=degree_stage)
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+
+        search_filter = filters.SearchFilter()
+        datas = search_filter.filter_queryset(request, datas, self)
+
+        ordering_filter = filters.OrderingFilter()
+        datas = ordering_filter.filter_queryset(request, datas, self)
+
+        serializers = ListDossierDataSerializer(datas, many=True)
+
+
+        data = {
+                    "user_data":serializers.data,
+                    "report_date": datetime.now().strftime("%d-%m-%Y, %H:%M")
+                }
+        
+
+        template = get_template('pdf/vsl_report.html')
+        html  = template.render(data)
+        with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as temp_file:
+            pdf_path = temp_file.name
+            
+            # Encode HTML and create PDF
+            html = html.encode('latin-1', 'replace').decode('latin-1')
+            pdf = pisa.CreatePDF(BytesIO(html.encode("ISO-8859-1")), dest=temp_file)
+
+            if pdf.err:
+                raise Exception("PDF generation error!")
+        
+        # After the 'with' block, the file is closed, but not deleted yet
+        try:
+            # GCS file naming logic
+            timestamp = datetime.now().strftime("%d_%m_%y_%H_%M")
+            report_name = "vsl_report"
+            gcs_folder_name = "media/reports/vsl/pdf"
+            gcs_file_name = f"{gcs_folder_name}/{report_name}_{timestamp}.pdf"
+
+            # Upload the temporary file to GCS
+            bucket = client.get_bucket(settings.GS_BUCKET_NAME)
+            blob = bucket.blob(gcs_file_name)
+            blob.upload_from_filename(pdf_path)
+
+            return success_response(
+                message="Success",
+                data={"report_url": blob.public_url},
+                status_code=status.HTTP_200_OK
+            )
+        finally:
+            # Ensure the temporary file is deleted from the server's disk
+            os.remove(pdf_path)
+    
+
 
 class GetDossierSourceReportExcelView(APIView):
     permission_classes = [IsAuthenticated]

@@ -73,7 +73,8 @@ class SourceType(models.IntegerChoices):
     DelhiUniversity = 9, 'DelhiUniversity'
     CCS = 10, 'CCS'
     Kuk = 11, 'Kuk'
-    Vsl = 12, 'Vsl'
+    VslOptin = 12, 'VslOptin'
+    VslFinal = 13, 'VslFinal'
 
 class SourceFormType(models.IntegerChoices):
     ApplyNow = 1, 'ApplyNow'

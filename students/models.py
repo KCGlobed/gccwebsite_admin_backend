@@ -103,7 +103,8 @@ class SourceType(models.IntegerChoices):
     DelhiUniversity = 9, 'DelhiUniversity'
     CCS = 10, 'CCS'
     Kuk = 11, 'Kuk'
-    Vsl = 12, 'Vsl'
+    VslOptin = 12, 'VslOptin'
+    VslFinal = 13, 'VslFinal'
 
 class Payments(models.Model):
     razorpay_order_id = models.CharField(max_length=255, blank=True, null=True)

@@ -739,7 +739,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
 
 
 class StudentMockTestCompleteStatusSerializer(serializers.ModelSerializer):
-    email  = serializers.EmailField(required=True)
+    email  = serializers.CharField(required=True)
     status = serializers.BooleanField(required=True)
 
     class Meta:

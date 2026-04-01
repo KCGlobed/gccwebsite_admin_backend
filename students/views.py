@@ -1410,7 +1410,7 @@ class StudentSlotBookView(APIView):
 
 class StudentMockTestCompleteStatusView(APIView):
     def post(self, request):
-        datas = StudentProfile.objects.filter(email=request.data["email"])
+        datas = StudentProfile.objects.filter(application_id=request.data["email"])
         if not datas:
             return Response({'message':'Invalid Account','status':400,'data':[]})
         datas = datas.first()

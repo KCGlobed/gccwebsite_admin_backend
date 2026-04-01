@@ -902,4 +902,135 @@ class GetDossierSourceReportExcelView(APIView):
 
 
 
+class GetDossierVSLSourceReportExcelView(APIView):
+    permission_classes = [IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['id',"full_name","email","phone","city","state"]
+    ordering_fields = ['id',"full_name","email","phone","city","state","created_at"]
+
+    def get(self, request, sid=None):
+        
+        source_type = request.GET.get('source')
+        if source_type:
+            datas = DossierData.objects.filter(source=source_type).order_by('-id')
+        else:
+            datas = DossierData.objects.filter(source=SourceType.Website).order_by('-id')
+
+        full_name = request.GET.get('full_name')
+        if full_name:
+            datas = datas.filter(full_name__icontains=full_name)
+
+        email = request.GET.get('email')
+        if email:
+            datas = datas.filter(email__icontains=email)
+
+
+        phone = request.GET.get('phone')
+        if phone:
+            datas = datas.filter(phone__icontains=phone)
+
+
+        degree = request.GET.get('degree')
+        if degree:
+            datas = datas.filter(degree__icontains=degree)
+
+        degree_stage = request.GET.get('degree_stage')
+        if degree_stage:
+            datas = datas.filter(degree_stage__icontains=degree_stage)
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+
+        search_filter = filters.SearchFilter()
+        datas = search_filter.filter_queryset(request, datas, self)
+
+        ordering_filter = filters.OrderingFilter()
+        datas = ordering_filter.filter_queryset(request, datas, self)
+
+        serializers = ListDossierDataSerializer(datas, many=True)
+
+        lis = []
+        
+        lis.append({
+                "name":"VSL Report",
+                "email":'',
+                "subject":'',
+                "Chapter":'',
+                "Topic":'',
+                "total_questions":''
+            })
+
+       
+        lis.append({
+                "name":"",
+                "email":'',
+                "subject":'',
+                "Chapter":'',
+                "Topic":'',
+                "total_questions":''
+            })
+        
+        lis.append({
+                "name":"Full Name",
+                "email":'Email',
+                "subject":'Phone Number',
+                "Chapter":'Degree',
+                "Topic":'Degree Stage',
+                "total_questions":'Created At',
+            })
+        
+        
+        for chapter_data in serializers.data:
+            lis.append({
+                "name":chapter_data['full_name'],
+                "email":chapter_data['email'],
+                "subject":chapter_data['phone'],
+                "Chapter":chapter_data['degree'],
+                "Topic":chapter_data['degree_stage'],
+                "total_questions":chapter_data['created_at'],
+            })
+
+
+        with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as temp_file:
+            pdf_path = temp_file.name
+            
+            # Create DataFrame and save to the temporary file
+            df = pd.DataFrame.from_dict(lis)
+            df.to_excel(pdf_path, header=False, index=False)
+        
+        # After the 'with' block, the file is closed but not deleted
+        try:
+            # GCS file naming logic
+            timestamp = datetime.now().strftime("%d_%m_%y_%H_%M")
+            report_name = "vsl_report"
+            gcs_folder_name = "media/reports/vsl/excel"
+            gcs_file_name = f"{gcs_folder_name}/{report_name}_{timestamp}.xlsx"
+
+            # Upload the temporary file to GCS
+            bucket = client.get_bucket(settings.GS_BUCKET_NAME)
+            blob = bucket.blob(gcs_file_name)
+            blob.upload_from_filename(pdf_path)
+
+            return success_response(
+                message="Success",
+                data={"report_url": blob.public_url},
+                status_code=status.HTTP_200_OK
+            )
+        finally:
+            # Ensure the temporary file is deleted
+            os.remove(pdf_path)
+
+
+
 

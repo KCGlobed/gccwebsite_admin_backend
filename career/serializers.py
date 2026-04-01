@@ -85,7 +85,7 @@ class CreateVslDataSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         print(validated_data)
 
-        vsl_obj = DossierData(full_name=validated_data.get("full_name"), email=validated_data.get("email"),phone=validated_data.get("phone"),degree=validated_data.get("degree"),degree_stage=validated_data.get("degree_stage"),source=SourceType.Vsl, source_form=SourceFormType.Program)
+        vsl_obj = DossierData(full_name=validated_data.get("full_name"), email=validated_data.get("email"),phone=validated_data.get("phone"),degree=validated_data.get("degree"),degree_stage=validated_data.get("degree_stage"),source=SourceType.VslOptin, source_form=SourceFormType.Program)
         vsl_obj.save()
 
         # instance = super().create(validated_data)

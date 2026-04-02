@@ -89,6 +89,8 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
         
         return instance
 
+
+
 class CreateVslDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = DossierData
@@ -100,54 +102,94 @@ class CreateVslDataSerializer(serializers.ModelSerializer):
         vsl_obj = DossierData(full_name=validated_data.get("full_name"), email=validated_data.get("email"),phone=validated_data.get("phone"),degree=validated_data.get("degree"),degree_stage=validated_data.get("degree_stage"),source=SourceType.VslOptin, source_form=SourceFormType.Program)
         vsl_obj.save()
 
-        # instance = super().create(validated_data)
-        # if settings.MERITO_STATUS == "True":
-        #     src_type = instance.source
-        #     if src_type == 1:
-        #         m_source = "gccwebsite"
-        #     elif src_type == 2:
-        #         m_source = "gccefos"
-        #     elif src_type == 3:
-        #         m_source = "gccaffiliateOne"
-        #     elif src_type == 4:
-        #         m_source = "gccaffiliateTwo"
-        #     elif src_type == 5:
-        #         m_source = "gccaffiliateThree"
-        #     elif src_type == 6:
-        #         m_source = "gccaffiliateFour"
-        #     elif src_type == 7:
-        #         m_source = "gccaffiliateFive"
-        #     else:
-        #         m_source = "gcc"
-        #     # API URL
-        #     url = settings.MERITO_BASE_URL+"/lead/v1/createOrUpdate"
+        if settings.MERITO_STATUS == "True":
+            src_type = vsl_obj.source
+            if src_type == 12:
+                m_source = "gccvsloptin"
+            else:
+                m_source = "gcc"
+            # API URL
+            url = settings.MERITO_BASE_URL+"/lead/v1/createOrUpdate"
 
-        #     headers = {
-        #         "Content-Type": "application/json",
-        #         "secret-key": settings.MERITO_SECRETE_KEY,
-        #         "access-key": settings.MERITO_ACCESS_KEY
-        #     }
+            headers = {
+                "Content-Type": "application/json",
+                "secret-key": settings.MERITO_SECRETE_KEY,
+                "access-key": settings.MERITO_ACCESS_KEY
+            }
 
-        #     payload = {
-        #         "name": instance.full_name,
-        #         "email": instance.email,
-        #         "mobile": instance.phone,
-        #         "lead_stage": "hot",
-        #         "search_criteria": "email",
-        #         "city": instance.city,
-        #         "state": instance.state,
-        #         "country": "India",
-        #         "cf_source":m_source
-        #     }
+            payload = {
+                "name": vsl_obj.full_name,
+                "email": vsl_obj.email,
+                "mobile": vsl_obj.phone,
+                "lead_stage": "hot",
+                "search_criteria": "email",
+                # "city": instance.city,
+                # "state": instance.state,
+                # "country": "India",
+                "source":m_source
+            }
 
-        #     try:
-        #         response = requests.post(url, headers=headers, json=payload)
-        #         print(response.status_code)
-        #         print(response.text)
-        #     except Exception as e:
-        #         print("API Error:", str(e))
+            try:
+                response = requests.post(url, headers=headers, json=payload)
+                print(response.status_code)
+                print(response.text)
+            except Exception as e:
+                print("API Error:", str(e))
         
         return vsl_obj
+
+
+
+class CreateVslFinalDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DossierData
+        fields = ["full_name","email","phone","city","state"]
+        
+    def create(self, validated_data):
+        print(validated_data)
+
+        vsl_obj = DossierData(full_name=validated_data.get("full_name"), email=validated_data.get("email"),phone=validated_data.get("phone"),city=validated_data.get("city"),state=validated_data.get("state"),source=SourceType.VslFinal, source_form=SourceFormType.Dossier)
+        vsl_obj.save()
+
+        if settings.MERITO_STATUS == "True":
+            src_type = vsl_obj.source
+            if src_type == 13:
+                m_source = "gccvslfinal"
+            else:
+                m_source = "gcc"
+            # API URL
+            url = settings.MERITO_BASE_URL+"/lead/v1/createOrUpdate"
+
+            headers = {
+                "Content-Type": "application/json",
+                "secret-key": settings.MERITO_SECRETE_KEY,
+                "access-key": settings.MERITO_ACCESS_KEY
+            }
+
+            payload = {
+                "name": vsl_obj.full_name,
+                "email": vsl_obj.email,
+                # "mobile": vsl_obj.phone,
+                "lead_stage": "hot",
+                "search_criteria": "email",
+                "city": vsl_obj.city,
+                "state": vsl_obj.state,
+                "country": "India",
+                "source":m_source
+            }
+
+            try:
+                response = requests.post(url, headers=headers, json=payload)
+                print(response.status_code)
+                print(response.text)
+            except Exception as e:
+                print("API Error:", str(e))
+        
+        return vsl_obj
+
+
+
+
 
 
 

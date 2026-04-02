@@ -120,6 +120,17 @@ class VslDataForm_Create(APIView):
             return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
 
 
+class VslFinalDataForm_Create(APIView):
+    # permission_classes = [IsAuthenticated]
+    def post(self, request, format=None):
+        serializer = CreateVslFinalDataSerializer(data = request.data)
+        if serializer.is_valid(raise_exception = True):
+            obj = serializer.save()
+            return success_response(message="success", data={"id":obj.id, "data":ListDossierDataSerializer(obj).data}, status_code=status.HTTP_200_OK)
+        else:
+            return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
+
+
 
 class DossierDataForm_List(APIView):
     permission_classes = [IsAuthenticated]
@@ -424,7 +435,7 @@ class GetDossierReportPDFView(APIView):
             # GCS file naming logic
             timestamp = datetime.now().strftime("%d_%m_%y_%H_%M")
             report_name = "dossier_report"
-            gcs_folder_name = "media/gcc/reports"
+            gcs_folder_name = "media/reports/dossier/pdf"
             gcs_file_name = f"{gcs_folder_name}/{report_name}_{timestamp}.pdf"
 
             # Upload the temporary file to GCS
@@ -551,7 +562,7 @@ class GetDossierReportExcelView(APIView):
             # GCS file naming logic
             timestamp = datetime.now().strftime("%d_%m_%y_%H_%M")
             report_name = "dossier_report"
-            gcs_folder_name = "media/gcc/reports"
+            gcs_folder_name = "media/reports/dossier/excel"
             gcs_file_name = f"{gcs_folder_name}/{report_name}_{timestamp}.xlsx"
 
             # Upload the temporary file to GCS
@@ -655,7 +666,7 @@ class GetDossierSourceReportPDFView(APIView):
             # GCS file naming logic
             timestamp = datetime.now().strftime("%d_%m_%y_%H_%M")
             report_name = "dossier_report"
-            gcs_folder_name = "media/gcc/reports"
+            gcs_folder_name = "media/source/excel"
             gcs_file_name = f"{gcs_folder_name}/{report_name}_{timestamp}.pdf"
 
             # Upload the temporary file to GCS
@@ -883,7 +894,7 @@ class GetDossierSourceReportExcelView(APIView):
             # GCS file naming logic
             timestamp = datetime.now().strftime("%d_%m_%y_%H_%M")
             report_name = "dossier_report"
-            gcs_folder_name = "media/gcc/reports"
+            gcs_folder_name = "media/reports/source/excel"
             gcs_file_name = f"{gcs_folder_name}/{report_name}_{timestamp}.xlsx"
 
             # Upload the temporary file to GCS

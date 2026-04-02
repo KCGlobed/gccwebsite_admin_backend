@@ -8,6 +8,7 @@ urlpatterns = [
 
     path("createdossierform", DossierDataForm_Create.as_view()),
     path("createvslform", VslDataForm_Create.as_view()),
+    path("createvslfinalform", VslFinalDataForm_Create.as_view()),
     path("dossierdata_page_list", DossierDataForm_List.as_view()),
     path("dossiersourcedata_page_list", DossierDataSourceForm_List.as_view()),
     

@@ -99,6 +99,14 @@ class DossierData(models.Model):
     degree_stage = models.CharField(max_length=50, blank=True, null=True)
 
 
+class VslDetail(models.Model):
+    dossier = models.ForeignKey('DossierData', null=True, blank=True, on_delete=models.CASCADE)
+    video_playback = models.IntegerField(default=0)  ## Seconds
+    specialist_status = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
+
+
 class SupportForm(models.Model):
     user = models.ForeignKey('users.User', null=True, blank=True, on_delete=models.CASCADE)
     subject = models.CharField(max_length=200, blank=True, null=True)

@@ -109,6 +109,7 @@ class DossierDataForm_Create(APIView):
         else:
             return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
 
+
 class VslDataForm_Create(APIView):
     # permission_classes = [IsAuthenticated]
     def post(self, request, format=None):

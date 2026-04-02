@@ -148,9 +148,12 @@ class CreateVslFinalDataSerializer(serializers.ModelSerializer):
         
     def create(self, validated_data):
         print(validated_data)
+        validated_data['source'] = SourceType.VslFinal
+        validated_data['source_form'] = SourceFormType.Dossier
 
-        vsl_obj = DossierData(full_name=validated_data.get("full_name"), email=validated_data.get("email"),phone=validated_data.get("phone"),city=validated_data.get("city"),state=validated_data.get("state"),source=SourceType.VslFinal, source_form=SourceFormType.Dossier)
-        vsl_obj.save()
+        vsl_obj =  super().create(validated_data)
+        # vsl_obj = DossierData(full_name=validated_data.get("full_name"), email=validated_data.get("email"),phone=validated_data.get("phone"),city=validated_data.get("city"),state=validated_data.get("state"),source=SourceType.VslFinal, source_form=SourceFormType.Dossier)
+        # vsl_obj.save()
 
         if settings.MERITO_STATUS == "True":
             src_type = vsl_obj.source

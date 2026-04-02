@@ -53,10 +53,6 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 m_source = "gccccs"
             elif src_type == 11:
                 m_source = "gcckuk"
-            elif src_type == 12:
-                m_source = "gccvsloptin"
-            elif src_type == 13:
-                m_source = "gccvslfinal"
             else:
                 m_source = "gcc"
             # API URL
@@ -94,13 +90,18 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
 class CreateVslDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = DossierData
-        fields = ["full_name","email","phone","degree","degree_stage"]
+        # fields = ["full_name","email","phone","degree","degree_stage","fbc_id","utm_source","utm_medium","utm_content","utm_campaign","utm_adname","campaign_id","adset_id","fbclid","ad_source","ad_id"]
+        fields = "__all__"
         
     def create(self, validated_data):
         print(validated_data)
+        validated_data['source'] = SourceType.VslOptin
+        validated_data['source_form'] = SourceFormType.Program
 
-        vsl_obj = DossierData(full_name=validated_data.get("full_name"), email=validated_data.get("email"),phone=validated_data.get("phone"),degree=validated_data.get("degree"),degree_stage=validated_data.get("degree_stage"),source=SourceType.VslOptin, source_form=SourceFormType.Program)
-        vsl_obj.save()
+        vsl_obj =  super().create(validated_data)
+
+        # vsl_obj = DossierData(full_name=validated_data.get("full_name"), email=validated_data.get("email"),phone=validated_data.get("phone"),degree=validated_data.get("degree"),degree_stage=validated_data.get("degree_stage"),source=SourceType.VslOptin, source_form=SourceFormType.Program)
+        # vsl_obj.save()
 
         if settings.MERITO_STATUS == "True":
             src_type = vsl_obj.source
@@ -196,10 +197,7 @@ class CreateVslOptinDetailDataSerializer(serializers.ModelSerializer):
         fields = ["dossier_id","video_playback"]
         
     def create(self, validated_data):
-        print(validated_data)
-        print("dossuer",validated_data.get("dossier_id"))
         vsl_obj = VslDetail.objects.filter(dossier_id=validated_data.get("dossier_id"))
-        print(vsl_obj)
         if vsl_obj:
             vsl_obj.update(video_playback=validated_data.get("video_playback"))
         else:
@@ -215,10 +213,7 @@ class UpdateVslOptinDetailDataSerializer(serializers.ModelSerializer):
         fields = ["dossier_id","specialist_status"]
         
     def create(self, validated_data):
-        print(validated_data)
-        print("dossuer",validated_data.get("dossier_id"))
         vsl_obj = VslDetail.objects.filter(dossier_id=validated_data.get("dossier_id"))
-        print(vsl_obj)
         if vsl_obj:
             vsl_obj.update(specialist_status=validated_data.get("specialist_status"))
         else:

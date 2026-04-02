@@ -97,6 +97,17 @@ class DossierData(models.Model):
     # Added for VSL
     degree = models.CharField(max_length=50, blank=True, null=True)
     degree_stage = models.CharField(max_length=50, blank=True, null=True)
+    fbc_id = models.CharField(max_length=100, blank=True, null=True)
+    utm_source = models.CharField(max_length=100, blank=True, null=True)
+    utm_medium = models.CharField(max_length=100, blank=True, null=True)
+    utm_content = models.CharField(max_length=100, blank=True, null=True)
+    utm_campaign = models.CharField(max_length=100, blank=True, null=True)
+    campaign_id = models.CharField(max_length=100, blank=True, null=True)
+    utm_adname = models.CharField(max_length=100, blank=True, null=True)
+    adset_id = models.CharField(max_length=100, blank=True, null=True)
+    fbclid = models.CharField(max_length=100, blank=True, null=True)
+    ad_source = models.CharField(max_length=100, blank=True, null=True)
+    ad_id = models.CharField(max_length=100, blank=True, null=True)
 
 
 class VslDetail(models.Model):

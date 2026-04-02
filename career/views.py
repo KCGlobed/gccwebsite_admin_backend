@@ -131,6 +131,28 @@ class VslFinalDataForm_Create(APIView):
             return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
 
 
+class VslOptinDetailDataForm_Create(APIView):
+    # permission_classes = [IsAuthenticated]
+    def post(self, request, format=None):
+        serializer = CreateVslOptinDetailDataSerializer(data = request.data)
+        if serializer.is_valid(raise_exception = True):
+            obj = serializer.save()
+            return success_response(message="success", data={}, status_code=status.HTTP_200_OK)
+        else:
+            return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
+
+
+class VslOptinDetailDataForm_Update(APIView):
+    # permission_classes = [IsAuthenticated]
+    def post(self, request, format=None):
+        serializer = UpdateVslOptinDetailDataSerializer(data = request.data)
+        if serializer.is_valid(raise_exception = True):
+            obj = serializer.save()
+            return success_response(message="success", data={}, status_code=status.HTTP_200_OK)
+        else:
+            return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
+
+
 
 class DossierDataForm_List(APIView):
     permission_classes = [IsAuthenticated]

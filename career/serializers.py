@@ -189,6 +189,47 @@ class CreateVslFinalDataSerializer(serializers.ModelSerializer):
 
 
 
+class CreateVslOptinDetailDataSerializer(serializers.ModelSerializer):
+    dossier_id = serializers.IntegerField(required=True)
+    class Meta:
+        model = VslDetail
+        fields = ["dossier_id","video_playback"]
+        
+    def create(self, validated_data):
+        print(validated_data)
+        print("dossuer",validated_data.get("dossier_id"))
+        vsl_obj = VslDetail.objects.filter(dossier_id=validated_data.get("dossier_id"))
+        print(vsl_obj)
+        if vsl_obj:
+            vsl_obj.update(video_playback=validated_data.get("video_playback"))
+        else:
+            vsl_obj = VslDetail(dossier_id=validated_data.get("dossier_id"), video_playback=validated_data.get("video_playback"))
+            vsl_obj.save()
+
+        return vsl_obj
+
+class UpdateVslOptinDetailDataSerializer(serializers.ModelSerializer):
+    dossier_id = serializers.IntegerField(required=True)
+    class Meta:
+        model = VslDetail
+        fields = ["dossier_id","specialist_status"]
+        
+    def create(self, validated_data):
+        print(validated_data)
+        print("dossuer",validated_data.get("dossier_id"))
+        vsl_obj = VslDetail.objects.filter(dossier_id=validated_data.get("dossier_id"))
+        print(vsl_obj)
+        if vsl_obj:
+            vsl_obj.update(specialist_status=validated_data.get("specialist_status"))
+        else:
+            vsl_obj = VslDetail(dossier_id=validated_data.get("dossier_id"), specialist_status=validated_data.get("specialist_status"))
+            vsl_obj.save()
+
+        return vsl_obj
+
+
+
+
 
 
 

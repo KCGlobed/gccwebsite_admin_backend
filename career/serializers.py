@@ -144,7 +144,8 @@ class CreateVslDataSerializer(serializers.ModelSerializer):
 class CreateVslFinalDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = DossierData
-        fields = ["full_name","email","phone","city","state"]
+        # fields = ["full_name","email","phone","city","state"]
+        fields = "__all__"
         
     def create(self, validated_data):
         print(validated_data)

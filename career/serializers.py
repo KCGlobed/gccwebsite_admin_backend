@@ -74,7 +74,8 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 "city": instance.city,
                 "state": instance.state,
                 "country": "India",
-                "source":m_source
+                "source":m_source,
+                "cf_payment_status":"Pending"
             }
 
             try:
@@ -128,7 +129,8 @@ class CreateVslDataSerializer(serializers.ModelSerializer):
                 # "city": instance.city,
                 # "state": instance.state,
                 # "country": "India",
-                "source":m_source
+                "source":m_source,
+                "cf_payment_status":"Pending"
             }
 
             try:
@@ -181,7 +183,8 @@ class CreateVslFinalDataSerializer(serializers.ModelSerializer):
                 "city": vsl_obj.city,
                 "state": vsl_obj.state,
                 "country": "India",
-                "source":m_source
+                "source":m_source,
+                "cf_payment_status":"Pending"
             }
 
             try:

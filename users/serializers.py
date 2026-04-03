@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from users.models import *
-
+from students.models import Payments
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator 
 from django.utils.encoding import smart_str, force_bytes
@@ -10,7 +10,7 @@ from django.core.mail import send_mail
 from gcc_backend.utils import *
 from django.template import loader
 from datetime import datetime, date
-
+import requests
 
 
 class WebsiteUserLoginSerializer(serializers.ModelSerializer):
@@ -158,7 +158,29 @@ class CreateStudentSerializer(serializers.ModelSerializer):
         user.save()
         num = user.id
 
+        if settings.MERITO_STATUS == "True":
+            
+            # API URL
+            url = settings.MERITO_BASE_URL+"/lead/v1/createOrUpdate"
 
+            headers = {
+                "Content-Type": "application/json",
+                "secret-key": settings.MERITO_SECRETE_KEY,
+                "access-key": settings.MERITO_ACCESS_KEY
+            }
+
+            payload = {
+                "email": user.email,
+                "search_criteria": "email",
+                "cf_payment_status":"Complete"
+            }
+
+            try:
+                response = requests.post(url, headers=headers, json=payload)
+                print(response.status_code)
+                print(response.text)
+            except Exception as e:
+                print("API Error:", str(e))
 
         subject = 'GCC School – Payment Confirmation & Next Steps for NFET 2026'
 

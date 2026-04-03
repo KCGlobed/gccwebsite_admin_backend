@@ -109,6 +109,16 @@ class DossierDataForm_Create(APIView):
         else:
             return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
 
+class DossierAbondant_Create(APIView):
+    # permission_classes = [IsAuthenticated]
+    def post(self, request, format=None):
+        serializer = CreateDossierAbondantSerializer(data = request.data)
+        if serializer.is_valid(raise_exception = True):
+            obj = serializer.save()
+            return success_response(message="success", data={"id":obj.id}, status_code=status.HTTP_200_OK)
+        else:
+            return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
+
 
 class VslDataForm_Create(APIView):
     # permission_classes = [IsAuthenticated]
@@ -209,6 +219,56 @@ class DossierDataForm_List(APIView):
         paginator = self.pagination_class()
         page = paginator.paginate_queryset(datas, request, view=self)
         serializers = ListDossierDataSerializer(page, many=True)
+        
+        return paginator.get_paginated_response(serializers.data)
+    
+
+class AbondantDataForm_List(APIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = CustomPageNumberPagination
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['id',"full_name","email","phone"]
+    ordering_fields = ['id',"full_name","email","phone","created_at"]
+    def get(self, request):
+        datas = DossierAbondant.objects.all().order_by('-id')
+
+        full_name = request.GET.get('full_name')
+        if full_name:
+            datas = datas.filter(full_name__icontains=full_name)
+
+        email = request.GET.get('email')
+        if email:
+            datas = datas.filter(email__icontains=email)
+
+
+        phone = request.GET.get('phone')
+        if phone:
+            datas = datas.filter(phone__icontains=phone)
+
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+
+        search_filter = filters.SearchFilter()
+        datas = search_filter.filter_queryset(request, datas, self)
+
+        ordering_filter = filters.OrderingFilter()
+        datas = ordering_filter.filter_queryset(request, datas, self)
+
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(datas, request, view=self)
+        serializers = ListDossierAbondantSerializer(page, many=True)
         
         return paginator.get_paginated_response(serializers.data)
     

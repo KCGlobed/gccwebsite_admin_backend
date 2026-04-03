@@ -25,7 +25,8 @@ class ListPartnerWithUsSerializer(serializers.ModelSerializer):
 class CreateDossierDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = DossierData
-        fields = ["full_name","email","phone","city","state","source","source_form"]
+        # fields = ["full_name","email","phone","city","state","source","source_form"]
+        fields = "__all__"
         
     def create(self, validated_data):
         instance = super().create(validated_data)
@@ -275,3 +276,21 @@ class ListSupportFormSerializer(serializers.ModelSerializer):
         
 
 
+
+class CreateDossierAbondantSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DossierAbondant
+        fields = "__all__"
+
+
+
+
+class ListDossierAbondantSerializer(serializers.ModelSerializer):
+    created_at = serializers.DateTimeField(read_only=True, format="%Y-%m-%d %H:%M:%S")
+
+    class Meta:
+        model = DossierAbondant
+        fields = "__all__"
+        
+
+        

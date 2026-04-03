@@ -7,11 +7,13 @@ urlpatterns = [
     path("partners_page_list", PartnerWithUs_list.as_view()),
 
     path("createdossierform", DossierDataForm_Create.as_view()),
+    path("createabondantform", DossierAbondant_Create.as_view()),
     path("createvslform", VslDataForm_Create.as_view()),
     path("createvslfinalform", VslFinalDataForm_Create.as_view()),
     path("createvsldetailform", VslOptinDetailDataForm_Create.as_view()),
     path("addvsldetailform", VslOptinDetailDataForm_Update.as_view()),
     path("dossierdata_page_list", DossierDataForm_List.as_view()),
+    path("abondantdata_page_list", AbondantDataForm_List.as_view()),
     path("dossiersourcedata_page_list", DossierDataSourceForm_List.as_view()),
     
     path("newslettersubscribers_page_list", NewsletterSubscribers_List.as_view()),

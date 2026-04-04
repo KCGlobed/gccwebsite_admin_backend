@@ -76,6 +76,9 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 "country": "India",
                 "source":m_source,
                 "cf_source":m_source,
+                "cf_utmsource1":instance.utm_source,
+                "medium":instance.utm_medium,
+                "campaign":instance.utm_campaign,
                 "cf_payment_status":"Pending"
             }
 
@@ -132,6 +135,9 @@ class CreateVslDataSerializer(serializers.ModelSerializer):
                 # "country": "India",
                 "source":m_source,
                 "cf_source":m_source,
+                "cf_utmsource1":vsl_obj.utm_source,
+                "medium":vsl_obj.utm_medium,
+                "campaign":vsl_obj.utm_campaign,
                 "cf_payment_status":"Pending"
             }
 
@@ -187,6 +193,9 @@ class CreateVslFinalDataSerializer(serializers.ModelSerializer):
                 "country": "India",
                 "source":m_source,
                 "cf_source":m_source,
+                "cf_utmsource1":vsl_obj.utm_source,
+                "medium":vsl_obj.utm_medium,
+                "campaign":vsl_obj.utm_campaign,
                 "cf_payment_status":"Pending"
             }
 
@@ -288,6 +297,68 @@ class CreateDossierAbondantSerializer(serializers.ModelSerializer):
         model = DossierAbondant
         fields = "__all__"
 
+    def create(self, validated_data):
+        instance = super().create(validated_data)
+        if settings.MERITO_STATUS == "True":
+            src_type = instance.source
+            if src_type == 1:
+                m_source = "gccwebsite"
+            elif src_type == 2:
+                m_source = "gccefos"
+            elif src_type == 3:
+                m_source = "gccaffiliateOne"
+            elif src_type == 4:
+                m_source = "gccaffiliateTwo"
+            elif src_type == 5:
+                m_source = "gccaffiliateThree"
+            elif src_type == 6:
+                m_source = "gccaffiliateFour"
+            elif src_type == 7:
+                m_source = "gccaffiliateFive"
+            elif src_type == 8:
+                m_source = "gccipuniversity"
+            elif src_type == 9:
+                m_source = "gccdelhiuniversity"
+            elif src_type == 10:
+                m_source = "gccccs"
+            elif src_type == 11:
+                m_source = "gcckuk"
+            elif src_type == 12:
+                m_source = "gccvsloptin"
+            elif src_type == 13:
+                m_source = "gccvslfinal"
+            else:
+                m_source = "gcc"
+            # API URL
+            url = settings.MERITO_BASE_URL+"/lead/v1/createOrUpdate"
+
+            headers = {
+                "Content-Type": "application/json",
+                "secret-key": settings.MERITO_SECRETE_KEY,
+                "access-key": settings.MERITO_ACCESS_KEY
+            }
+
+            payload = {
+                "name": instance.full_name,
+                "email": instance.email,
+                "mobile": instance.phone,
+                "lead_stage": "hot",
+                "search_criteria": "email",
+                # "city": instance.city,
+                # "state": instance.state,
+                # "country": "India",
+                "source":m_source,
+                "cf_source":m_source,
+                "cf_payment_status":"Pending"
+            }
+
+            try:
+                response = requests.post(url, headers=headers, json=payload)
+                print(response.status_code)
+                print(response.text)
+            except Exception as e:
+                print("API Error:", str(e))
+        return instance
 
 
 

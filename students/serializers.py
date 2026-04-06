@@ -627,7 +627,8 @@ class StudentSlotBookSerializer(serializers.ModelSerializer):
                 "data": {
                         "field_342101":instance.slot_date.strftime("%d/%m/%Y"),
                         "field_342102":start_formatted,
-                        "field_340093":instance.slot_date.strftime("%d/%m/%Y")
+                        "field_340093":instance.slot_date.strftime("%d/%m/%Y"),
+                        "field_343386":f'''{instance.slot_date.strftime("%d/%m/%Y")} {start_formatted}'''
                         # "field_340094":instance.slot_time
                 }
             }

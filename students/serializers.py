@@ -524,7 +524,9 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                         "field_340097_1_1":query.institution,
                         # "field_340097_1_1":query.pg_status,
                         # "field_340097_1_1":query.pg_status,
-                        "field_342113":query.user.application_id
+                        "field_342113":query.user.application_id,
+                        "field_343097":"Complete",
+                        "field_343098":"Complete"
                 }
             }
             print(exp_payload)

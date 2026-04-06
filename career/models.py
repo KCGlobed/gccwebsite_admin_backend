@@ -108,6 +108,18 @@ class DossierData(models.Model):
     fbclid = models.CharField(max_length=100, blank=True, null=True)
     ad_source = models.CharField(max_length=100, blank=True, null=True)
     ad_id = models.CharField(max_length=100, blank=True, null=True)
+    ## Added for university dropdown
+    university = models.CharField(max_length=200, blank=True, null=True)
+
+class DossierDocument(models.Model):
+    dossier = models.ForeignKey('DossierData',on_delete=models.CASCADE,null=True,blank=True,related_name='documents')
+    file = models.FileField(upload_to="career/images/",null=True,blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Document {self.id} - {self.dossier}"
+
 
 
 class VslDetail(models.Model):

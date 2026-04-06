@@ -92,6 +92,12 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
         return instance
 
 
+class CreateDossierDocumentSerializer(serializers.ModelSerializer):
+    dossier_id = serializers.IntegerField(required=True)
+    class Meta:
+        model = DossierDocument
+        fields = ["dossier_id","file"]
+
 
 class CreateVslDataSerializer(serializers.ModelSerializer):
     class Meta:

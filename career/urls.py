@@ -7,6 +7,7 @@ urlpatterns = [
     path("partners_page_list", PartnerWithUs_list.as_view()),
 
     path("createdossierform", DossierDataForm_Create.as_view()),
+    path("createdossierdocument", DossierDocument_Create.as_view()),
     path("createabondantform", DossierAbondant_Create.as_view()),
     path("createvslform", VslDataForm_Create.as_view()),
     path("createvslfinalform", VslFinalDataForm_Create.as_view()),

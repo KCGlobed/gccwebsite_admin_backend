@@ -229,10 +229,10 @@ class CheckEmail(APIView):
                 status_code=status.HTTP_200_OK
             )
 
-        return error_response(
+        return success_response(
             message="Email not found",
             data={"isExist":False},
-            status_code=status.HTTP_404_NOT_FOUND
+            status_code=status.HTTP_200_OK
         )
 
 

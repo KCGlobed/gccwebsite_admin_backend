@@ -60,10 +60,16 @@ class User(AbstractBaseUser, PermissionsMixin):
     SubAdmin = 2
     Manager = 3
     Student = 4
-    Other = 5
+    Other = 5  ##ET users
     Efos = 6
     Vsl = 7
-    
+    AffliateOne = 8
+    AffliateTwo = 9
+    AffliateThree = 10
+    AffliateFour = 11
+    AffliateFive = 12
+
+
     ROLE_CHOICES = (
         (SuperAdmin, 'SuperAdmin'),
         (SubAdmin, 'SubAdmin'),
@@ -71,7 +77,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         (Student, 'Student'),
         (Other,'Other'),
         (Efos,'Efos'),
-        (Vsl,'Vsl')
+        (Vsl,'Vsl'),
+        (AffliateOne, 'AffliateOne'),
+        (AffliateTwo, 'AffliateTwo'),
+        (AffliateThree, 'AffliateThree'),
+        (AffliateFour,'AffliateFour'),
+        (AffliateFive,'AffliateFive')
     )
 
     SOCIAL_LOGIN_CHOICES = (

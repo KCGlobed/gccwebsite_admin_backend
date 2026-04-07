@@ -11,6 +11,10 @@ from gcc_backend.utils import *
 from django.template import loader
 from datetime import datetime, date
 import requests
+from django.utils import timezone
+from career.models import DossierData
+
+
 
 
 class WebsiteUserLoginSerializer(serializers.ModelSerializer):
@@ -204,6 +208,131 @@ class CreateStudentSerializer(serializers.ModelSerializer):
         send_mail( subject, message, email_from, recipient_list,html_message=html_message )
 
         return user
+
+
+
+
+class CreateUniversityStudentSerializer(serializers.ModelSerializer):
+    dossier_id = serializers.CharField(max_length = 255, required=True)
+    full_name = serializers.CharField(max_length = 255, required=True)
+    email = serializers.EmailField(max_length = 255, required=True)
+    city = serializers.CharField(max_length = 255, required=False, allow_blank=True)
+    state = serializers.CharField(max_length = 255, required=False, allow_blank=True)
+    country = serializers.CharField(max_length = 255, required=False, allow_blank=True)
+    phone1 = serializers.CharField(max_length = 255, required=False, allow_blank=True)
+    remarks = serializers.CharField(max_length = 255, required=True)
+    document_status = serializers.BooleanField(required=True)
+
+    class Meta:
+        model = User
+        fields = ['dossier_id','email','full_name',"city","state","country","phone1","remarks","document_status"]
+        
+
+    def validate(self, data):
+        user_count = User.objects.filter(email = data.get('email').lower()).count()
+        if user_count > 0:
+            raise serializers.ValidationError('Email address is already registered with Us')
+        
+        return data
+
+
+    def create(self, validate_data):
+        now = timezone.now()
+        dat = timezone.localtime(now)
+        if validate_data.get('document_status') == True:
+            password = generate_random_password(8)
+            info = { "first_name": validate_data.get('full_name'), "last_name":"", 'email': validate_data.get('email').lower(), 'password': password}
+            user = User.objects.create_user(**info)
+            self.generated_password = password
+            # assign_role(user, "Student")
+            formatted_emp = str(user.id).zfill(4)
+            formatted_month = str(datetime.now().date().month).zfill(2)
+            formatted_year = str(datetime.now().date().year)
+            generate_application_id = f"NFET-{formatted_year}-{formatted_month}{formatted_emp}"  # 000001
+            user.role = User.Student
+            user.email_verified = 1
+            user.is_active = True
+            user.country = validate_data.get('country')
+            user.state = validate_data.get('state')
+            user.city = validate_data.get('city')
+            user.phone1 = validate_data.get('phone1')
+            user.application_id = generate_application_id
+            user.save()
+            num = user.id
+
+            if settings.MERITO_STATUS == "True":
+                
+                # API URL
+                url = settings.MERITO_BASE_URL+"/lead/v1/createOrUpdate"
+
+                headers = {
+                    "Content-Type": "application/json",
+                    "secret-key": settings.MERITO_SECRETE_KEY,
+                    "access-key": settings.MERITO_ACCESS_KEY
+                }
+
+                payload = {
+                    "email": user.email,
+                    "search_criteria": "email",
+                    "cf_payment_status":"Complete"
+                }
+
+                try:
+                    response = requests.post(url, headers=headers, json=payload)
+                    print(response.status_code)
+                    print(response.text)
+                except Exception as e:
+                    print("API Error:", str(e))
+
+            subject = 'Verification Successful & NFET-2026 Login Details'
+
+            message = f''
+            email_from = settings.DEFAULT_FROM_EMAIL
+            recipient_list = [user.email, ]
+            html_message = loader.render_to_string(
+                'university_user_detail_email.html',
+                {
+                    'name': user.first_name,
+                    'candidate_id': generate_application_id,
+                    'slot_booking': 'https://forms.gle/UQqKnCsmJzVLK6qU8',
+                    'website_url': settings.WEBSITE_BASE_URL,
+                    'login_url': settings.WEBSITE_BASE_URL+"/login",
+                    "email": user.email,
+                    "password": password,               
+
+                }
+            )
+            send_mail( subject, message, email_from, recipient_list,html_message=html_message )
+
+            DossierData.objects.filter(id=validate_data.get("dossier_id")).update(document_status=validate_data.get('document_status'),remarks=self.validated_data.get('remarks'),remarks_timestamp=dat)
+            
+            return user
+        else:
+
+            DossierData.objects.filter(id=validate_data.get("dossier_id")).update(document_status=validate_data.get('document_status'),remarks=self.validated_data.get('remarks'),remarks_timestamp=dat)
+            
+            
+            # subject = 'testing'
+
+            # message = f'testing'
+            # email_from = settings.DEFAULT_FROM_EMAIL
+            # recipient_list = [validate_data.get('email'), ]
+            # html_message = loader.render_to_string(
+            #     'university_user_detail_email.html',
+            #     {
+            #         'name': "",
+            #         'candidate_id': "",
+            #         'slot_booking': 'https://forms.gle/UQqKnCsmJzVLK6qU8',
+            #         'website_url': settings.WEBSITE_BASE_URL,
+            #         'login_url': settings.WEBSITE_BASE_URL+"/login",
+            #         "email": "",
+            #         "password": "",               
+
+            #     }
+            # )
+            # send_mail( subject, message, email_from, recipient_list,html_message=html_message )
+
+            return "success"
 
 
 

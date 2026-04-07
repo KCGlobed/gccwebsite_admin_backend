@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import *
+from .views_admin import *
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -23,4 +24,10 @@ urlpatterns = [
 
 
     path('mail-test/', Mail_test.as_view(), name="mail-test"),
+
+    ## Admin
+    path('create_university_student/', CreateUniversityStudentView.as_view(), name="create_university_student"),
+
+
+    
 ]

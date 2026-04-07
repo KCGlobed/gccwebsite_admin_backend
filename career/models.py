@@ -82,6 +82,12 @@ class SourceFormType(models.IntegerChoices):
     Program = 3, 'Program'
 
 
+class DocumentStatusType(models.IntegerChoices):
+    Pending = 1, 'Pending'
+    Approved = 2, 'Approved'
+    Rejected = 3, 'Rejected'
+
+
 
 
 class DossierData(models.Model):
@@ -110,6 +116,10 @@ class DossierData(models.Model):
     ad_id = models.CharField(max_length=100, blank=True, null=True)
     ## Added for university dropdown
     university = models.CharField(max_length=200, blank=True, null=True)
+    remarks = models.TextField(blank=True, null=True)
+    document_status = models.IntegerField(choices=DocumentStatusType.choices,default=DocumentStatusType.Pending)
+    remarks_timestamp = models.DateTimeField(null=True, blank=True)
+
 
 class DossierDocument(models.Model):
     dossier = models.ForeignKey('DossierData',on_delete=models.CASCADE,null=True,blank=True,related_name='documents')

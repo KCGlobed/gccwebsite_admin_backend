@@ -4,6 +4,8 @@ from django.conf import settings
 from users.models import User
 from users.serializers import StudentProfileDetailSerializer
 import requests
+from django.utils import timezone
+
 
 class ListCareerApplicationSerializer(serializers.ModelSerializer):
     resume_path = serializers.SerializerMethodField('get_resume_path')
@@ -255,13 +257,32 @@ class UpdateVslOptinDetailDataSerializer(serializers.ModelSerializer):
 
 
 
-class ListDossierDataSerializer(serializers.ModelSerializer):
-    created_at = serializers.DateTimeField(read_only=True, format="%Y-%m-%d %H:%M:%S")
+class DossierDocumentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DossierDocument
+        fields = ["file"]
 
+
+class ListDossierDataSerializer(serializers.ModelSerializer):
+    # created_at = serializers.DateTimeField(read_only=True, format="%Y-%m-%d %H:%M:%S")
+    created_at = serializers.SerializerMethodField()
+    user_document_url = serializers.SerializerMethodField()
     class Meta:
         model = DossierData
         fields = "__all__"
-        
+    def get_created_at(self, obj):
+        if obj.created_at:
+            local_time = timezone.localtime(obj.created_at)
+            return local_time.strftime("%Y-%m-%d %H:%M:%S")
+        return None
+
+    def get_user_document_url(self, obj):
+        if obj.id:
+            user_obj = DossierDocument.objects.filter(dossier=obj.id)
+            user_ser = DossierDocumentSerializer(user_obj, many=True).data
+        else:
+            user_ser = []
+        return user_ser
 
 class ListNewsletterSubscriberSerializer(serializers.ModelSerializer):
     class Meta:

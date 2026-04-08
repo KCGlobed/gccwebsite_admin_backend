@@ -892,11 +892,24 @@ class StudentCreatePaymentSerializer(serializers.ModelSerializer):
     
 
 class PostExamResultSerializer(serializers.ModelSerializer):
-    
     class Meta:
         model = StudentExamResult
         fields = "__all__"
-    
+
+    def create(self, validated_data):
+        std_obj = StudentProfile.objects.filter(application_id=validated_data.get("email"))
+        if std_obj:
+            validated_data["student_profile"] = std_obj.first()
+            instance = super().create(validated_data)
+            return instance
+        else:
+            raise serializers.ValidationError(
+                {
+                    "status": 400,
+                    "message": "Please Select Valid Student ID",
+                    "data":[]
+                }
+            )
 
 
 

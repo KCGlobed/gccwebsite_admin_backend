@@ -221,7 +221,7 @@ class CreateUniversityStudentSerializer(serializers.ModelSerializer):
     country = serializers.CharField(max_length = 255, required=False, allow_blank=True)
     phone1 = serializers.CharField(max_length = 255, required=False, allow_blank=True)
     remarks = serializers.CharField(max_length = 255, required=True)
-    document_status = serializers.BooleanField(required=True)
+    document_status = serializers.IntegerField(required=True)
 
     class Meta:
         model = User
@@ -239,7 +239,7 @@ class CreateUniversityStudentSerializer(serializers.ModelSerializer):
     def create(self, validate_data):
         now = timezone.now()
         dat = timezone.localtime(now)
-        if validate_data.get('document_status') == True:
+        if validate_data.get('document_status') == 2:
             password = generate_random_password(8)
             info = { "first_name": validate_data.get('full_name'), "last_name":"", 'email': validate_data.get('email').lower(), 'password': password}
             user = User.objects.create_user(**info)
@@ -307,7 +307,7 @@ class CreateUniversityStudentSerializer(serializers.ModelSerializer):
             DossierData.objects.filter(id=validate_data.get("dossier_id")).update(document_status=validate_data.get('document_status'),remarks=self.validated_data.get('remarks'),remarks_timestamp=dat)
             
             return user
-        else:
+        elif validate_data.get('document_status') == 3:
 
             DossierData.objects.filter(id=validate_data.get("dossier_id")).update(document_status=validate_data.get('document_status'),remarks=self.validated_data.get('remarks'),remarks_timestamp=dat)
             
@@ -333,6 +333,8 @@ class CreateUniversityStudentSerializer(serializers.ModelSerializer):
             # send_mail( subject, message, email_from, recipient_list,html_message=html_message )
 
             return "success"
+        else:
+            raise serializers.ValidationError('Invalid Request')
 
 
 

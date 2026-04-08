@@ -270,6 +270,7 @@ class ListDossierDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = DossierData
         fields = "__all__"
+        
     def get_created_at(self, obj):
         if obj.created_at:
             local_time = timezone.localtime(obj.created_at)
@@ -277,11 +278,8 @@ class ListDossierDataSerializer(serializers.ModelSerializer):
         return None
 
     def get_user_document_url(self, obj):
-        if obj.id:
-            user_obj = DossierDocument.objects.filter(dossier=obj.id)
-            user_ser = DossierDocumentSerializer(user_obj, many=True).data
-        else:
-            user_ser = []
+        user_obj = DossierDocument.objects.filter(dossier=obj.id)
+        user_ser = DossierDocumentSerializer(user_obj, many=True).data
         return user_ser
 
 class ListNewsletterSubscriberSerializer(serializers.ModelSerializer):

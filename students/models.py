@@ -331,3 +331,33 @@ class StudentSlotBooking(models.Model):
 
     def __str__(self):
         return '%s' % self.id
+    
+
+##################
+
+class StudentExamResult(models.Model):
+    student_profile = models.ForeignKey('StudentProfile', null=True, blank=True, on_delete=models.CASCADE)
+    email = models.CharField(max_length=250, null=True, blank=True)
+    testid = models.CharField(max_length=250, null=True, blank=True)
+    starttime = models.CharField(max_length=250, null=True, blank=True)
+    endtime = models.CharField(max_length=250, null=True, blank=True)
+    timetaken = models.CharField(max_length=250, null=True, blank=True)
+    totalscore = models.CharField(max_length=250, null=True, blank=True)
+    totalquestionsattempted = models.CharField(max_length=250, null=True, blank=True)
+    totalcorrectanswers = models.CharField(max_length=250, null=True, blank=True)
+    totalquestions = models.CharField(max_length=250, null=True, blank=True)
+    json_data = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
+
+    class Meta:
+        verbose_name = 'Student Exam Result'
+        verbose_name_plural = 'Student Exam Result'
+
+    def __str__(self):
+        return '%s' % self.id
+
+
+
+
+

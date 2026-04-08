@@ -891,5 +891,12 @@ class StudentCreatePaymentSerializer(serializers.ModelSerializer):
 
     
 
+class PostExamResultSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = StudentExamResult
+        fields = "__all__"
+    
+
 
 

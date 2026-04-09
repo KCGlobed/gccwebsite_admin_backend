@@ -577,3 +577,99 @@ class GetSessionFileUploadView(APIView):
             })
         
 
+### for student profile data
+class GetStudentProfileReportExcelView(APIView):
+    # permission_classes = [IsAuthenticated]
+    def get(self, request):
+        data_objs = StudentProfile.objects.all().order_by("-id")
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                data_objs = data_objs.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                data_objs = data_objs.filter(created_at__date__lte=end_date)
+
+
+        data_list = ListStudentProfileExcelReportSerializer(data_objs, many=True).data
+        COLUMN_MAPPING = {
+            "first_name":"First Name",
+            "last_name":"Last Name",
+            "email":"Email",
+            "phone":"Phone Number",
+            "contact_name":"Contact Name",
+            "contact_phone": "Contact Phone Number",
+            "date_of_birth": "Date Of Birth",
+            "gender": "Gender",
+            "nationality": "Nationality",
+            "pincode": "PinCode",
+            "city": "City",
+            "state": "State",
+            "address": "Full Address",
+            "tenth_passing_year": "Year Of Pass(10th)",
+            "tenth_passing_percentage": "Percentage/CGPA",
+            "tenth_score_type": "Score Type(10th)",
+            "tenth_medium": "Medium(10th)",
+            "twelveth_passing_year": "Year Of Pass(12th)",
+            "twelveth_passing_percentage": "Percentage/CGPA",
+            "twelveth_score_type": "Score Type(12th)",
+            "twelveth_medium": "Medium(12th)",
+            "slot_date": "Slot Date",
+            "slot_time": "Slot Time",
+            "application_id": "Application ID",
+            "created_at": "Create Date"
+            }
+        # print(data_list)
+        # return Response({"message":"success", "data":data_list})
+        # # Create temp file
+        with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as temp_file:
+            pdf_path = temp_file.name
+            
+            #### Create DataFrame and save to the temporary file
+            # df = pd.DataFrame.from_dict(data_list)
+            # df.rename(columns=COLUMN_MAPPING, inplace=True)
+
+            df = pd.DataFrame(data_list)
+
+            # Reorder columns as per COLUMN_MAPPING keys
+            df = df[list(COLUMN_MAPPING.keys())]
+
+            # Rename columns for Excel headers
+            df.rename(columns=COLUMN_MAPPING, inplace=True)
+
+            df.to_excel(pdf_path, header=True, index=False)
+        
+        # After the 'with' block, the file is closed but not deleted
+        try:
+            # GCS file naming logic
+            timestamp = datetime.now().strftime("%d_%m_%y_%H_%M")
+            report_name = "student_profile_report"
+            username = re.sub(r'\s+', '_', f"{request.user.first_name} {request.user.last_name}")
+            gcs_folder_name = "media/excel_report"
+            gcs_file_name = f"{gcs_folder_name}/{username}_{report_name}.xlsx"
+
+            # Upload the temporary file to GCS
+            bucket = client.get_bucket(settings.GS_BUCKET_NAME_2)
+            blob = bucket.blob(gcs_file_name)
+            blob.upload_from_filename(pdf_path)
+            # ---------- Generate signed URL ----------
+            url = blob.generate_signed_url(
+                version="v4",
+                expiration=timedelta(minutes=settings.SIGNED_URL_EXPIRY),
+                method="GET"
+            )
+            return Response({
+                "message": "Success",
+                "data": {
+                    "report_url": url
+                }
+            })
+
+        finally:
+            os.remove(pdf_path)

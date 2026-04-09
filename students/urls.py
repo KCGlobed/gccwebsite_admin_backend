@@ -61,4 +61,7 @@ urlpatterns = [
     
     path('create_student_payment/', StudentCreatePaymentView.as_view(), name="create_student_payment"),
     path('post_exam_result/', PostExamResultView.as_view(), name="post_exam_result"),
+
+    
+    path('student_profile_report_excel/', GetStudentProfileReportExcelView.as_view(), name="student_profile_report_excel"),
 ]

@@ -109,6 +109,40 @@ class ListPaymentExcelReportSerializer(serializers.ModelSerializer) :
 
 
 
+class ListStudentProfileExcelReportSerializer(serializers.ModelSerializer) :
+    created_at = serializers.SerializerMethodField('get_created_at')
+    tenth_medium = serializers.SerializerMethodField('get_tenth_medium')
+    twelveth_medium = serializers.SerializerMethodField('get_twelveth_medium')
+    gender = serializers.SerializerMethodField('get_gender')
+    class Meta:
+        model = StudentProfile
+        fields = "__all__"
+
+    # def to_representation(self, instance):
+    #     data = super().to_representation(instance)
+
+    #     return data
+    
+    def get_created_at(self, obj):
+        if obj.created_at:
+            # Convert to project TIME_ZONE automatically
+            local_dt = timezone.localtime(obj.created_at)
+
+            formatted_date = local_dt.strftime("%B %d, %Y, %I:%M %p")
+
+            # Remove leading zero and convert AM/PM to a.m./p.m.
+            formatted_date = formatted_date.replace(" 0", " ")
+            formatted_date = formatted_date.replace("AM", "a.m.").replace("PM", "p.m.")
+        else:
+            formatted_date = "--"
+        return formatted_date
+    
+    def get_tenth_medium(self, obj):
+        return obj.get_tenth_medium_display()
+    def get_twelveth_medium(self, obj):
+        return obj.get_twelveth_medium_display()
+    def get_gender(self, obj):
+        return obj.get_gender_display()
 
 
 class ListCampusFacultySerializer(serializers.ModelSerializer) :

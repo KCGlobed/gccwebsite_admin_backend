@@ -25,7 +25,7 @@ from django.template.loader import get_template
 from gcc_backend.utils import send_email_async
 import threading
 from django.conf import settings
-
+from django.db.models import OuterRef, Exists
 
 class CareerApplication_list(APIView):
     permission_classes = [IsAuthenticated]
@@ -182,7 +182,18 @@ class DossierDataForm_List(APIView):
     search_fields = ['id',"full_name","email","phone","city","state"]
     ordering_fields = ['id',"full_name","email","phone","city","state","created_at"]
     def get(self, request):
-        datas = DossierData.objects.filter(source=SourceType.Website).order_by('-id')
+
+        document_status = request.GET.get('document_status')
+        if document_status:
+            datas = DossierData.objects.filter(
+                    source=SourceType.Website
+                ).annotate(
+                    has_doc=Exists(
+                        DossierDocument.objects.filter(dossier_id=OuterRef('id'))
+                    )
+                ).filter(has_doc=True).order_by('-id')
+        else:
+            datas = DossierData.objects.filter(source=SourceType.Website).order_by('-id')
 
         full_name = request.GET.get('full_name')
         if full_name:
@@ -293,7 +304,18 @@ class DossierDataSourceForm_List(APIView):
 
         source_type = request.GET.get('source')
         if source_type:
-            datas = DossierData.objects.filter(source=source_type).order_by('-id')
+            # datas = DossierData.objects.filter(source=source_type).order_by('-id')
+            document_status = request.GET.get('document_status')
+            if document_status:
+                datas = DossierData.objects.filter(
+                        source=source_type
+                    ).annotate(
+                        has_doc=Exists(
+                            DossierDocument.objects.filter(dossier_id=OuterRef('id'))
+                        )
+                    ).filter(has_doc=True).order_by('-id')
+            else:
+                datas = DossierData.objects.filter(source=source_type).order_by('-id')
         else:
             datas = DossierData.objects.filter(source=SourceType.Website).order_by('-id')
 

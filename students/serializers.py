@@ -524,6 +524,16 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
             else:
                 mthmedium = "Other"
 
+            if query.higher_education_status == 1:
+                higher_status = "Yes"
+            else:
+                higher_status = "No"
+            if query.pg_status == 1:
+                pg_status = "Completed"
+            else:
+                pg_status = "Pursuing"
+
+
             tenth_score_type = query.tenth_score_type if query.tenth_score_type == "Percentage" else "CGPA out of 10"
             twelveth_score_type = query.twelveth_score_type if query.twelveth_score_type == "Percentage" else "CGPA out of 10"
 
@@ -556,8 +566,13 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                         "field_333994_1_3":query.twelveth_passing_percentage,
                         "field_333994_1_4":mthmedium,
                         "field_340097_1_1":query.institution,
-                        # "field_340097_1_1":query.pg_status,
-                        # "field_340097_1_1":query.pg_status,
+                        "field_340097_1_2":query.ug_score_type,
+                        "field_340097_1_3":query.pg_percentage,
+                        # "field_340097_1_4":query.medium_instruction,
+                        "field_340069":pg_status,
+                        "field_340077":higher_status,
+                        "field_340079":query.higher_qualification_institution,
+                        "field_340078":query.higher_qualification,
                         "field_342113":query.user.application_id,
                         "field_343097":"Complete",
                         "field_343098":"Complete"
@@ -653,15 +668,17 @@ class StudentSlotBookSerializer(serializers.ModelSerializer):
             start_str, end_str = instance.slot_time.split(" - ")
             start_time = datetime.strptime(start_str, "%I:%M %p")
             # Format to HH:mm:ss
-            start_formatted = start_time.strftime("%H:%M:%S")
+            start_formatted = start_time.strftime("%H:%M:%S %p")
+            start_formatted_one = start_time.strftime("%H:%M:%S")
+            print(f'''{instance.slot_date.strftime("%d/%m/%Y")} {start_formatted}''')
             meritto_payload = {
                 "form_id": 22144,
                 "email": instance.email,
                 "search_criteria":"email",
                 "data": {
                         "field_342101":instance.slot_date.strftime("%d/%m/%Y"),
-                        "field_342102":start_formatted,
-                        "field_340093":instance.slot_date.strftime("%d/%m/%Y"),
+                        "field_342102":start_formatted_one,
+                        # "field_340093":instance.slot_date.strftime("%d/%m/%Y"),
                         "field_343386":f'''{instance.slot_date.strftime("%d/%m/%Y")} {start_formatted}'''
                         # "field_340094":instance.slot_time
                 }

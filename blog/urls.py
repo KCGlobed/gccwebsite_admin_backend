@@ -4,7 +4,15 @@ from .views import *
 urlpatterns = [
 
     path("tags_dropdown", BlogTag_dropdown.as_view()),
+    path("create_tag", CreateTagView.as_view()),
+    path("update_tag/<int:pk>", UpdateTagView.as_view()),
+    path("delete_tag/<int:pk>", DeleteTagView.as_view()),
+
+
     path("category_dropdown", BlogCategory_dropdown.as_view()),
+    path("create_category", CreateCategoryView.as_view()),
+    path("update_category/<int:pk>", UpdateCategoryView.as_view()),
+    path("delete_category/<int:pk>", DeleteCategoryView.as_view()),
 
 
     path("create_blog", CreateBlogView.as_view()),

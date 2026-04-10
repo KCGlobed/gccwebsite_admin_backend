@@ -23,6 +23,51 @@ from django.utils.dateparse import parse_date
 # Create your views here.
 
 
+
+class CreateTagView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request, format=None):
+        serializer = ListTagSerializer(data = request.data)
+        if serializer.is_valid(raise_exception = True):
+            user  = serializer.save()
+            return Response({
+            'success': True,
+            'message': 'Tag created successfully',
+            "status": str(status.HTTP_200_OK),
+            "data": serializer.data
+            })
+        return Response({
+            'success': False,
+            'message': 'Failed',
+            "status": str(status.HTTP_400_BAD_REQUEST),
+            "data": serializer.errors
+        })
+    
+
+
+class UpdateTagView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, pk):
+        try:
+            obj = Tag.objects.get(id=pk)
+        except Tag.DoesNotExist:
+            return Response({"error": "Tag not found"}, status=404)
+
+        serializer = ListTagSerializer(obj, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response({
+            "success": True,
+            "message": "Tag updated successfully",
+            "data": serializer.data
+        })
+
+
+
+
+
 class BlogTag_dropdown(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
@@ -35,6 +80,93 @@ class BlogTag_dropdown(APIView):
             "data": serializers.data
         })
     
+
+class DeleteTagView(APIView):
+    permission_classes = [IsAuthenticated]
+    def delete(self, request, pk, format=None):
+        try:
+            course = Tag.objects.get(id = pk)
+            course.delete()
+            return Response({
+                "success": True,
+                "message": "Tag Deleted Successfully",
+                "data": [{"id":pk}],
+                "status":status.HTTP_200_OK
+            })
+        except Tag.DoesNotExist:
+            return Response({
+                "success": False,
+                "message": "Tag not found",
+                "data": [{"id":pk}],
+                "status":status.HTTP_400_BAD_REQUEST
+            })
+
+
+
+
+class CreateCategoryView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request, format=None):
+        serializer = ListCategorySerializer(data = request.data)
+        if serializer.is_valid(raise_exception = True):
+            user  = serializer.save()
+            return Response({
+            'success': True,
+            'message': 'Category created successfully',
+            "status": str(status.HTTP_200_OK),
+            "data": serializer.data
+            })
+        return Response({
+            'success': False,
+            'message': 'Failed',
+            "status": str(status.HTTP_400_BAD_REQUEST),
+            "data": serializer.errors
+        })
+    
+
+
+class UpdateCategoryView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, pk):
+        try:
+            obj = Category.objects.get(id=pk)
+        except Category.DoesNotExist:
+            return Response({"error": "Category not found"}, status=404)
+
+        serializer = ListCategorySerializer(obj, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response({
+            "success": True,
+            "message": "Category updated successfully",
+            "data": serializer.data
+        })
+
+    
+
+class DeleteCategoryView(APIView):
+    permission_classes = [IsAuthenticated]
+    def delete(self, request, pk, format=None):
+        try:
+            course = Category.objects.get(id = pk)
+            course.delete()
+            return Response({
+                "success": True,
+                "message": "Category Deleted Successfully",
+                "data": [{"id":pk}],
+                "status":status.HTTP_200_OK
+            })
+        except Category.DoesNotExist:
+            return Response({
+                "success": False,
+                "message": "Category not found",
+                "data": [{"id":pk}],
+                "status":status.HTTP_400_BAD_REQUEST
+            })
+
+
 
 class BlogCategory_dropdown(APIView):
     permission_classes = [IsAuthenticated]

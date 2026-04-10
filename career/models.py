@@ -156,5 +156,8 @@ class DossierAbondant(models.Model):
     source_form = models.IntegerField(choices=SourceFormType.choices,default=SourceFormType.ApplyNow)
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
-
+    ## Added
+    utm_source = models.CharField(max_length=250, blank=True, null=True)
+    utm_medium = models.CharField(max_length=250, blank=True, null=True)
+    utm_campaign = models.CharField(max_length=250, blank=True, null=True)
     

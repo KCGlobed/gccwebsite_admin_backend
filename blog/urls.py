@@ -20,4 +20,8 @@ urlpatterns = [
     path("delete_blog/<int:pk>", DeleteBlogView.as_view()),
     path("blogs_list", Blogs_list.as_view()),
     
+
+    ## Websites 
+    path("websiteblogs_list", WebsiteBlogs_list.as_view()),
+    path("websiteblogs_detail/<int:pk>", WebsiteBlogs_detail.as_view()),
 ]

@@ -277,3 +277,63 @@ class DeleteBlogView(APIView):
                 "data": [{"id":pk}],
                 "status":status.HTTP_400_BAD_REQUEST
             })
+        
+
+
+
+##################################### For Website ####################################
+
+
+class WebsiteBlogs_list(APIView):
+    pagination_class = CustomPageNumberPagination
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['title']
+    ordering_fields = ['id']
+    def get(self, request):
+        datas = Blog.objects.filter(status=True).order_by('-id')
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+        search_filter = filters.SearchFilter()
+        datas = search_filter.filter_queryset(request, datas, self)
+
+        ordering_filter = filters.OrderingFilter()
+        datas = ordering_filter.filter_queryset(request, datas, self)
+
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(datas, request, view=self)
+        serializers = ListingBlogSerializer(page, many=True)
+        
+        return paginator.get_paginated_response(serializers.data)
+    
+
+
+
+
+class WebsiteBlogs_detail(APIView):
+    def get(self, request, pk):
+
+        datas = Blog.objects.filter(id=pk, status=True)
+        serializers = ListingBlogSerializer(datas, many=True).data
+        
+        return Response({
+                "success": True,
+                "message": "Success",
+                "data": serializers,
+                "status":status.HTTP_200_OK
+            })
+    
+
+
+

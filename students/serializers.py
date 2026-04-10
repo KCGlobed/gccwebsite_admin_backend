@@ -524,10 +524,18 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
             else:
                 mthmedium = "Other"
 
+            if int(query.medium_instruction) == 1:
+                minstrmedium = "English"
+            elif int(query.medium_instruction) == 2:
+                minstrmedium = "Hindi"
+            else:
+                minstrmedium = "Other"
+
             if query.higher_education_status == 1:
                 higher_status = "Yes"
             else:
                 higher_status = "No"
+
             if query.pg_status == 1:
                 pg_status = "Completed"
             else:
@@ -568,7 +576,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                         "field_340097_1_1":query.institution,
                         "field_340097_1_2":query.ug_score_type,
                         "field_340097_1_3":query.pg_percentage,
-                        # "field_340097_1_4":query.medium_instruction,
+                        "field_340097_1_4":query.pg_percentage,
                         "field_340069":pg_status,
                         "field_340077":higher_status,
                         "field_340079":query.higher_qualification_institution,
@@ -683,6 +691,7 @@ class StudentSlotBookSerializer(serializers.ModelSerializer):
                         # "field_340094":instance.slot_time
                 }
             }
+            print(meritto_payload)
             try:
                 response = requests.post(url, headers=headers, json=meritto_payload)
                 print(response.status_code)

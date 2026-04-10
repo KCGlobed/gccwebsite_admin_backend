@@ -579,7 +579,7 @@ class GetSessionFileUploadView(APIView):
 
 ### for student profile data
 class GetStudentProfileReportExcelView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         data_objs = StudentProfile.objects.all().order_by("-id")
 

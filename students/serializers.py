@@ -957,6 +957,7 @@ class PostExamResultSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def create(self, validated_data):
+        print(validated_data)
         std_obj = StudentProfile.objects.filter(application_id=validated_data.get("email"))
         if std_obj:
             validated_data["student_profile"] = std_obj.first()

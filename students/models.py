@@ -346,7 +346,7 @@ class StudentExamResult(models.Model):
     totalquestionsattempted = models.CharField(max_length=250, null=True, blank=True)
     totalcorrectanswers = models.CharField(max_length=250, null=True, blank=True)
     totalquestions = models.CharField(max_length=250, null=True, blank=True)
-    json_data = models.TextField(null=True, blank=True)
+    json_data = models.JSONField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
 

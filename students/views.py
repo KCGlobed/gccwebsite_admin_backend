@@ -1735,9 +1735,15 @@ class StudentCreatePaymentView(APIView):
 class PostExamResultView(APIView):
     # permission_classes = [IsAuthenticated]
     def post(self, request):
+        print(request.data)
         serializers = PostExamResultSerializer(data=request.data)
         if serializers.is_valid():
-            serializers.save()
+            datas = serializers.save()
+            print(datas)
+            print(type(datas))
+            print(datas.json_data)
+            datas.json_data = request.data["competency"]
+            datas.save()
             return Response({'message':'success',"status":200,'data':{}})
         else:
             return Response({'message':'failed',"status":400,'data':serializers.errors})

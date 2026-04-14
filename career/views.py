@@ -194,7 +194,12 @@ class DossierDataForm_List(APIView):
                 ).filter(has_doc=True).order_by('-id')
         else:
             datas = DossierData.objects.filter(source=SourceType.Website).order_by('-id')
-
+        
+        verify_status = request.GET.get('isVerified')
+        if verify_status:
+            if str(verify_status) in ["2","3"]:
+                datas = datas.filter(document_status=int(verify_status))
+                
         full_name = request.GET.get('full_name')
         if full_name:
             datas = datas.filter(full_name__icontains=full_name)

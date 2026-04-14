@@ -1644,26 +1644,25 @@ class GetStudentProfileListingView(APIView):
 
 
 class GetStudentScoreCardView(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     def get(self, request):
-        user_obj = User.objects.filter(id=request.user.id).first()
+        user_obj = User.objects.filter(id=233).first()
         std_data = StudentProfile.objects.filter(user = user_obj).first()
         static_selected_bucket = settings.GS_BUCKET_NAME
         context = {
-            "candidate_name":"testing",
+            "candidate_name":f'''{std_data.first_name}" "{std_data.last_name}''',
             "application_id":user_obj.application_id,
-            "date_of_exam":"23-03-2026",
-            "candidate_name":"testing",
-            "time_of_exam":"08:30 PM",
-            "total_questions":"08:30 PM",
-            "total_correct":"08:30 PM",
-            "total_incorrect":"08:30 PM",
-            "total_not_attempted":"08:30 PM",
+            "date_of_exam":std_data.slot_date,
+            "time_of_exam":std_data.slot_time,
+            "total_questions":10,
+            "total_correct":5,
+            "total_incorrect":2,
+            "total_not_attempted":3,
 
             "username": user_obj.email,
             "user_id": user_obj.id,
             "application_id": user_obj.application_id,
-            "student_name": std_data.first_name+" "+std_data.last_name,
+            "student_name": f'''{std_data.first_name}" "{std_data.last_name}''',
             "slot_date": std_data.slot_date,
             "slot_time": std_data.slot_time,
             "photo": std_data.photo.url,

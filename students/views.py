@@ -1648,16 +1648,31 @@ class GetStudentScoreCardView(APIView):
     def get(self, request):
         user_obj = User.objects.filter(id=233).first()
         std_data = StudentProfile.objects.filter(user = user_obj).first()
+        score_objs = StudentExamResult.objects.filter(student_profile=std_data).first()
+        
+        datas = []
+        for i in score_objs.json_data:
+            obj = {}
+            obj["Name"] = i["Name"]
+            obj["TotalQuestions"] = i["TotalQuestions"]
+            obj["Incorrect"] = int(float(i["Attempted"])-float(i['Correct']))
+            obj["Correct"] = i["Correct"]
+            obj["NotAttempted"] = int(float(i["TotalQuestions"]) - float(i["Attempted"]))
+            datas.append(obj)
+
+        # print(score_objs, score_objs.json_data, type(score_objs.json_data), type(score_objs.json_data[0]))
+
         static_selected_bucket = settings.GS_BUCKET_NAME
         context = {
-            "candidate_name":f'''{std_data.first_name}" "{std_data.last_name}''',
+            "candidate_name":f"{std_data.first_name} {std_data.last_name}",
             "application_id":user_obj.application_id,
             "date_of_exam":std_data.slot_date,
             "time_of_exam":std_data.slot_time,
-            "total_questions":10,
-            "total_correct":5,
-            "total_incorrect":2,
-            "total_not_attempted":3,
+            "sections":datas,
+            "total_questions":score_objs.totalquestions,
+            "total_correct":score_objs.totalcorrectanswers,
+            "total_incorrect":int(float(score_objs.totalquestionsattempted) - float(score_objs.totalcorrectanswers)),
+            "total_not_attempted":int(float(score_objs.totalquestions) - float(score_objs.totalquestionsattempted)),
 
             "username": user_obj.email,
             "user_id": user_obj.id,
@@ -1674,6 +1689,7 @@ class GetStudentScoreCardView(APIView):
             # "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/admit_card_signature.png"
             "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/gcc_admit_card_sign.png"
         }
+        # return Response({"abc":"efg"})
         # Render template
         template = get_template("pdf/student_score_card.html")
         html = template.render(context)

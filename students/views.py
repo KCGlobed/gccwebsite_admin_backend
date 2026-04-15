@@ -1582,12 +1582,13 @@ class GetStudentProfileView(APIView):
         return Response({'message':'failed',"status":400,'data':[]})
     
 
+
 class GetStudentReAttemptView(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request):
-        st = request.data.get("status")
+        status = request.data.get("status")
 
-        if not st:
+        if not status:
             return Response({
                 "message":"Status is required",
                 "status":status.HTTP_400_BAD_REQUEST,
@@ -1603,6 +1604,7 @@ class GetStudentReAttemptView(APIView):
                 return Response({'message':'failed',"status":400,'data':serializers.errors})
         return Response({'message':'failed',"status":400,'data':{}})
     
+
 
 
 class GetStudentProfileListingView(APIView):

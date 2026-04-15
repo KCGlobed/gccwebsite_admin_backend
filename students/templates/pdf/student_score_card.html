@@ -32,6 +32,7 @@
             text-align: center;
             padding: 8px;
             font-weight: bold;
+            font-size: 12px;
             letter-spacing: 1px;
             margin-bottom: 20px;
             border-radius: 4px;
@@ -49,7 +50,7 @@
             width: 20%;
         }
         .value {
-            font-weight: bold;
+            /* font-weight: bold; */
             width: 30%;
         }
         .score-table {
@@ -106,15 +107,15 @@
     <table class="info-table">
         <tr>
             <td class="label">Candidate Name:</td>
-            <td class="value">{{ name }}</td>
+            <td class="value">{{ candidate_name }}</td>
             <td class="label">Application ID:</td>
-            <td class="value">{{ app_id }}</td>
+            <td class="value">{{ application_id }}</td>
         </tr>
         <tr>
             <td class="label">Date of Exam:</td>
-            <td class="value">{{ exam_date }}</td>
+            <td class="value">{{ date_of_exam }}</td>
             <td class="label">Time of Exam:</td>
-            <td class="value">{{ exam_time }}</td>
+            <td class="value">{{ time_of_exam }}</td>
         </tr>
     </table>
 
@@ -131,19 +132,19 @@
         <tbody>
             {% for row in sections %}
             <tr>
-                <td class="text-left">{{ row.name }}</td>
-                <td>{{ row.total }}</td>
-                <td>{{ row.correct }}</td>
-                <td>{{ row.incorrect }}</td>
-                <td>{{ row.unattempted }}</td>
+                <td class="text-left">{{ row.Name }}</td>
+                <td>{{ row.TotalQuestions }}</td>
+                <td>{{ row.Correct }}</td>
+                <td>{{ row.Incorrect }}</td>
+                <td>{{ row.NotAttempted }}</td>
             </tr>
             {% endfor %}
             <tr class="total-row">
                 <td class="text-left">Total</td>
-                <td>{{ total_q }}</td>
-                <td>{{ total_c }}</td>
-                <td>{{ total_i }}</td>
-                <td>{{ total_u }}</td>
+                <td>{{ total_questions }}</td>
+                <td>{{ total_correct }}</td>
+                <td>{{ total_incorrect }}</td>
+                <td>{{ total_not_attempted }}</td>
             </tr>
         </tbody>
     </table>

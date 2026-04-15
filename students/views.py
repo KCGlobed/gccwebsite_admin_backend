@@ -1644,11 +1644,15 @@ class GetStudentProfileListingView(APIView):
 
 
 class GetStudentScoreCardView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     def get(self, request):
-        user_obj = User.objects.filter(id=233).first()
-        std_data = StudentProfile.objects.filter(user = user_obj).first()
+        user_obj = request.user
+
+        std_data = StudentProfile.objects.filter(user=user_obj).first()
         score_objs = StudentExamResult.objects.filter(student_profile=std_data).first()
+
+        if not score_objs:
+            return Response({"message": "No data found"}, status=404)
         
         datas = []
         for i in score_objs.json_data:
@@ -1660,11 +1664,9 @@ class GetStudentScoreCardView(APIView):
             obj["NotAttempted"] = int(float(i["TotalQuestions"]) - float(i["Attempted"]))
             datas.append(obj)
 
-        # print(score_objs, score_objs.json_data, type(score_objs.json_data), type(score_objs.json_data[0]))
-
         static_selected_bucket = settings.GS_BUCKET_NAME
         context = {
-            "candidate_name":f"{std_data.first_name} {std_data.last_name}",
+            "candidate_name":f"{std_data.first_name.upper()} {std_data.last_name.upper()}",
             "application_id":user_obj.application_id,
             "date_of_exam":std_data.slot_date,
             "time_of_exam":std_data.slot_time,
@@ -1677,7 +1679,7 @@ class GetStudentScoreCardView(APIView):
             "username": user_obj.email,
             "user_id": user_obj.id,
             "application_id": user_obj.application_id,
-            "student_name": f'''{std_data.first_name}" "{std_data.last_name}''',
+            "student_name": f'''{std_data.first_name.upper()}" "{std_data.last_name.upper()}''',
             "slot_date": std_data.slot_date,
             "slot_time": std_data.slot_time,
             "photo": std_data.photo.url,
@@ -1689,24 +1691,7 @@ class GetStudentScoreCardView(APIView):
             # "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/admit_card_signature.png"
             "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/gcc_admit_card_sign.png"
         }
-        context = {
-            "name": "Akshat Sinha",
-            "app_id": "NFET-2026-000022",
-            "exam_date": "28/03/2026",
-            "exam_time": "11:30 AM - 01:00 PM",
-            "sections": [
-                {"name": "Accounting & Finance Fundamentals", "total": 18, "correct": 16, "incorrect": 2, "unattempted": 0},
-                {"name": "English & Business Communication", "total": 18, "correct": 15, "incorrect": 3, "unattempted": 0},
-                {"name": "Auditing & Analytical Reasoning", "total": 12, "correct": 12, "incorrect": 0, "unattempted": 0},
-                {"name": "Quantitative Aptitude", "total": 6, "correct": 5, "incorrect": 1, "unattempted": 0},
-                {"name": "Business & Economic Awareness", "total": 6, "correct": 6, "incorrect": 0, "unattempted": 0},
-            ],
-            "total_q": 60,
-            "total_c": 54,
-            "total_i": 6,
-            "total_u": 0,
-        }
-        # return Response({"abc":"efg"})
+        
         # Render template
         template = get_template("pdf/student_score_card.html")
         html = template.render(context)

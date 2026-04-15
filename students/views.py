@@ -1674,6 +1674,23 @@ class GetStudentScoreCardView(APIView):
             # "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/admit_card_signature.png"
             "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/gcc_admit_card_sign.png"
         }
+        context = {
+            "name": "Akshat Sinha",
+            "app_id": "NFET-2026-000022",
+            "exam_date": "28/03/2026",
+            "exam_time": "11:30 AM - 01:00 PM",
+            "sections": [
+                {"name": "Accounting & Finance Fundamentals", "total": 18, "correct": 16, "incorrect": 2, "unattempted": 0},
+                {"name": "English & Business Communication", "total": 18, "correct": 15, "incorrect": 3, "unattempted": 0},
+                {"name": "Auditing & Analytical Reasoning", "total": 12, "correct": 12, "incorrect": 0, "unattempted": 0},
+                {"name": "Quantitative Aptitude", "total": 6, "correct": 5, "incorrect": 1, "unattempted": 0},
+                {"name": "Business & Economic Awareness", "total": 6, "correct": 6, "incorrect": 0, "unattempted": 0},
+            ],
+            "total_q": 60,
+            "total_c": 54,
+            "total_i": 6,
+            "total_u": 0,
+        }
         # Render template
         template = get_template("pdf/student_score_card.html")
         html = template.render(context)

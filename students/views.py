@@ -1606,7 +1606,7 @@ class GetStudentReAttemptView(APIView):
     
 
 
-
+    
 class GetStudentProfileListingView(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPageNumberPagination

@@ -68,4 +68,27 @@ class ListingBlogSerializer(serializers.ModelSerializer) :
 
 
 
+######################################## Seminar Event Manage ##################################################
 
+
+class CreateUpdateSeminarSerializer(serializers.ModelSerializer) :
+    class Meta:
+        model = ManageSeminar
+        fields = ["title","content","thumbnailImage","tags","event_link"]
+
+class ManageSeminarSerializer(serializers.ModelSerializer) :
+    class Meta:
+        model = ManageSeminar
+        fields = "__all__"
+
+class ChangeSeminarStatusSerializer(serializers.ModelSerializer) :
+    class Meta:
+        model = ManageSeminar
+        fields = ["status"]
+
+
+class WebsiteManageSeminarSerializer(serializers.ModelSerializer) :
+    class Meta:
+        model = ManageSeminar
+        # fields = "__all__"
+        exclude = ["status"]

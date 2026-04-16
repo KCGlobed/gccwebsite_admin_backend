@@ -20,8 +20,18 @@ urlpatterns = [
     path("delete_blog/<int:pk>", DeleteBlogView.as_view()),
     path("blogs_list", Blogs_list.as_view()),
     
+    
+    path("create_seminar", CreateManageSeminarView.as_view()),
+    path("seminar_page_list", Seminar_list.as_view()),
+    path("update_seminar/<int:pk>", UpdateSeminarView.as_view()),
+    path("delete_seminar/<int:pk>", DeleteSeminarView.as_view()),
+    path("change_seminar_status/<int:pk>", ChangeSeminarStatusView.as_view()),
+    path("website_seminar_page_list", WebsiteSeminar_list.as_view()),
+
 
     ## Websites 
     path("websiteblogs_list", WebsiteBlogs_list.as_view()),
     path("websiteblogs_detail/<int:pk>", WebsiteBlogs_detail.as_view()),
+
+
 ]

@@ -61,3 +61,36 @@ class Blog(models.Model):
     def __str__(self):
         return '%s' % self.id
 
+
+
+
+
+
+##################################### Seminar/Event Management ########################################
+
+
+
+
+class ManageSeminar(models.Model):
+    title = models.CharField(max_length=200, null=True, blank=True)
+    content = models.TextField()
+    thumbnailImage = models.FileField(upload_to="blog/seminar_thumbnail/images/", null=True, blank=True)
+    tags = models.CharField(max_length=200, null=True, blank=True)
+    event_link = models.CharField(max_length=250, null=True, blank=True)
+    status = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Manage Seminar'
+        verbose_name_plural = 'Manage Seminar'
+        
+    def __str__(self):
+        return '%s' % self.id
+
+
+
+
+
+
+

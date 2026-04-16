@@ -337,3 +337,161 @@ class WebsiteBlogs_detail(APIView):
 
 
 
+#################################### Seminar Event Manage ################################
+
+
+class CreateManageSeminarView(APIView):
+    # permission_classes = [IsAuthenticated]
+    def post(self, request, format=None):
+        serializer = CreateUpdateSeminarSerializer(data = request.data)
+        if serializer.is_valid(raise_exception = True):
+            user  = serializer.save()
+            return Response({
+            'success': True,
+            'message': 'Seminar created successfully',
+            "status": str(status.HTTP_200_OK),
+            "data": serializer.data
+            })
+        return Response({
+            'success': False,
+            'message': 'Failed',
+            "status": str(status.HTTP_400_BAD_REQUEST),
+            "data": serializer.errors
+        })
+
+
+
+class Seminar_list(APIView):
+    # permission_classes = [IsAuthenticated]
+    pagination_class = CustomPageNumberPagination
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['id']
+    ordering_fields = ['id']
+    def get(self, request):
+        datas = ManageSeminar.objects.all().order_by('-id')
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+        search_filter = filters.SearchFilter()
+        datas = search_filter.filter_queryset(request, datas, self)
+
+        ordering_filter = filters.OrderingFilter()
+        datas = ordering_filter.filter_queryset(request, datas, self)
+
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(datas, request, view=self)
+        serializers = ManageSeminarSerializer(page, many=True)
+        
+        return paginator.get_paginated_response(serializers.data)
+    
+
+
+
+class UpdateSeminarView(APIView):
+    # permission_classes = [IsAuthenticated]
+
+    def patch(self, request, pk):
+        try:
+            obj = ManageSeminar.objects.get(id=pk)
+        except ManageSeminar.DoesNotExist:
+            return Response({"error": "Seminar not found"}, status=404)
+
+        serializer = CreateUpdateSeminarSerializer(obj, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response({
+            "success": True,
+            "message": "Seminar updated successfully",
+            "data": serializer.data
+        })
+
+class DeleteSeminarView(APIView):
+    # permission_classes = [IsAuthenticated]
+    def delete(self, request, pk, format=None):
+        try:
+            course = ManageSeminar.objects.get(id = pk)
+            course.delete()
+            return Response({
+                "success": True,
+                "message": "Seminar Deleted Successfully",
+                "data": [{"id":pk}],
+                "status":status.HTTP_200_OK
+            })
+        except ManageSeminar.DoesNotExist:
+            return Response({
+                "success": False,
+                "message": "Seminar not found",
+                "data": [{"id":pk}],
+                "status":status.HTTP_400_BAD_REQUEST
+            })
+        
+
+class ChangeSeminarStatusView(APIView):
+    # permission_classes = [IsAuthenticated]
+
+    def patch(self, request, pk):
+        try:
+            obj = ManageSeminar.objects.get(id=pk)
+        except ManageSeminar.DoesNotExist:
+            return Response({"error": "Seminar not found"}, status=404)
+
+        serializer = ChangeSeminarStatusSerializer(obj, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response({
+            "success": True,
+            "message": "Seminar status updated successfully",
+            "data": serializer.data
+        })
+
+
+##### WEbsites ####
+
+class WebsiteSeminar_list(APIView):
+    pagination_class = CustomPageNumberPagination
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['id']
+    ordering_fields = ['id']
+    def get(self, request):
+        datas = ManageSeminar.objects.all().order_by('-id')
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+        search_filter = filters.SearchFilter()
+        datas = search_filter.filter_queryset(request, datas, self)
+
+        ordering_filter = filters.OrderingFilter()
+        datas = ordering_filter.filter_queryset(request, datas, self)
+
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(datas, request, view=self)
+        serializers = ManageSeminarSerializer(page, many=True)
+        
+        return paginator.get_paginated_response(serializers.data)
+    
+
+

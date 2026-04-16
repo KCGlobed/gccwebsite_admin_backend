@@ -341,7 +341,7 @@ class WebsiteBlogs_detail(APIView):
 
 
 class CreateManageSeminarView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     def post(self, request, format=None):
         serializer = CreateUpdateSeminarSerializer(data = request.data)
         if serializer.is_valid(raise_exception = True):
@@ -362,7 +362,7 @@ class CreateManageSeminarView(APIView):
 
 
 class Seminar_list(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     pagination_class = CustomPageNumberPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['id']
@@ -399,7 +399,7 @@ class Seminar_list(APIView):
 
 
 class UpdateSeminarView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def patch(self, request, pk):
         try:
@@ -418,7 +418,7 @@ class UpdateSeminarView(APIView):
         })
 
 class DeleteSeminarView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     def delete(self, request, pk, format=None):
         try:
             course = ManageSeminar.objects.get(id = pk)
@@ -439,7 +439,7 @@ class DeleteSeminarView(APIView):
         
 
 class ChangeSeminarStatusView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def patch(self, request, pk):
         try:

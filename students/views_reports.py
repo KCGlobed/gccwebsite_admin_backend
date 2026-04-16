@@ -620,6 +620,7 @@ class GetStudentProfileReportExcelView(APIView):
             "twelveth_passing_percentage": "Percentage/CGPA",
             "twelveth_score_type": "Score Type(12th)",
             "twelveth_medium": "Medium(12th)",
+            "employement_status":"Experience",
             "slot_date": "Slot Date",
             "slot_time": "Slot Time",
             "application_id": "Application ID",

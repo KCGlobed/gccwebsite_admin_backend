@@ -143,6 +143,13 @@ class ListStudentProfileExcelReportSerializer(serializers.ModelSerializer) :
         return obj.get_twelveth_medium_display()
     def get_gender(self, obj):
         return obj.get_gender_display()
+    def get_employement_status(self, obj):
+        name = "N/A"
+        if str(obj.employement_status) == "1":
+            name = "Fresher"
+        else:
+            name = "Experience"
+        return name
 
 
 class ListCampusFacultySerializer(serializers.ModelSerializer) :

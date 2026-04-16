@@ -489,7 +489,7 @@ class WebsiteSeminar_list(APIView):
 
         paginator = self.pagination_class()
         page = paginator.paginate_queryset(datas, request, view=self)
-        serializers = ManageSeminarSerializer(page, many=True)
+        serializers = WebsiteManageSeminarSerializer(page, many=True)
         
         return paginator.get_paginated_response(serializers.data)
     

@@ -90,5 +90,4 @@ class ChangeSeminarStatusSerializer(serializers.ModelSerializer) :
 class WebsiteManageSeminarSerializer(serializers.ModelSerializer) :
     class Meta:
         model = ManageSeminar
-        # fields = "__all__"
-        exclude = ["status"]
+        exclude = ["status","updated_at"]

@@ -86,7 +86,7 @@ class ChangeSeminarStatusSerializer(serializers.ModelSerializer) :
         model = ManageSeminar
         fields = ["status"]
 
-
+### Webistes
 class WebsiteManageSeminarSerializer(serializers.ModelSerializer) :
     class Meta:
         model = ManageSeminar

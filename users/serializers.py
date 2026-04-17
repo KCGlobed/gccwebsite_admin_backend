@@ -228,18 +228,23 @@ class CreateUniversityStudentSerializer(serializers.ModelSerializer):
         fields = ['dossier_id','email','full_name',"city","state","country","phone1","remarks","document_status"]
         
 
-    def validate(self, data):
-        user_count = User.objects.filter(email = data.get('email').lower()).count()
-        if user_count > 0:
-            raise serializers.ValidationError('Email address is already registered with Us')
+    # def validate(self, data):
+    #     user_count = User.objects.filter(email = data.get('email').lower()).count()
+    #     if user_count > 0:
+    #         raise serializers.ValidationError('Email address is already registered with Us')
         
-        return data
+    #     return data
 
 
     def create(self, validate_data):
         now = timezone.now()
         dat = timezone.localtime(now)
         if validate_data.get('document_status') == 2:
+            user_count = User.objects.filter(email = validate_data.get('email').lower()).count()
+            if user_count > 0:
+                DossierData.objects.filter(id=validate_data.get("dossier_id")).update(document_status=validate_data.get('document_status'),remarks=self.validated_data.get('remarks'),remarks_timestamp=dat)
+                raise serializers.ValidationError({'message':'Document Already Approved!','status':200,'data':[]})
+            
             password = generate_random_password(8)
             info = { "first_name": validate_data.get('full_name'), "last_name":"", 'email': validate_data.get('email').lower(), 'password': password}
             user = User.objects.create_user(**info)
@@ -308,7 +313,7 @@ class CreateUniversityStudentSerializer(serializers.ModelSerializer):
             
             return user
         elif validate_data.get('document_status') == 3:
-
+            
             DossierData.objects.filter(id=validate_data.get("dossier_id")).update(document_status=validate_data.get('document_status'),remarks=self.validated_data.get('remarks'),remarks_timestamp=dat)
             
             

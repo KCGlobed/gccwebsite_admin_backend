@@ -1628,6 +1628,21 @@ class GetStudentProfileListingView(APIView):
             end_date = parse_date(end_date)
             if end_date:
                 datas = datas.filter(created_at__date__lte=end_date)
+        
+
+        # slot_date range filter
+        start_slot_date = request.GET.get('start_slot_date')
+        end_slot_date = request.GET.get('end_slot_date')
+        if start_slot_date:
+            # start_slot_date = parse_date(start_slot_date)
+            if start_date:
+                datas = datas.filter(slot_date__gte=start_date)
+
+        if end_slot_date:
+            # end_date = parse_date(end_date)
+            if end_slot_date:
+                datas = datas.filter(slot_date__lte=end_slot_date)
+
 
         search_filter = filters.SearchFilter()
         datas = search_filter.filter_queryset(request, datas, self)

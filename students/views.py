@@ -1612,7 +1612,7 @@ class GetStudentProfileListingView(APIView):
     pagination_class = CustomPageNumberPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['first_name',"last_name","email","phone","state","city"]
-    ordering_fields = ['first_name',"last_name","email","phone","state","city","created_at"]
+    ordering_fields = ['first_name',"last_name","email","phone","state","city","created_at","slot_date"]
     def get(self, request):
         datas = StudentProfile.objects.all().order_by('-id')
 
@@ -1629,19 +1629,17 @@ class GetStudentProfileListingView(APIView):
             if end_date:
                 datas = datas.filter(created_at__date__lte=end_date)
         
-
+        print(request)
+        print("sasasa",type(request.GET.get("start_slot_date")))
+        print("sdadadsad",type(request.GET.get("end_slot_date")))
         # slot_date range filter
         start_slot_date = request.GET.get('start_slot_date')
         end_slot_date = request.GET.get('end_slot_date')
         if start_slot_date:
-            # start_slot_date = parse_date(start_slot_date)
-            if start_date:
-                datas = datas.filter(slot_date__gte=start_date)
+            datas = datas.filter(slot_date__gte=start_slot_date)
 
         if end_slot_date:
-            # end_date = parse_date(end_date)
-            if end_slot_date:
-                datas = datas.filter(slot_date__lte=end_slot_date)
+            datas = datas.filter(slot_date__lte=end_slot_date)
 
 
         search_filter = filters.SearchFilter()

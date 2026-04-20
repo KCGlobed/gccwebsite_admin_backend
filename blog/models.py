@@ -44,6 +44,8 @@ class Blog(models.Model):
     content = models.TextField()
     excerpt = models.TextField(blank=True)
     featuredImage = models.FileField(upload_to="blog/images/", null=True, blank=True)
+    altImage = models.CharField(max_length=200,null=True, blank=True)
+    schema_markup = models.TextField(blank=True, null=True)
     categories = models.ManyToManyField(Category, related_name="blogs")
     tags = models.ManyToManyField(Tag, related_name="blogs")
     blogStatus = models.CharField(max_length=20, choices=STATUS_CHOICES, default="draft")

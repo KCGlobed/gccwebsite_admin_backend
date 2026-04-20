@@ -1750,6 +1750,95 @@ class GetStudentScoreCardView(APIView):
             os.remove(pdf_path)
 
 
+class GetAdminStudentScoreCardView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, stid):
+        
+        std_data = StudentProfile.objects.filter(id=stid).first()
+        score_objs = StudentExamResult.objects.filter(student_profile=std_data).first()
+
+        if not score_objs:
+            return Response({"message": "No data found"},data={}, status=404)
+        
+        datas = []
+        for i in score_objs.json_data:
+            obj = {}
+            obj["Name"] = i["Name"]
+            obj["TotalQuestions"] = i["TotalQuestions"]
+            obj["Incorrect"] = int(float(i["Attempted"])-float(i['Correct']))
+            obj["Correct"] = i["Correct"]
+            obj["NotAttempted"] = int(float(i["TotalQuestions"]) - float(i["Attempted"]))
+            datas.append(obj)
+
+        static_selected_bucket = settings.GS_BUCKET_NAME
+        context = {
+            "candidate_name":f"{std_data.first_name.upper()} {std_data.last_name.upper()}",
+            "application_id":std_data.application_id,
+            "date_of_exam":std_data.slot_date,
+            "time_of_exam":std_data.slot_time,
+            "sections":datas,
+            "total_questions":score_objs.totalquestions,
+            "total_correct":score_objs.totalcorrectanswers,
+            "total_incorrect":int(float(score_objs.totalquestionsattempted) - float(score_objs.totalcorrectanswers)),
+            "total_not_attempted":int(float(score_objs.totalquestions) - float(score_objs.totalquestionsattempted)),
+
+            "username": std_data.email,
+            "user_id": std_data.id,
+            "application_id": std_data.application_id,
+            "student_name": f'''{std_data.first_name.upper()}" "{std_data.last_name.upper()}''',
+            "slot_date": std_data.slot_date,
+            "slot_time": std_data.slot_time,
+            "photo": std_data.photo.url,
+            "signature": std_data.signature.url,
+            "barcode":"",
+            "report_date": datetime.now(),
+            "test_link":"https://cocubes.in/gccschool-nfet",
+            "bucket_static_logo":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/gcc-admit-card-logo.jpeg",
+            # "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/admit_card_signature.png"
+            "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/gcc_admit_card_sign.png"
+        }
+        
+        # Render template
+        template = get_template("pdf/student_score_card.html")
+        html = template.render(context)
+
+        # xhtml2pdf needs ISO-8859-1
+        html = html.encode("ISO-8859-1", "ignore").decode("ISO-8859-1")
+
+        # Create temp file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+            pdf_path = tmp.name
+            pisa_status = pisa.CreatePDF(BytesIO(html.encode("ISO-8859-1")), dest=tmp)
+
+        if pisa_status.err:
+            os.remove(pdf_path)
+            return Response({"error": "PDF generation failed"}, status=500)
+        try:
+            # Upload to GCS
+            username = re.sub(r"\s+", "_", std_data.email)
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            gcs_file = f"media/admit_card/{username}_{std_data.id}.pdf"
+
+            bucket = client.bucket(settings.GS_BUCKET_NAME_2)
+            blob = bucket.blob(gcs_file)
+            blob.upload_from_filename(pdf_path, content_type="application/pdf")
+            # ---------- Generate signed URL ----------
+            url = blob.generate_signed_url(
+                version="v4",
+                expiration=timedelta(minutes=settings.SIGNED_URL_EXPIRY),
+                method="GET"
+            )
+            return Response({
+                "message": "Success",
+                "data": {
+                    "report_url": url
+                }
+            })
+
+        finally:
+            os.remove(pdf_path)
+
+
 
 #########################################################################################
 

@@ -58,6 +58,7 @@ urlpatterns = [
 
     ## download score card for refrenece
     path('student-score-card-download/', GetStudentScoreCardView.as_view(), name="student-score-card-download"),
+    path('admin-student-score-card-download/<int:stid>', GetAdminStudentScoreCardView.as_view(), name="admin-student-score-card-download"),
     
     path('create_student_payment/', StudentCreatePaymentView.as_view(), name="create_student_payment"),
     path('post_exam_result/', PostExamResultView.as_view(), name="post_exam_result"),

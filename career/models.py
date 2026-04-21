@@ -119,7 +119,7 @@ class DossierData(models.Model):
     remarks = models.TextField(blank=True, null=True)
     document_status = models.IntegerField(choices=DocumentStatusType.choices,default=DocumentStatusType.Pending)
     remarks_timestamp = models.DateTimeField(null=True, blank=True)
-    # fee_waiver_category = models.CharField(max_length=200, default="No Waiver")
+    fee_waiver_category = models.CharField(max_length=200, default="No Waiver")
 
 
 class DossierDocument(models.Model):

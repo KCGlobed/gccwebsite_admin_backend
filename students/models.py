@@ -122,7 +122,7 @@ class Payments(models.Model):
     dossier_form = models.ForeignKey('career.DossierData', null=True, blank=True, on_delete=models.CASCADE)
     source = models.IntegerField(choices=SourceType.choices,default=SourceType.Website, null=True)
     re_attempt_status = models.BooleanField(default=False)
-    fee_waiver_category = models.CharField(max_length=200, default="No Waiver")
+    # fee_waiver_category = models.CharField(max_length=200, default="No Waiver")
 
     class Meta:
         db_table = 'payments'

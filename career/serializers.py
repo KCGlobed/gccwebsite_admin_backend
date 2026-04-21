@@ -139,9 +139,11 @@ class CreateVslDataSerializer(serializers.ModelSerializer):
                 "mobile": vsl_obj.phone,
                 "lead_stage": "hot",
                 "search_criteria": "email",
+
                 # "city": instance.city,
                 # "state": instance.state,
                 # "country": "India",
+                
                 "source":m_source,
                 "cf_source":m_source,
                 "cf_utmsource1":vsl_obj.utm_source,

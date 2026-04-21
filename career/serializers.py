@@ -133,6 +133,7 @@ class CreateVslDataSerializer(serializers.ModelSerializer):
             }
 
             payload = {
+                "search_criteria": "email",
                 "name": vsl_obj.full_name,
                 "email": vsl_obj.email,
                 "mobile": vsl_obj.phone,

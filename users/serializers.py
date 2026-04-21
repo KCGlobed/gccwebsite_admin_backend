@@ -378,7 +378,7 @@ class UserForgotPasswordSerializer(serializers.ModelSerializer):
             html_message = loader.render_to_string(
                 'reset_email.html',
                 {
-                    'name': user.first_name +' '+ user.last_name,
+                    'name': f'{user.first_name} {user.last_name}',
                     'verification_link': url,
                 }
             )

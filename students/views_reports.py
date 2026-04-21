@@ -581,7 +581,7 @@ class GetSessionFileUploadView(APIView):
 class GetStudentProfileReportExcelView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        data_objs = StudentProfile.objects.all().order_by("-id")
+        datas = StudentProfile.objects.all().order_by("-id")
 
         # Date range filter
         start_date = request.GET.get('start_date')
@@ -589,15 +589,25 @@ class GetStudentProfileReportExcelView(APIView):
         if start_date:
             start_date = parse_date(start_date)
             if start_date:
-                data_objs = data_objs.filter(created_at__date__gte=start_date)
+                datas = datas.filter(created_at__date__gte=start_date)
 
         if end_date:
             end_date = parse_date(end_date)
             if end_date:
-                data_objs = data_objs.filter(created_at__date__lte=end_date)
+                datas = datas.filter(created_at__date__lte=end_date)
 
 
-        data_list = ListStudentProfileExcelReportSerializer(data_objs, many=True).data
+        # slot_date range filter
+        start_slot_date = request.GET.get('start_slot_date')
+        end_slot_date = request.GET.get('end_slot_date')
+        if start_slot_date:
+            datas = datas.filter(slot_date__gte=start_slot_date)
+
+        if end_slot_date:
+            datas = datas.filter(slot_date__lte=end_slot_date)
+
+
+        data_list = ListStudentProfileExcelReportSerializer(datas, many=True).data
         COLUMN_MAPPING = {
             "first_name":"First Name",
             "last_name":"Last Name",

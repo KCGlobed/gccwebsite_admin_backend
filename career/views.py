@@ -490,9 +490,23 @@ class GetDossierReportPDFView(APIView):
     search_fields = ['id',"full_name","email","phone","city","state"]
     ordering_fields = ['id',"full_name","email","phone","city","state","created_at"]
     def get(self, request, sid=None):
+        document_status = request.GET.get('document_status')
+        if document_status:
+            datas = DossierData.objects.filter(
+                    source=SourceType.Website
+                ).annotate(
+                    has_doc=Exists(
+                        DossierDocument.objects.filter(dossier_id=OuterRef('id'))
+                    )
+                ).filter(has_doc=True).order_by('-id')
+        else:
+            datas = DossierData.objects.filter(source=SourceType.Website).order_by('-id')
         
-        datas = DossierData.objects.filter(source=SourceType.Website).order_by('-id')
-
+        verify_status = request.GET.get('isVerified')
+        if verify_status:
+            if str(verify_status) in ["2","3"]:
+                datas = datas.filter(document_status=int(verify_status))
+                
         full_name = request.GET.get('full_name')
         if full_name:
             datas = datas.filter(full_name__icontains=full_name)
@@ -527,6 +541,45 @@ class GetDossierReportPDFView(APIView):
             end_date = parse_date(end_date)
             if end_date:
                 datas = datas.filter(created_at__date__lte=end_date)
+
+
+
+        # datas = DossierData.objects.filter(source=SourceType.Website).order_by('-id')
+
+        # full_name = request.GET.get('full_name')
+        # if full_name:
+        #     datas = datas.filter(full_name__icontains=full_name)
+
+        # email = request.GET.get('email')
+        # if email:
+        #     datas = datas.filter(email__icontains=email)
+
+
+        # phone = request.GET.get('phone')
+        # if phone:
+        #     datas = datas.filter(phone__icontains=phone)
+
+
+        # state = request.GET.get('state')
+        # if state:
+        #     datas = datas.filter(state__icontains=state)
+
+        # city = request.GET.get('city')
+        # if city:
+        #     datas = datas.filter(city__icontains=city)
+
+        # # Date range filter
+        # start_date = request.GET.get('start_date')
+        # end_date = request.GET.get('end_date')
+        # if start_date:
+        #     start_date = parse_date(start_date)
+        #     if start_date:
+        #         datas = datas.filter(created_at__date__gte=start_date)
+
+        # if end_date:
+        #     end_date = parse_date(end_date)
+        #     if end_date:
+        #         datas = datas.filter(created_at__date__lte=end_date)
 
 
         search_filter = filters.SearchFilter()

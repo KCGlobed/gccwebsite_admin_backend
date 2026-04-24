@@ -71,7 +71,7 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 "name": instance.full_name,
                 "email": instance.email,
                 "mobile": instance.phone,
-                "lead_stage": "hot",
+                # "lead_stage": "hot",
                 "search_criteria": "email",
                 "city": instance.city,
                 "state": instance.state,
@@ -81,7 +81,8 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 "cf_utmsource1":instance.utm_source,
                 "medium":instance.utm_medium,
                 "campaign":instance.utm_campaign,
-                "cf_payment_status":"Pending"
+                "cf_payment_status":"Pending",
+                "cf_fee_waiver_category":instance.fee_waiver_category
             }
 
             try:
@@ -137,7 +138,8 @@ class CreateVslDataSerializer(serializers.ModelSerializer):
                 "name": vsl_obj.full_name,
                 "email": vsl_obj.email,
                 "mobile": vsl_obj.phone,
-                "lead_stage": "hot",
+                # "lead_stage": "hot",
+                "cf_fee_waiver_category":"",
                 "search_criteria": "email",
 
                 # "city": instance.city,
@@ -149,7 +151,8 @@ class CreateVslDataSerializer(serializers.ModelSerializer):
                 "cf_utmsource1":vsl_obj.utm_source,
                 "medium":vsl_obj.utm_medium,
                 "campaign":vsl_obj.utm_campaign,
-                "cf_payment_status":"Pending"
+                "cf_payment_status":"Pending",
+                "cf_fee_waiver_category":vsl_obj.fee_waiver_category
             }
 
             try:
@@ -197,7 +200,7 @@ class CreateVslFinalDataSerializer(serializers.ModelSerializer):
                 "name": vsl_obj.full_name,
                 "email": vsl_obj.email,
                 # "mobile": vsl_obj.phone,
-                "lead_stage": "hot",
+                # "lead_stage": "hot",
                 "search_criteria": "email",
                 "city": vsl_obj.city,
                 "state": vsl_obj.state,
@@ -207,7 +210,8 @@ class CreateVslFinalDataSerializer(serializers.ModelSerializer):
                 "cf_utmsource1":vsl_obj.utm_source,
                 "medium":vsl_obj.utm_medium,
                 "campaign":vsl_obj.utm_campaign,
-                "cf_payment_status":"Pending"
+                "cf_payment_status":"Pending",
+                "cf_fee_waiver_category":vsl_obj.fee_waiver_category
             }
 
             try:
@@ -370,7 +374,7 @@ class CreateDossierAbondantSerializer(serializers.ModelSerializer):
                 "name": instance.full_name,
                 "email": instance.email,
                 "mobile": instance.phone,
-                "lead_stage": "hot",
+                # "lead_stage": "hot",
                 "search_criteria": "email",
                 # "city": instance.city,
                 # "state": instance.state,
@@ -380,7 +384,8 @@ class CreateDossierAbondantSerializer(serializers.ModelSerializer):
                 "cf_utmsource1":instance.utm_source,
                 "medium":instance.utm_medium,
                 "campaign":instance.utm_campaign,
-                "cf_payment_status":"Pending"
+                "cf_payment_status":"Pending",
+                "cf_fee_waiver_category":instance.fee_waiver_category
             }
 
             try:

@@ -25,7 +25,7 @@ class StudentEnquiries(models.Model):
         db_table = 'student_enquiries'
 
 
-
+  
 
 class StudentDocuments(models.Model):
     student_id = models.IntegerField()

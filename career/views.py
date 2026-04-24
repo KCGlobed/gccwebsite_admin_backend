@@ -695,6 +695,21 @@ class GetDossierReportExcelView(APIView):
                 "subject":'',
                 "Chapter":'',
                 "Topic":'',
+                "fbc_id":'',
+                "utm_source":'',
+                "utm_medium":'',
+                "utm_content":'',
+                "utm_campaign":'',
+                "campaign_id":'',
+                "utm_adname":'',
+                "adset_id":'',
+                "fbclid":'',
+                "ad_source":'',
+                "ad_id":'',
+                "university":'',
+                "remarks":'',
+                "remarks_timestamp":'',
+                "fee_waiver_category":'',
                 "total_questions":''
             })
 
@@ -705,6 +720,21 @@ class GetDossierReportExcelView(APIView):
                 "subject":'',
                 "Chapter":'',
                 "Topic":'',
+                "fbc_id":'',
+                "utm_source":'',
+                "utm_medium":'',
+                "utm_content":'',
+                "utm_campaign":'',
+                "campaign_id":'',
+                "utm_adname":'',
+                "adset_id":'',
+                "fbclid":'',
+                "ad_source":'',
+                "ad_id":'',
+                "university":'',
+                "remarks":'',
+                "remarks_timestamp":'',
+                "fee_waiver_category":'',
                 "total_questions":''
             })
         
@@ -714,7 +744,22 @@ class GetDossierReportExcelView(APIView):
                 "subject":'Phone Number',
                 "Chapter":'City',
                 "Topic":'State',
-                "total_questions":'Created At',
+                "fbc_id":'Fbc Id',
+                "utm_source":'UTM Source',
+                "utm_medium":'UTM Medium',
+                "utm_content":'UTM Content',
+                "utm_campaign":'UTM Campaign',
+                "campaign_id":'Campaign Id',
+                "utm_adname":'UTM Adname',
+                "adset_id":'Adset Id',
+                "fbclid":'Fbclid',
+                "ad_source":'Ad Source',
+                "ad_id":'Ad Id',
+                "university":'University',
+                "remarks":'Remarks',
+                "remarks_timestamp":'Remarks Timestamp',
+                "fee_waiver_category":'Fee Waiver Category',
+                "total_questions":'Created At'
             })
         
         
@@ -725,7 +770,22 @@ class GetDossierReportExcelView(APIView):
                 "subject":chapter_data['phone'],
                 "Chapter":chapter_data['city'],
                 "Topic":chapter_data['state'],
-                "total_questions":chapter_data['created_at'],
+                "fbc_id":chapter_data['fbc_id'],
+                "utm_source":chapter_data['utm_source'],
+                "utm_medium":chapter_data['utm_medium'],
+                "utm_content":chapter_data['utm_content'],
+                "utm_campaign":chapter_data['utm_campaign'],
+                "campaign_id":chapter_data['campaign_id'],
+                "utm_adname":chapter_data['utm_adname'],
+                "adset_id":chapter_data['adset_id'],
+                "fbclid":chapter_data['fbclid'],
+                "ad_source":chapter_data['ad_source'],
+                "ad_id":chapter_data['ad_id'],
+                "university":chapter_data['university'],
+                "remarks":chapter_data['remarks'],
+                "remarks_timestamp":chapter_data['remarks_timestamp'],
+                "fee_waiver_category":chapter_data['fee_waiver_category'],
+                "total_questions":chapter_data['created_at']
             })
 
 

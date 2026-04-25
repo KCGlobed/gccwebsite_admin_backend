@@ -384,8 +384,8 @@ class CreateDossierAbondantSerializer(serializers.ModelSerializer):
                 "cf_utmsource1":instance.utm_source,
                 "medium":instance.utm_medium,
                 "campaign":instance.utm_campaign,
-                "cf_payment_status":"Pending",
-                "cf_fee_waiver_category":instance.fee_waiver_category
+                "cf_payment_status":"Pending"
+                # "cf_fee_waiver_category":instance.fee_waiver_category
             }
 
             try:

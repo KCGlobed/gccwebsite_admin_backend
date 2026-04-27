@@ -91,9 +91,9 @@
                         <td>
                             <b>Personal Details</b>
                         </td>
-                        <td>
+                        <!-- <td>
                             <b>Order Id</b>
-                        </td>
+                        </td> -->
                         <td>
                             <b>Payment Id</b>
                         </td>
@@ -108,8 +108,8 @@
                     {% for session in data_list %}
                         <tr>
                             <td>Full Name: {{session.full_name}}<br>Email: {{session.email}}<br>Mobile: {{session.phone}}<br>City: {{session.city}}<br>State: {{session.state}}</td>
-                            <td>{{session.razorpay_order_id}}</td>
-                            <td>{{session.razorpay_payment_id}}</td>
+                            <!-- <td>{{session.razorpay_order_id}}</td> -->
+                            <td>Order ID :{{session.razorpay_order_id}}<br>Payment ID:{{session.razorpay_payment_id}}</td>
                             <td>{{session.amount}}</td>
                             <td>{{session.created_at}}</td>
                         </tr>

@@ -1022,7 +1022,7 @@ class GetDossierVSLSourceReportPDFView(APIView):
 
 
 class GetDossierSourceReportExcelView(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['id',"full_name","email","phone","city","state"]
     ordering_fields = ['id',"full_name","email","phone","city","state","created_at"]

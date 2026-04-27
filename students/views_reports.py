@@ -684,3 +684,89 @@ class GetStudentProfileReportExcelView(APIView):
 
         finally:
             os.remove(pdf_path)
+
+
+
+
+
+
+
+class GetStudentProfileReportPDFView(APIView): 
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        datas = StudentProfile.objects.all().order_by("-id")
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+
+        # slot_date range filter
+        start_slot_date = request.GET.get('start_slot_date')
+        end_slot_date = request.GET.get('end_slot_date')
+        if start_slot_date:
+            datas = datas.filter(slot_date__gte=start_slot_date)
+
+        if end_slot_date:
+            datas = datas.filter(slot_date__lte=end_slot_date)
+
+
+        data_list = ListStudentProfileExcelReportSerializer(datas, many=True).data
+        selected_bucket = settings.GS_BUCKET_NAME
+        context = {
+            "username": request.user.email,
+            "user_id": request.user.id,
+            "data_list": data_list,
+            "report_date": datetime.now(),
+            "bucket_static_logo":f"https://storage.googleapis.com/{selected_bucket}/static/images/gccschool.jpeg"
+        }
+        # Render template
+        template = get_template("pdf/student_profile_report.html")
+        html = template.render(context)
+
+        # xhtml2pdf needs ISO-8859-1
+        html = html.encode("ISO-8859-1", "ignore").decode("ISO-8859-1")
+
+        # Create temp file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+            pdf_path = tmp.name
+            pisa_status = pisa.CreatePDF(BytesIO(html.encode("ISO-8859-1")), dest=tmp)
+
+        if pisa_status.err:
+            os.remove(pdf_path)
+            return Response({"error": "PDF generation failed"}, status=500)
+        try:
+            # Upload to GCS
+            username = re.sub(r"\s+", "_", request.user.email)
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            gcs_file = f"media/pdf_reports/{username}_profilereport.pdf"
+
+            bucket = client.bucket(settings.GS_BUCKET_NAME_2)
+            blob = bucket.blob(gcs_file)
+            blob.upload_from_filename(pdf_path, content_type="application/pdf")
+            # ---------- Generate signed URL ----------
+            url = blob.generate_signed_url(
+                version="v4",
+                expiration=timedelta(minutes=settings.SIGNED_URL_EXPIRY),
+                method="GET"
+            )
+            return Response({
+                "message": "Success",
+                "data": {
+                    "report_url": url
+                }
+            })
+
+        finally:
+            os.remove(pdf_path)
+
+

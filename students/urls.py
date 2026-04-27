@@ -65,4 +65,5 @@ urlpatterns = [
 
     
     path('student_profile_report_excel/', GetStudentProfileReportExcelView.as_view(), name="student_profile_report_excel"),
+    path('student_profile_report_pdf/', GetStudentProfileReportPDFView.as_view(), name="student_profile_report_pdf"),
 ]

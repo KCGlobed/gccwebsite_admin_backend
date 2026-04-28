@@ -110,6 +110,23 @@ class DossierDataForm_Create(APIView):
             return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
 
 
+from .serializers import push_to_meritto
+class DossierMeritto_CreateUpdate(APIView):
+    # permission_classes = [IsAuthenticated]
+    def post(self, request, format=None):
+        data_list = []
+        dossier_obj = DossierData.objects.filter(id=4561)
+        filter_data = dossier_obj.count()
+        for obj in dossier_obj:
+            push_to_meritto(obj)
+            # serializer = CreateOrUpdateDossierDataMerittoSerializer(obj, data = request.data)
+            # if serializer.is_valid(raise_exception = True):
+            #     serializer.save()
+            data_list.append(obj.id)
+        total_lead = len(data_list)
+        return success_response(message="success", data={"total_lead":total_lead,"filter_data":filter_data,"ids":data_list}, status_code=status.HTTP_200_OK)
+
+
 class DossierDocument_Create(APIView):
     # permission_classes = [IsAuthenticated]
     def post(self, request, format=None):

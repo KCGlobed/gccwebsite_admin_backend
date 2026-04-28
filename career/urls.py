@@ -37,5 +37,6 @@ urlpatterns = [
     ## Delete data
 
     path("delete_lead", GetDeleteLead.as_view()),
+    path("meritto_refresh", DossierMeritto_CreateUpdate.as_view()),
 ]
 

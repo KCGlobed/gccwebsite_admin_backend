@@ -461,13 +461,27 @@ class GetSourcePaymentReportExcelView(APIView):
 
 
         data_list = ListPaymentExcelReportSerializer(data_objs, many=True).data
+        print("sdddadsadasd.........",data_list)
         COLUMN_MAPPING = {
             "full_name":"Full Name",
             "email":"Email",
             "phone":"Phone",
             "city":"City",
             "state":"State",
-            "razorpay_order_id": "Order ID",
+            "university":"University",
+            "ad_id":"Ad ID",
+            "ad_source":"AD Source",
+            "adset_id":"Adset ID",
+            "campaign_id":"Campaign ID",
+            "degree":"Degree",
+            "degree_stage": "Degree Stage",
+            "fbc_id": "FBC ID",
+            "fbclid": "FBCLID",
+            "utm_adname": "UTM Adname",
+            "utm_campaign": "UTM Campaign",
+            "utm_content": "UTM Content",
+            "utm_medium": "UTM Medium",
+            "utm_source": "UTM Source",
             "razorpay_payment_id": "Payment ID",
             "amount": "Amount",
             "status": "Payment Status",

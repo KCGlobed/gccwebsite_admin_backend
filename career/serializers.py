@@ -406,4 +406,82 @@ class ListDossierAbondantSerializer(serializers.ModelSerializer):
         fields = "__all__"
         
 
-        
+
+
+
+
+
+############### MERITTO UPLOAD BULK ###########################
+
+def push_to_meritto(obj):
+    if not settings.MERITO_STATUS:
+        return
+
+    source_map = {
+        1: "gccwebsite",
+        2: "gccefos",
+        3: "gccaffiliateOne",
+        4: "gccaffiliateTwo",
+        5: "gccaffiliateThree",
+        6: "gccaffiliateFour",
+        7: "gccaffiliateFive",
+        8: "gccipuniversity",
+        9: "gccdelhiuniversity",
+        10: "gccccs",
+        11: "gcckuk",
+    }
+
+    m_source = source_map.get(obj.source, "gcc")
+
+    url = f"{settings.MERITO_BASE_URL}/lead/v1/createOrUpdate"
+
+    headers = {
+        "Content-Type": "application/json",
+        "secret-key": settings.MERITO_SECRETE_KEY,
+        "access-key": settings.MERITO_ACCESS_KEY
+    }
+
+    payload = {
+        "name": obj.full_name,
+        "email": obj.email,
+        "mobile": obj.phone,
+        "search_criteria": "email",
+        "city": obj.city,
+        "state": obj.state,
+        "country": "India",
+        "source": m_source,
+        "cf_source": m_source,
+        "cf_utmsource1": obj.utm_source,
+        "medium": obj.utm_medium,
+        "campaign": obj.utm_campaign,
+        "cf_payment_status": "Complete",
+        "cf_fee_waiver_category": obj.fee_waiver_category
+    }
+
+    try:
+        response = requests.post(url, headers=headers, json=payload, timeout=10)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        print("Meritto API Error:", str(e))
+        return None
+
+
+class CreateOrUpdateDossierDataMerittoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DossierData
+        fields = "__all__"
+
+    def create(self, validated_data):
+        instance = super().create(validated_data)
+        push_to_meritto(instance)
+        return instance
+
+    def update(self, instance, validated_data):
+        instance = super().update(instance, validated_data)
+        push_to_meritto(instance)
+        return instance
+
+
+
+

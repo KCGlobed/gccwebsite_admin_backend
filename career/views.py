@@ -1227,6 +1227,130 @@ class GetDossierSourceReportExcelView(APIView):
             # Ensure the temporary file is deleted
             os.remove(pdf_path)
 
+class GetAmendmentSourceReportExcelView(APIView):
+    # permission_classes = [IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['id',"full_name","email","phone"]
+    ordering_fields = ['id',"full_name","email","phone","created_at"]
+
+    def get(self, request, sid=None):
+        
+        source_type = request.GET.get('source')
+        if source_type:
+            datas = DossierData.objects.filter(source=source_type).order_by('-id')
+        else:
+            datas = DossierData.objects.filter(source=SourceType.Website).order_by('-id')
+
+        full_name = request.GET.get('full_name')
+        if full_name:
+            datas = datas.filter(full_name__icontains=full_name)
+
+        email = request.GET.get('email')
+        if email:
+            datas = datas.filter(email__icontains=email)
+
+
+        phone = request.GET.get('phone')
+        if phone:
+            datas = datas.filter(phone__icontains=phone)
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+
+        search_filter = filters.SearchFilter()
+        datas = search_filter.filter_queryset(request, datas, self)
+
+        ordering_filter = filters.OrderingFilter()
+        datas = ordering_filter.filter_queryset(request, datas, self)
+
+        serializers = ListDossierAbondantSerializer(datas, many=True)
+
+        lis = []
+        
+        lis.append({
+                "full_name":"Amendment Report",
+                "email":'',
+                "phone":'',
+                "utm_source":'',
+                "utm_medium":'',
+                "utm_campaign":'',
+                "created_at":''
+            })
+
+       
+        lis.append({
+                "full_name":"",
+                "email":'',
+                "phone":'',
+                "utm_source":'',
+                "utm_medium":'',
+                "utm_campaign":'',
+                "created_at":''
+            })
+        
+        lis.append({
+                "full_name":"Full Name",
+                "email":'Email',
+                "phone":'Phone Number',
+                "utm_source":'UTM Source',
+                "utm_medium":'UTM Medium',
+                "utm_campaign":'UTM Campaign',
+                "created_at":'Date Time'
+            })
+        
+        
+        for chapter_data in serializers.data:
+            lis.append({
+                "full_name":chapter_data["full_name"],
+                "email":chapter_data["email"],
+                "phone":chapter_data["phone"],
+                "utm_source":chapter_data["utm_source"],
+                "utm_medium":chapter_data["utm_medium"],
+                "utm_campaign":chapter_data["utm_campaign"],
+                "created_at":chapter_data["created_at"]
+            })
+
+
+        with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as temp_file:
+            pdf_path = temp_file.name
+            
+            # Create DataFrame and save to the temporary file
+            df = pd.DataFrame.from_dict(lis)
+            df.to_excel(pdf_path, header=False, index=False)
+        
+        # After the 'with' block, the file is closed but not deleted
+        try:
+            # GCS file naming logic
+            timestamp = datetime.now().strftime("%d_%m_%y_%H_%M")
+            report_name = "amendment_report"
+            gcs_folder_name = "media/reports/source/excel"
+            gcs_file_name = f"{gcs_folder_name}/{report_name}_{timestamp}.xlsx"
+
+            # Upload the temporary file to GCS
+            bucket = client.get_bucket(settings.GS_BUCKET_NAME)
+            blob = bucket.blob(gcs_file_name)
+            blob.upload_from_filename(pdf_path)
+
+            return success_response(
+                message="Success",
+                data={"report_url": blob.public_url},
+                status_code=status.HTTP_200_OK
+            )
+        finally:
+            # Ensure the temporary file is deleted
+            os.remove(pdf_path)
+
 
 
 class GetDossierVSLSourceReportExcelView(APIView):

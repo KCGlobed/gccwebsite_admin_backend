@@ -1237,9 +1237,9 @@ class GetAmendmentSourceReportExcelView(APIView):
         
         source_type = request.GET.get('source')
         if source_type:
-            datas = DossierData.objects.filter(source=source_type).order_by('-id')
+            datas = DossierAbondant.objects.filter(source=source_type).order_by('-id')
         else:
-            datas = DossierData.objects.filter(source=SourceType.Website).order_by('-id')
+            datas = DossierAbondant.objects.filter(source=SourceType.Website).order_by('-id')
 
         full_name = request.GET.get('full_name')
         if full_name:

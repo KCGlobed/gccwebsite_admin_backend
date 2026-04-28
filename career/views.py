@@ -1344,3 +1344,20 @@ class GetDossierVSLSourceReportExcelView(APIView):
 
 
 
+
+class GetDeleteLead(APIView):
+    def get(self, request, sid=None):
+        print("deleting.....")
+        # d_list = [257,694,727,744,748,750,752,773,774,782,894,254,503,1147,3561,3795,3524,3780,3526,4109,1171,1270,4109]
+        # d_list = [284]
+        d_list = []
+        for i in d_list:
+            d = DossierData.objects.filter(id=i)
+            if d:
+                d.first().delete()
+                print(i,">>>>>>deleted....")
+        return success_response(
+                message="Success",
+                data={},
+                status_code=status.HTTP_200_OK
+            )

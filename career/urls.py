@@ -31,5 +31,11 @@ urlpatterns = [
     path('get-dossier-vsl-source-report-pdf/', GetDossierVSLSourceReportPDFView.as_view(), name="get-dossier-vsl-source-report-pdf"),
     path('get-dossier-vsl-source-report-excel/', GetDossierVSLSourceReportExcelView.as_view(), name="get-dossier-vsl-source-report-excel"),  ##last update -  not working in admin
 
+
+
+
+    ## Delete data
+
+    path("delete_lead", GetDeleteLead.as_view()),
 ]
 

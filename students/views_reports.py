@@ -608,6 +608,7 @@ class GetStudentProfileReportExcelView(APIView):
 
 
         data_list = ListStudentProfileExcelReportSerializer(datas, many=True).data
+        # print("datas...",data_list)
         COLUMN_MAPPING = {
             "first_name":"First Name",
             "last_name":"Last Name",
@@ -623,13 +624,17 @@ class GetStudentProfileReportExcelView(APIView):
             "state": "State",
             "address": "Full Address",
             "tenth_passing_year": "Year Of Pass(10th)",
-            "tenth_passing_percentage": "Percentage/CGPA",
+            "tenth_passing_percentage": "Percentage/CGPA(10th)",
             "tenth_score_type": "Score Type(10th)",
             "tenth_medium": "Medium(10th)",
             "twelveth_passing_year": "Year Of Pass(12th)",
-            "twelveth_passing_percentage": "Percentage/CGPA",
+            "twelveth_passing_percentage": "Percentage/CGPA(12th)",
             "twelveth_score_type": "Score Type(12th)",
             "twelveth_medium": "Medium(12th)",
+            "medium_instruction": "Medium(UG)",
+            "pg_status":"Study(UG)",
+            "ug_score_type": "Percentage/CGPA(UG)",
+            "pg_percentage": "Score(UG)",
             "employement_status":"Experience",
             "slot_date": "Slot Date",
             "slot_time": "Slot Time",

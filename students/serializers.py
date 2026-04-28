@@ -114,6 +114,9 @@ class ListStudentProfileExcelReportSerializer(serializers.ModelSerializer) :
     tenth_medium = serializers.SerializerMethodField('get_tenth_medium')
     twelveth_medium = serializers.SerializerMethodField('get_twelveth_medium')
     gender = serializers.SerializerMethodField('get_gender')
+    employement_status = serializers.SerializerMethodField('get_employement_status')
+    higher_education_status = serializers.SerializerMethodField('get_higher_education_status')
+    pg_status = serializers.SerializerMethodField('get_pg_status')
     class Meta:
         model = StudentProfile
         fields = "__all__"
@@ -141,14 +144,25 @@ class ListStudentProfileExcelReportSerializer(serializers.ModelSerializer) :
         return obj.get_tenth_medium_display()
     def get_twelveth_medium(self, obj):
         return obj.get_twelveth_medium_display()
+    def get_medium_instruction(self, obj):
+        return obj.get_medium_instruction_display()
     def get_gender(self, obj):
         return obj.get_gender_display()
+    def get_pg_status(self, obj):
+        return obj.get_pg_status_display()
     def get_employement_status(self, obj):
         name = "N/A"
         if str(obj.employement_status) == "1":
             name = "Fresher"
         else:
             name = "Experience"
+        return name
+    def get_higher_education_status(self, obj):
+        name = "N/A"
+        if str(obj.higher_education_status) == "1":
+            name = "YES"
+        else:
+            name = "No"
         return name
 
 
@@ -972,7 +986,9 @@ class PostExamResultSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def create(self, validated_data):
+        print("serializer request data..")
         print(validated_data)
+        print("serializer end request data..")
         std_obj = StudentProfile.objects.filter(application_id=validated_data.get("email"))
         if std_obj:
             validated_data["student_profile"] = std_obj.first()

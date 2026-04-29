@@ -12,7 +12,10 @@ urlpatterns = [
     path("createvslform", VslDataForm_Create.as_view()),
     path("createvslfinalform", VslFinalDataForm_Create.as_view()),
     path("createvsldetailform", VslOptinDetailDataForm_Create.as_view()),
+
     path("addvsldetailform", VslOptinDetailDataForm_Update.as_view()),
+    path("vsladvisor_page_list", VSLAdvisorDataForm_List.as_view()),
+
     path("dossierdata_page_list", DossierDataForm_List.as_view()),
     path("abondantdata_page_list", AbondantDataForm_List.as_view()),
     path("dossiersourcedata_page_list", DossierDataSourceForm_List.as_view()),

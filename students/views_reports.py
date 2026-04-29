@@ -461,7 +461,6 @@ class GetSourcePaymentReportExcelView(APIView):
 
 
         data_list = ListPaymentExcelReportSerializer(data_objs, many=True).data
-        print("sdddadsadasd.........",data_list)
         COLUMN_MAPPING = {
             "full_name":"Full Name",
             "email":"Email",

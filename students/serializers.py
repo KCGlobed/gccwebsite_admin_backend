@@ -990,18 +990,45 @@ class PostExamResultSerializer(serializers.ModelSerializer):
         print(validated_data)
         print("serializer end request data..")
         std_obj = StudentProfile.objects.filter(application_id=validated_data.get("email"))
+        # if std_obj:
+        #     validated_data["student_profile"] = std_obj.first()
+        #     instance = super().create(validated_data)
+        #     return instance
+        # else:
+        #     raise serializers.ValidationError(
+        #         {
+        #             "status": 400,
+        #             "message": "Please Select Valid Student ID",
+        #             "data":[]
+        #         }
+        #     )
         if std_obj:
             validated_data["student_profile"] = std_obj.first()
-            instance = super().create(validated_data)
-            return instance
         else:
-            raise serializers.ValidationError(
-                {
-                    "status": 400,
-                    "message": "Please Select Valid Student ID",
-                    "data":[]
-                }
-            )
+            validated_data["student_profile"] = None
+            
+        instance = super().create(validated_data)
+        return instance
+
+
+
+class PostRealExamResultSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentRealExamResult
+        fields = "__all__"
+
+    def create(self, validated_data):
+        print("serializer request data..")
+        print(validated_data)
+        print("serializer end request data..")
+        std_obj = StudentProfile.objects.filter(application_id=validated_data.get("email"))
+        if std_obj:
+            validated_data["student_profile"] = std_obj.first()
+        else:
+            validated_data["student_profile"] = None
+
+        instance = super().create(validated_data)
+        return instance
 
 
 

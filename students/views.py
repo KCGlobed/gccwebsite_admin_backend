@@ -1869,6 +1869,25 @@ class PostExamResultView(APIView):
             return Response({'message':'failed',"status":400,'data':serializers.errors})
     
 
+class PostRealExamResultView(APIView):
+    # permission_classes = [IsAuthenticated]
+    def post(self, request):
+        print("Result Request payload start...")
+        print(request.data)
+        print("Result Request payload end....")
+        serializers = PostRealExamResultSerializer(data=request.data)
+        if serializers.is_valid():
+            datas = serializers.save()
+            # print(datas)
+            # print(type(datas))
+            # print(datas.json_data)
+            datas.json_data = request.data["competency"]
+            datas.save()
+            return Response({'message':'success',"status":200,'data':{}})
+        else:
+            return Response({'message':'failed',"status":400,'data':serializers.errors})
+    
+
 
 
 

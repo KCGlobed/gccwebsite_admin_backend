@@ -132,7 +132,7 @@ class DossierDocument(models.Model):
         return f"Document {self.id} - {self.dossier}"
 
 
-
+## 
 class VslDetail(models.Model):
     dossier = models.ForeignKey('DossierData', null=True, blank=True, on_delete=models.CASCADE)
     video_playback = models.IntegerField(default=0)  ## Seconds

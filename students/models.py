@@ -360,5 +360,29 @@ class StudentExamResult(models.Model):
 
 
 
+class StudentRealExamResult(models.Model):
+    student_profile = models.ForeignKey('StudentProfile', null=True, blank=True, on_delete=models.CASCADE)
+    email = models.CharField(max_length=250, null=True, blank=True)
+    testid = models.CharField(max_length=250, null=True, blank=True)
+    starttime = models.CharField(max_length=250, null=True, blank=True)
+    endtime = models.CharField(max_length=250, null=True, blank=True)
+    timetaken = models.CharField(max_length=250, null=True, blank=True)
+    totalscore = models.CharField(max_length=250, null=True, blank=True)
+    totalquestionsattempted = models.CharField(max_length=250, null=True, blank=True)
+    totalcorrectanswers = models.CharField(max_length=250, null=True, blank=True)
+    totalquestions = models.CharField(max_length=250, null=True, blank=True)
+    json_data = models.JSONField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
+
+    class Meta:
+        verbose_name = 'Student Real Exam Result'
+        verbose_name_plural = 'Student Real Exam Result'
+
+    def __str__(self):
+        return '%s' % self.id
+
+
+
 
 

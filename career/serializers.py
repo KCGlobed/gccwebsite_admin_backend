@@ -241,6 +241,8 @@ class CreateVslOptinDetailDataSerializer(serializers.ModelSerializer):
 
         return vsl_obj
 
+
+
 class UpdateVslOptinDetailDataSerializer(serializers.ModelSerializer):
     dossier_id = serializers.IntegerField(required=True)
     class Meta:

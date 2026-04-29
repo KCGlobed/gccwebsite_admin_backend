@@ -37,6 +37,7 @@ urlpatterns = [
 
     path('get-amendment-source-report-excel/', GetAmendmentSourceReportExcelView.as_view(), name="get-dossier-source-report-excel"),
 
+    path("get-vsl-advisor-report-excel/", GetVSLAdvisorReportExcelView.as_view()),
 
     ## Delete data
 

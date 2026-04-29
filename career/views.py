@@ -1289,6 +1289,193 @@ class GetDossierSourceReportExcelView(APIView):
             # Ensure the temporary file is deleted
             os.remove(pdf_path)
 
+class GetVSLAdvisorReportExcelView(APIView):
+    # permission_classes = [IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['id',"full_name","email","phone","city","state"]
+    ordering_fields = ['id',"full_name","email","phone","city","state","created_at"]
+
+    def get(self, request, sid=None):
+        
+        adv_datas_list = list(VslDetail.objects.filter(specialist_status=True).values_list('dossier__id', flat=True))
+        # print(adv_datas_list)
+        datas = DossierData.objects.filter(id__in=adv_datas_list, source=SourceType.VslOptin).order_by('-id')
+
+        full_name = request.GET.get('full_name')
+        if full_name:
+            datas = datas.filter(full_name__icontains=full_name)
+
+        email = request.GET.get('email')
+        if email:
+            datas = datas.filter(email__icontains=email)
+
+
+        phone = request.GET.get('phone')
+        if phone:
+            datas = datas.filter(phone__icontains=phone)
+
+
+        state = request.GET.get('state')
+        if state:
+            datas = datas.filter(state__icontains=state)
+
+        city = request.GET.get('city')
+        if city:
+            datas = datas.filter(city__icontains=city)
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+
+        search_filter = filters.SearchFilter()
+        datas = search_filter.filter_queryset(request, datas, self)
+
+        ordering_filter = filters.OrderingFilter()
+        datas = ordering_filter.filter_queryset(request, datas, self)
+
+        serializers = ListDossierDataSerializer(datas, many=True)
+
+        lis = []
+        
+        lis.append({
+                "name":"Dossier Report",
+                "email":'',
+                "subject":'',
+                "Chapter":'',
+                "Topic":'',
+                "fbc_id":'',
+                "utm_source":'',
+                "utm_medium":'',
+                "utm_content":'',
+                "utm_campaign":'',
+                "campaign_id":'',
+                "utm_adname":'',
+                "adset_id":'',
+                "fbclid":'',
+                "ad_source":'',
+                "ad_id":'',
+                "university":'',
+                "remarks":'',
+                "remarks_timestamp":'',
+                "fee_waiver_category":'',
+                "total_questions":''
+            })
+
+       
+        lis.append({
+                "name":"",
+                "email":'',
+                "subject":'',
+                "Chapter":'',
+                "Topic":'',
+                "fbc_id":'',
+                "utm_source":'',
+                "utm_medium":'',
+                "utm_content":'',
+                "utm_campaign":'',
+                "campaign_id":'',
+                "utm_adname":'',
+                "adset_id":'',
+                "fbclid":'',
+                "ad_source":'',
+                "ad_id":'',
+                "university":'',
+                "remarks":'',
+                "remarks_timestamp":'',
+                "fee_waiver_category":'',
+                "total_questions":''
+            })
+        
+        lis.append({
+                "name":"Full Name",
+                "email":'Email',
+                "subject":'Phone Number',
+                "Chapter":'City',
+                "Topic":'State',
+                "fbc_id":'Fbc Id',
+                "utm_source":'UTM Source',
+                "utm_medium":'UTM Medium',
+                "utm_content":'UTM Content',
+                "utm_campaign":'UTM Campaign',
+                "campaign_id":'Campaign Id',
+                "utm_adname":'UTM Adname',
+                "adset_id":'Adset Id',
+                "fbclid":'Fbclid',
+                "ad_source":'Ad Source',
+                "ad_id":'Ad Id',
+                "university":'University',
+                "remarks":'Remarks',
+                "remarks_timestamp":'Remarks Timestamp',
+                "fee_waiver_category":'Fee Waiver Category',
+                "total_questions":'Created At'
+            })
+        
+        
+        for chapter_data in serializers.data:
+            lis.append({
+                "name":chapter_data['full_name'],
+                "email":chapter_data['email'],
+                "subject":chapter_data['phone'],
+                "Chapter":chapter_data['city'],
+                "Topic":chapter_data['state'],
+                "fbc_id":chapter_data['fbc_id'],
+                "utm_source":chapter_data['utm_source'],
+                "utm_medium":chapter_data['utm_medium'],
+                "utm_content":chapter_data['utm_content'],
+                "utm_campaign":chapter_data['utm_campaign'],
+                "campaign_id":chapter_data['campaign_id'],
+                "utm_adname":chapter_data['utm_adname'],
+                "adset_id":chapter_data['adset_id'],
+                "fbclid":chapter_data['fbclid'],
+                "ad_source":chapter_data['ad_source'],
+                "ad_id":chapter_data['ad_id'],
+                "university":chapter_data['university'],
+                "remarks":chapter_data['remarks'],
+                "remarks_timestamp":chapter_data['remarks_timestamp'],
+                "fee_waiver_category":chapter_data['fee_waiver_category'],
+                "total_questions":chapter_data['created_at']
+            })
+
+
+        with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as temp_file:
+            pdf_path = temp_file.name
+            
+            # Create DataFrame and save to the temporary file
+            df = pd.DataFrame.from_dict(lis)
+            df.to_excel(pdf_path, header=False, index=False)
+        
+        # After the 'with' block, the file is closed but not deleted
+        try:
+            # GCS file naming logic
+            timestamp = datetime.now().strftime("%d_%m_%y_%H_%M")
+            report_name = "dossier_report"
+            gcs_folder_name = "media/reports/source/excel"
+            gcs_file_name = f"{gcs_folder_name}/{report_name}_{timestamp}.xlsx"
+
+            # Upload the temporary file to GCS
+            bucket = client.get_bucket(settings.GS_BUCKET_NAME)
+            blob = bucket.blob(gcs_file_name)
+            blob.upload_from_filename(pdf_path)
+
+            return success_response(
+                message="Success",
+                data={"report_url": blob.public_url},
+                status_code=status.HTTP_200_OK
+            )
+        finally:
+            # Ensure the temporary file is deleted
+            os.remove(pdf_path)
+
 class GetAmendmentSourceReportExcelView(APIView):
     # permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]

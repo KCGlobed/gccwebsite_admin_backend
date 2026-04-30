@@ -1642,6 +1642,22 @@ class GetStudentProfileListingView(APIView):
         if fee_waiver_category:
             datas = datas.filter(fee_waiver_category=fee_waiver_category)
 
+        full_name = request.GET.get('full_name')
+        if full_name:
+            datas = datas.filter(first_name__icontains=full_name)
+        email = request.GET.get('email')
+        if email:
+            datas = datas.filter(email__icontains=email)
+        phone = request.GET.get('phone')
+        if phone:
+            datas = datas.filter(phone__icontains=phone)
+        state = request.GET.get('state')
+        if state:
+            datas = datas.filter(state__icontains=state)
+        city = request.GET.get('city')
+        if city:
+            datas = datas.filter(city__icontains=city)
+
         search_filter = filters.SearchFilter()
         datas = search_filter.filter_queryset(request, datas, self)
 

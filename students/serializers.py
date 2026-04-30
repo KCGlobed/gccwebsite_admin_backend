@@ -117,6 +117,7 @@ class ListStudentProfileExcelReportSerializer(serializers.ModelSerializer) :
     employement_status = serializers.SerializerMethodField('get_employement_status')
     higher_education_status = serializers.SerializerMethodField('get_higher_education_status')
     pg_status = serializers.SerializerMethodField('get_pg_status')
+    medium_instruction = serializers.SerializerMethodField('get_medium_instruction')
     class Meta:
         model = StudentProfile
         fields = "__all__"

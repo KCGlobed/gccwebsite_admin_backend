@@ -1643,9 +1643,13 @@ class GetStudentProfileListingView(APIView):
         if fee_waiver_category:
             datas = datas.filter(fee_waiver_category=fee_waiver_category)
 
-        full_name = request.GET.get('full_name')
-        if full_name:
-            datas = datas.filter(first_name__icontains=full_name)
+        first_name = request.GET.get('first_name')
+        if first_name:
+            datas = datas.filter(first_name__icontains=first_name)
+        last_name = request.GET.get('last_name')
+        if last_name:
+            datas = datas.filter(last_name__icontains=last_name)
+            
         email = request.GET.get('email')
         if email:
             datas = datas.filter(email__icontains=email)

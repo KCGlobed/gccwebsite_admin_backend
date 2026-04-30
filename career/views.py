@@ -241,6 +241,14 @@ class DossierDataForm_List(APIView):
         if city:
             datas = datas.filter(city__icontains=city)
 
+        fee_waiver_category = request.GET.get('fee_waiver_category')
+        if fee_waiver_category:
+            datas = datas.filter(fee_waiver_category__icontains=fee_waiver_category)
+
+        university = request.GET.get('university')
+        if university:
+            datas = datas.filter(university__icontains=university)
+
         # Date range filter
         start_date = request.GET.get('start_date')
         end_date = request.GET.get('end_date')

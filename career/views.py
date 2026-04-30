@@ -193,8 +193,6 @@ class VslOptinDetailDataForm_Update(APIView):
             return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
 
 
-
-
 class DossierDataForm_List(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPageNumberPagination

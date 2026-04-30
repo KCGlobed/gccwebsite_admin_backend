@@ -1611,7 +1611,7 @@ class GetStudentProfileListingView(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPageNumberPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['first_name',"last_name","email","phone","state","city"]
+    search_fields = ['first_name',"last_name","email","phone","state","city","fee_waiver_category"]
     ordering_fields = ['first_name',"last_name","email","phone","state","city","created_at","slot_date"]
     def get(self, request):
         datas = StudentProfile.objects.all().order_by('-id')
@@ -1638,6 +1638,9 @@ class GetStudentProfileListingView(APIView):
         if end_slot_date:
             datas = datas.filter(slot_date__lte=end_slot_date)
 
+        fee_waiver_category = request.GET.get('fee_waiver_category')
+        if fee_waiver_category:
+            datas = datas.filter(fee_waiver_category=fee_waiver_category)
 
         search_filter = filters.SearchFilter()
         datas = search_filter.filter_queryset(request, datas, self)
@@ -1891,3 +1894,15 @@ class PostRealExamResultView(APIView):
 
 
 
+
+class AddWaiverValueProfileView(APIView):
+    def post(self, request):
+        student = StudentProfile.objects.all()
+        for i in student:
+            ds = DossierData.objects.filter(email=i.email).last()
+            if ds:
+                i.fee_waiver_category = ds.fee_waiver_category
+                i.save()
+                print(i)
+        return Response({'message':'success',"status":200,'data':{}})
+    

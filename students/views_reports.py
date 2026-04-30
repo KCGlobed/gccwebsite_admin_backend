@@ -382,11 +382,26 @@ class GetPaymentReportExcelView(APIView):
             "phone":"Phone",
             "city":"City",
             "state":"State",
+            "university":"University",
+            "ad_id":"Ad ID",
+            "ad_source":"AD Source",
+            "adset_id":"Adset ID",
+            "campaign_id":"Campaign ID",
+            "degree":"Degree",
+            "degree_stage": "Degree Stage",
+            "fbc_id": "FBC ID",
+            "fbclid": "FBCLID",
+            "utm_adname": "UTM Adname",
+            "utm_campaign": "UTM Campaign",
+            "utm_content": "UTM Content",
+            "utm_medium": "UTM Medium",
+            "utm_source": "UTM Source",
             "razorpay_order_id": "Order ID",
             "razorpay_payment_id": "Payment ID",
             "amount": "Amount",
             "status": "Payment Status",
-            "created_at": "Payment Date"
+            "created_at": "Payment Date",
+            "fee_waiver_category":"Fee Waiver Category"
             }
         # # Create temp file
         with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as temp_file:
@@ -484,7 +499,8 @@ class GetSourcePaymentReportExcelView(APIView):
             "razorpay_payment_id": "Payment ID",
             "amount": "Amount",
             "status": "Payment Status",
-            "created_at": "Payment Date"
+            "created_at": "Payment Date",
+            "fee_waiver_category":"Fee Waiver Category"
             }
         # # Create temp file
         with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as temp_file:
@@ -656,7 +672,8 @@ class GetStudentProfileReportExcelView(APIView):
             "slot_date": "Slot Date",
             "slot_time": "Slot Time",
             "application_id": "Application ID",
-            "created_at": "Create Date"
+            "created_at": "Create Date",
+            "fee_waiver_category": "Fee Waiver Category"
             }
         # print(data_list)
         # return Response({"message":"success", "data":data_list})

@@ -136,6 +136,13 @@ class StudentPayment_list(APIView):
         if city:
             datas = datas.filter(dossier_form__city__icontains=city)
 
+        university = request.GET.get('university')
+        if university:
+            datas = datas.filter(dossier_form__university__icontains=university)
+        fee_waiver_category = request.GET.get('fee_waiver_category')
+        if fee_waiver_category:
+            datas = datas.filter(fee_waiver_category__icontains=fee_waiver_category)
+
         status = request.GET.get('status')
         if status:
             datas = datas.filter(status__icontains=status)
@@ -206,6 +213,14 @@ class StudentSourcePayment_list(APIView):
         if status:
             datas = datas.filter(status__icontains=status)
 
+        university = request.GET.get('university')
+        if university:
+            datas = datas.filter(dossier_form__university__icontains=university)
+        fee_waiver_category = request.GET.get('fee_waiver_category')
+        if fee_waiver_category:
+            datas = datas.filter(fee_waiver_category__icontains=fee_waiver_category)
+
+            
         # Date range filter
         start_date = request.GET.get('start_date')
         end_date   = request.GET.get('end_date')

@@ -286,6 +286,7 @@ class StudentProfile(models.Model):
     re_attempt = models.IntegerField(default=0, null=True)
     re_attempt_btn = models.IntegerField(default=0, null=True)
     application_id = models.CharField(max_length=200, blank=True, null=True)
+    fee_waiver_category = models.CharField(max_length=200, default="No Waiver")
 
     
     

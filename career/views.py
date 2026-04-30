@@ -789,7 +789,8 @@ class GetDossierReportExcelView(APIView):
                 "remarks":'',
                 "remarks_timestamp":'',
                 "fee_waiver_category":'',
-                "total_questions":''
+                "total_questions":'',
+                "document_status":''
             })
 
        
@@ -814,7 +815,8 @@ class GetDossierReportExcelView(APIView):
                 "remarks":'',
                 "remarks_timestamp":'',
                 "fee_waiver_category":'',
-                "total_questions":''
+                "total_questions":'',
+                "document_status":''
             })
         
         lis.append({
@@ -838,7 +840,8 @@ class GetDossierReportExcelView(APIView):
                 "remarks":'Remarks',
                 "remarks_timestamp":'Remarks Timestamp',
                 "fee_waiver_category":'Fee Waiver Category',
-                "total_questions":'Created At'
+                "total_questions":'Created At',
+                "document_status":'Document Status'
             })
         
         
@@ -864,7 +867,8 @@ class GetDossierReportExcelView(APIView):
                 "remarks":chapter_data['remarks'],
                 "remarks_timestamp":chapter_data['remarks_timestamp'],
                 "fee_waiver_category":chapter_data['fee_waiver_category'],
-                "total_questions":chapter_data['created_at']
+                "total_questions":chapter_data['created_at'],
+                "document_status":chapter_data['document_status']
             })
 
 
@@ -1282,7 +1286,8 @@ class GetDossierSourceReportExcelView(APIView):
                 "remarks":'',
                 "remarks_timestamp":'',
                 "fee_waiver_category":'',
-                "total_questions":''
+                "total_questions":'',
+                "document_status":''
             })
 
        
@@ -1307,7 +1312,8 @@ class GetDossierSourceReportExcelView(APIView):
                 "remarks":'',
                 "remarks_timestamp":'',
                 "fee_waiver_category":'',
-                "total_questions":''
+                "total_questions":'',
+                "document_status":''
             })
         
         lis.append({
@@ -1331,7 +1337,8 @@ class GetDossierSourceReportExcelView(APIView):
                 "remarks":'Remarks',
                 "remarks_timestamp":'Remarks Timestamp',
                 "fee_waiver_category":'Fee Waiver Category',
-                "total_questions":'Created At'
+                "total_questions":'Created At',
+                "document_status":'Document Status'
             })
         
         
@@ -1357,7 +1364,8 @@ class GetDossierSourceReportExcelView(APIView):
                 "remarks":chapter_data['remarks'],
                 "remarks_timestamp":chapter_data['remarks_timestamp'],
                 "fee_waiver_category":chapter_data['fee_waiver_category'],
-                "total_questions":chapter_data['created_at']
+                "total_questions":chapter_data['created_at'],
+                "document_status":chapter_data['document_status']
             })
 
 

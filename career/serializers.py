@@ -276,6 +276,7 @@ class ListDossierDataSerializer(serializers.ModelSerializer):
     # created_at = serializers.DateTimeField(read_only=True, format="%Y-%m-%d %H:%M:%S")
     created_at = serializers.SerializerMethodField()
     user_document_url = serializers.SerializerMethodField()
+    document_status = serializers.SerializerMethodField('get_document_status')
     class Meta:
         model = DossierData
         fields = "__all__"
@@ -290,6 +291,9 @@ class ListDossierDataSerializer(serializers.ModelSerializer):
         user_obj = DossierDocument.objects.filter(dossier=obj.id)
         user_ser = DossierDocumentSerializer(user_obj, many=True).data
         return user_ser
+    
+    def get_document_status(self, obj):
+        return obj.get_document_status_display()
 
 class ListNewsletterSubscriberSerializer(serializers.ModelSerializer):
     class Meta:

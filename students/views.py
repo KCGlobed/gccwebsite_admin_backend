@@ -1649,7 +1649,7 @@ class GetStudentProfileListingView(APIView):
         last_name = request.GET.get('last_name')
         if last_name:
             datas = datas.filter(last_name__icontains=last_name)
-            
+
         email = request.GET.get('email')
         if email:
             datas = datas.filter(email__icontains=email)
@@ -1685,7 +1685,7 @@ class GetStudentScoreCardView(APIView):
         user_obj = request.user
 
         std_data = StudentProfile.objects.filter(user=user_obj).first()
-        score_objs = StudentExamResult.objects.filter(student_profile=std_data).first()
+        score_objs = StudentRealExamResult.objects.filter(student_profile=std_data).first()
 
         if not score_objs:
             return Response({"message": "No data found"},data={}, status=404)
@@ -1774,7 +1774,7 @@ class GetAdminStudentScoreCardView(APIView):
     def get(self, request, stid):
         
         std_data = StudentProfile.objects.filter(id=stid).first()
-        score_objs = StudentExamResult.objects.filter(student_profile=std_data).first()
+        score_objs = StudentRealExamResult.objects.filter(student_profile=std_data).first()
 
         if not score_objs:
             return Response({"message": "No data found"},data={}, status=404)

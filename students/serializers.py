@@ -779,7 +779,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     
     def get_result_status(self, obj):
         status = False
-        std_result = StudentExamResult.objects.filter(student_profile=obj.id)
+        std_result = StudentRealExamResult.objects.filter(student_profile=obj.id)
         if std_result:
             status = True
         return status

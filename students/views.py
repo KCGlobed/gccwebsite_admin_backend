@@ -1617,6 +1617,7 @@ class GetStudentProfileListingView(APIView):
         datas = StudentProfile.objects.all().order_by('-id')
 
         # Date range filter
+        
         start_date = request.GET.get('start_date')
         end_date = request.GET.get('end_date')
         if start_date:

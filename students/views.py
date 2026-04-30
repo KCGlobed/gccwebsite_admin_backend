@@ -1934,7 +1934,7 @@ class AddWaiverValueProfileView(APIView):
     def post(self, request):
         student = StudentProfile.objects.all()
         for i in student:
-            ds = DossierData.objects.filter(email=i.email).last()
+            ds = Payments.objects.filter(dossier_form__email=i.email, status="success").last()
             if ds:
                 i.fee_waiver_category = ds.fee_waiver_category
                 i.save()

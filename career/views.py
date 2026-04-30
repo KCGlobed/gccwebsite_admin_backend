@@ -194,6 +194,7 @@ class VslOptinDetailDataForm_Update(APIView):
 
 
 
+
 class DossierDataForm_List(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPageNumberPagination

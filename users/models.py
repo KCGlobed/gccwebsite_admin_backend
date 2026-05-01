@@ -124,6 +124,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     updated_at = models.DateTimeField(auto_now = True)
     #Added
     application_id = models.CharField(max_length=50, blank=True, null=True)
+    fee_waiver_category = models.CharField(max_length=200, default="No Waiver")
+
 
     objects = UserManager()
 

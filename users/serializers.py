@@ -147,6 +147,9 @@ class CreateStudentSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**info)
         self.generated_password = password
         # assign_role(user, "Student")
+
+
+
         formatted_emp = str(user.id).zfill(4)
         formatted_month = str(datetime.now().date().month).zfill(2)
         formatted_year = str(datetime.now().date().year)
@@ -161,6 +164,9 @@ class CreateStudentSerializer(serializers.ModelSerializer):
         user.application_id = generate_application_id
         user.save()
         num = user.id
+
+
+
 
         if settings.MERITO_STATUS == "True":
             
@@ -262,6 +268,7 @@ class CreateUniversityStudentSerializer(serializers.ModelSerializer):
             user.city = validate_data.get('city')
             user.phone1 = validate_data.get('phone1')
             user.application_id = generate_application_id
+            # user.application_id = generate_application_id
             user.save()
             num = user.id
 
@@ -309,7 +316,7 @@ class CreateUniversityStudentSerializer(serializers.ModelSerializer):
             )
             send_mail( subject, message, email_from, recipient_list,html_message=html_message )
 
-            DossierData.objects.filter(id=validate_data.get("dossier_id")).update(document_status=validate_data.get('document_status'),remarks=self.validated_data.get('remarks'),remarks_timestamp=dat)
+            DossierData.objects.filter(id=validate_data.get("dossier_id")).update(document_status=validate_data.get('document_status'),remarks=validate_data.get('remarks'),remarks_timestamp=dat)
             
             return user
         elif validate_data.get('document_status') == 3:

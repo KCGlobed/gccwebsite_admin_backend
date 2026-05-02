@@ -82,7 +82,8 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 "medium":instance.utm_medium,
                 "campaign":instance.utm_campaign,
                 "cf_payment_status":"Pending",
-                "cf_fee_waiver_category":instance.fee_waiver_category
+                "cf_fee_waiver_category":instance.fee_waiver_category,
+                "cf_institution_university":instance.university
             }
 
             try:
@@ -152,7 +153,8 @@ class CreateVslDataSerializer(serializers.ModelSerializer):
                 "medium":vsl_obj.utm_medium,
                 "campaign":vsl_obj.utm_campaign,
                 "cf_payment_status":"Pending",
-                "cf_fee_waiver_category":vsl_obj.fee_waiver_category
+                "cf_fee_waiver_category":vsl_obj.fee_waiver_category,
+                "cf_institution_university":vsl_obj.university
             }
 
             try:
@@ -211,7 +213,8 @@ class CreateVslFinalDataSerializer(serializers.ModelSerializer):
                 "medium":vsl_obj.utm_medium,
                 "campaign":vsl_obj.utm_campaign,
                 "cf_payment_status":"Pending",
-                "cf_fee_waiver_category":vsl_obj.fee_waiver_category
+                "cf_fee_waiver_category":vsl_obj.fee_waiver_category,
+                "cf_institution_university":vsl_obj.university
             }
 
             try:
@@ -461,7 +464,8 @@ def push_to_meritto(obj):
         "medium": obj.utm_medium,
         "campaign": obj.utm_campaign,
         "cf_payment_status": "Complete",
-        "cf_fee_waiver_category": obj.fee_waiver_category
+        "cf_fee_waiver_category": obj.fee_waiver_category,
+        "cf_institution_university":obj.university
     }
 
     try:

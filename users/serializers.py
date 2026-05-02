@@ -147,8 +147,16 @@ class CreateStudentSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**info)
         self.generated_password = password
         # assign_role(user, "Student")
-
-
+        waive_value = ""
+        pay_obj = Payments.objects.filter(dossier_form__email=validate_data.get('email'), status="success")
+        if pay_obj:
+            pay_obj = pay_obj.last()
+            waive_value = pay_obj.fee_waiver_category
+        else:
+            pay_obj = DossierData.objects.filter(email=validate_data.get('email'))
+            if pay_obj:
+                pay_obj = pay_obj.last()
+                waive_value = pay_obj.fee_waiver_category
 
         formatted_emp = str(user.id).zfill(4)
         formatted_month = str(datetime.now().date().month).zfill(2)
@@ -162,6 +170,7 @@ class CreateStudentSerializer(serializers.ModelSerializer):
         user.city = validate_data.get('city')
         user.phone1 = validate_data.get('phone1')
         user.application_id = generate_application_id
+        user.fee_waiver_category = waive_value
         user.save()
         num = user.id
 
@@ -248,9 +257,20 @@ class CreateUniversityStudentSerializer(serializers.ModelSerializer):
         if validate_data.get('document_status') == 2:
             user_count = User.objects.filter(email = validate_data.get('email').lower()).count()
             if user_count > 0:
-                DossierData.objects.filter(id=validate_data.get("dossier_id")).update(document_status=validate_data.get('document_status'),remarks=self.validated_data.get('remarks'),remarks_timestamp=dat)
+                DossierData.objects.filter(id=validate_data.get("dossier_id")).update(document_status=validate_data.get('document_status'), remarks=validate_data.get('remarks'), remarks_timestamp=dat)
                 raise serializers.ValidationError({'message':'Document Already Approved!','status':200,'data':[]})
             
+            waive_value = ""
+            pay_obj = Payments.objects.filter(dossier_form__email=validate_data.get('email'), status="success")
+            if pay_obj:
+                pay_obj = pay_obj.last()
+                waive_value = pay_obj.fee_waiver_category
+            else:
+                pay_obj = DossierData.objects.filter(email=validate_data.get('email'))
+                if pay_obj:
+                    pay_obj = pay_obj.last()
+                    waive_value = pay_obj.fee_waiver_category
+
             password = generate_random_password(8)
             info = { "first_name": validate_data.get('full_name'), "last_name":"", 'email': validate_data.get('email').lower(), 'password': password}
             user = User.objects.create_user(**info)
@@ -268,7 +288,7 @@ class CreateUniversityStudentSerializer(serializers.ModelSerializer):
             user.city = validate_data.get('city')
             user.phone1 = validate_data.get('phone1')
             user.application_id = generate_application_id
-            # user.application_id = generate_application_id
+            user.fee_waiver_category = waive_value
             user.save()
             num = user.id
 

@@ -260,16 +260,18 @@ class CreateUniversityStudentSerializer(serializers.ModelSerializer):
                 DossierData.objects.filter(id=validate_data.get("dossier_id")).update(document_status=validate_data.get('document_status'), remarks=validate_data.get('remarks'), remarks_timestamp=dat)
                 raise serializers.ValidationError({'message':'Document Already Approved!','status':200,'data':[]})
             
-            waive_value = ""
-            pay_obj = Payments.objects.filter(dossier_form__email=validate_data.get('email'), status="success")
-            if pay_obj:
-                pay_obj = pay_obj.last()
-                waive_value = pay_obj.fee_waiver_category
-            else:
-                pay_obj = DossierData.objects.filter(email=validate_data.get('email'))
-                if pay_obj:
-                    pay_obj = pay_obj.last()
-                    waive_value = pay_obj.fee_waiver_category
+            # waive_value = ""
+            # pay_obj = Payments.objects.filter(dossier_form__email=validate_data.get('email'), status="success")
+            # if pay_obj:
+            #     pay_obj = pay_obj.last()
+            #     waive_value = pay_obj.fee_waiver_category
+            # else:
+            #     pay_obj = DossierData.objects.filter(email=validate_data.get('email'))
+            #     if pay_obj:
+            #         pay_obj = pay_obj.last()
+            #         waive_value = pay_obj.fee_waiver_category
+
+            fee_waive = "Free of cost (FOC)"
 
             password = generate_random_password(8)
             info = { "first_name": validate_data.get('full_name'), "last_name":"", 'email': validate_data.get('email').lower(), 'password': password}
@@ -288,7 +290,7 @@ class CreateUniversityStudentSerializer(serializers.ModelSerializer):
             user.city = validate_data.get('city')
             user.phone1 = validate_data.get('phone1')
             user.application_id = generate_application_id
-            user.fee_waiver_category = waive_value
+            user.fee_waiver_category = fee_waive
             user.save()
             num = user.id
 
@@ -306,7 +308,8 @@ class CreateUniversityStudentSerializer(serializers.ModelSerializer):
                 payload = {
                     "email": user.email,
                     "search_criteria": "email",
-                    "cf_payment_status":"Complete"
+                    "cf_payment_status":"Complete",
+                    "cf_fee_waiver_category": fee_waive
                 }
 
                 try:
@@ -336,7 +339,7 @@ class CreateUniversityStudentSerializer(serializers.ModelSerializer):
             )
             send_mail( subject, message, email_from, recipient_list,html_message=html_message )
 
-            DossierData.objects.filter(id=validate_data.get("dossier_id")).update(document_status=validate_data.get('document_status'),remarks=validate_data.get('remarks'),remarks_timestamp=dat)
+            DossierData.objects.filter(id=validate_data.get("dossier_id")).update(fee_waiver_category=fee_waive, document_status=validate_data.get('document_status'),remarks=validate_data.get('remarks'),remarks_timestamp=dat)
             
             return user
         elif validate_data.get('document_status') == 3:

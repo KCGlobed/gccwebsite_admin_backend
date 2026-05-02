@@ -1932,12 +1932,36 @@ class PostRealExamResultView(APIView):
 
 class AddWaiverValueProfileView(APIView):
     def post(self, request):
-        student = StudentProfile.objects.all()
-        for i in student:
-            ds = Payments.objects.filter(dossier_form__email=i.email, status="success").last()
-            if ds:
-                i.fee_waiver_category = ds.fee_waiver_category
-                i.save()
-                print(i)
+        dd = DossierData.objects.filter(document_status=2)
+        print(len(dd))
+        fee_waive_val = "Free of cost (FOC)"
+        for i in dd:
+            User.objects.filter(email=i.email).update(fee_waiver_category=fee_waive_val)
+            DossierData.objects.filter(email=i.email, document_status=2).update(fee_waiver_category=fee_waive_val)
+
+
+        # student = StudentProfile.objects.all()
+        # for i in student:
+            # ds = Payments.objects.filter(dossier_form__email=i.email, status="success").last()
+            # if ds:
+            #     i.fee_waiver_category = ds.fee_waiver_category
+            #     i.save()
+            #     print(i)
+            # else:
+            #     dd = DossierData.objects.filter(email=i.email).last()
+            #     if dd:
+            #         i.fee_waiver_category = dd.fee_waiver_category
+            #         i.save()
+            #         print(i)
+            # ds = DossierData.objects.filter(email=i.email, document_status=2).last()
+            ###########
+            # if ds:
+            #     fee_waive_val = "Free of cost (FOC)"
+            #     i.fee_waiver_category = "Free of cost (FOC)"
+            #     User.objects.filter(email=i.email).update(fee_waiver_category=fee_waive_val)
+            #     DossierData.objects.filter(email=i.email, document_status=2).update(fee_waiver_category=fee_waive_val)
+            #     i.save()
+            #     print(i)
+
         return Response({'message':'success',"status":200,'data':{}})
     

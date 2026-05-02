@@ -399,6 +399,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
             datas.photo = validate_data.get('photo', datas.photo)
             datas.signature = validate_data.get('signature', datas.signature)
             datas.application_id = user_obj.application_id
+            datas.fee_waiver_category = user_obj.fee_waiver_category
             datas.save()
             query = datas
             if len(validate_data.get('user_experience')) > 0:
@@ -478,7 +479,8 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                 dob_certificate = validate_data.get('dob_certificate'),
                 photo = validate_data.get('photo'),
                 signature = validate_data.get('signature'),
-                application_id = user_obj.application_id
+                application_id = user_obj.application_id,
+                fee_waiver_category = user_obj.fee_waiver_category
             )
             query.save()
             print(validate_data)

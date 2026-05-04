@@ -1969,7 +1969,9 @@ class AddWaiverValueProfileView(APIView):
 
 
 ## Add profile to meritto application form
-
+from django.utils import timezone
+import json
+from datetime import datetime, timedelta, date
 class AddProfileToMerittoView(APIView):
     def post(self, request):
 
@@ -2018,6 +2020,15 @@ class AddProfileToMerittoView(APIView):
                 tenth_score_type = query.tenth_score_type if query.tenth_score_type == "Percentage" else "CGPA out of 10"
                 twelveth_score_type = query.twelveth_score_type if query.twelveth_score_type == "Percentage" else "CGPA out of 10"
 
+                if query.slot_time:
+                    start_str, end_str = query.slot_time.split(" - ")
+                    start_time = datetime.strptime(start_str, "%I:%M %p")
+                    # Format to HH:mm:ss
+                    start_formatted = start_time.strftime("%H:%M:%S %p")
+                    start_formatted_one = start_time.strftime("%H:%M:%S")
+                    # print(f'''{query.slot_date.strftime("%d/%m/%Y")} {start_formatted}''')
+                
+
                 meritto_payload = {
                     "form_id": 22144,
                     "email": query.email,
@@ -2048,17 +2059,28 @@ class AddProfileToMerittoView(APIView):
                             "field_333994_1_4":mthmedium,
                             "field_340097_1_1":query.institution,
                             "field_340097_1_2":query.ug_score_type,
-                            "field_340097_1_3":query.pg_percentage,
-                            "field_340097_1_4":format(float(query.get("pg_percentage", 0)), ".2f"),
+                            "field_340097_1_3":format(float(query.pg_percentage), ".2f"),
+                            "field_340097_1_4":format(float(query.pg_percentage), ".2f"),
                             "field_340069":pg_status,
                             "field_340077":higher_status,
                             "field_340079":query.higher_qualification_institution,
                             # "field_340078":query.higher_qualification,
                             "field_342113":query.user.application_id,
                             "field_343097":"Complete",
-                            "field_343098":"Complete"
+                            "field_343098":"Complete",
+                            
                     }
                 }
+
+                if query.slot_time:
+                    # # "field_342101":query.slot_date.strftime("%d/%m/%Y"),
+                    # "field_342102":start_formatted_one,
+                    # # "field_340093":instance.slot_date.strftime("%d/%m/%Y"),
+                    # "field_343386":f'''{query.slot_date.strftime("%d/%m/%Y")} {start_formatted}''',
+                    # "field_340094":instance.slot_time
+                    meritto_payload["data"]["field_342102"] = start_formatted_one
+                    meritto_payload["data"]["field_343386"] = f'''{query.slot_date.strftime("%d/%m/%Y")} {start_formatted}'''
+
                 exp_payload = {"have_work_ex":"Fresher"}
                 std_exp = StudentExperience.objects.filter(student_profile=query)
                 if len(std_exp) > 0:

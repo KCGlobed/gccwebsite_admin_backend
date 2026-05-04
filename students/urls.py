@@ -70,6 +70,7 @@ urlpatterns = [
 
 
     path('test_waiver_update/', AddWaiverValueProfileView.as_view(), name="test_waiver_update"),
+    path('test_upload_profile_meritto/', AddProfileToMerittoView.as_view(), name="test_upload_profile_meritto"),
 
 
 ]

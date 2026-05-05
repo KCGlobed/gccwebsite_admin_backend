@@ -140,8 +140,8 @@ class CreateVslDataSerializer(serializers.ModelSerializer):
                 "email": vsl_obj.email,
                 "mobile": vsl_obj.phone,
                 # "lead_stage": "hot",
-                "cf_fee_waiver_category":"",
-                "search_criteria": "email",
+                # "cf_fee_waiver_category":"",
+                # "search_criteria": "email",
 
                 # "city": instance.city,
                 # "state": instance.state,

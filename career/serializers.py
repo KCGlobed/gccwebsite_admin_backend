@@ -153,10 +153,11 @@ class CreateVslDataSerializer(serializers.ModelSerializer):
                 "medium":vsl_obj.utm_medium,
                 "campaign":vsl_obj.utm_campaign,
                 "cf_payment_status":"Pending",
-                "cf_fee_waiver_category":vsl_obj.fee_waiver_category,
-                "cf_institution_university":vsl_obj.university
+                "cf_fee_waiver_category":vsl_obj.fee_waiver_category
+                # "cf_institution_university":vsl_obj.university
             }
 
+            print("meritto payload vslf..",payload)
             try:
                 response = requests.post(url, headers=headers, json=payload)
                 print(response.status_code)

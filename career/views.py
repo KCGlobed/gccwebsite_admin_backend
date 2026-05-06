@@ -115,14 +115,23 @@ class DossierMeritto_CreateUpdate(APIView):
     # permission_classes = [IsAuthenticated]
     def post(self, request, format=None):
         data_list = []
-        dossier_obj = DossierData.objects.filter(id=4561)
+        j = 0
+        dossier_obj = DossierData.objects.filter(id__gte=2766, source=SourceType.VslOptin)
         filter_data = dossier_obj.count()
         for obj in dossier_obj:
+            print("email.......",obj.email)
             push_to_meritto(obj)
+
+
             # serializer = CreateOrUpdateDossierDataMerittoSerializer(obj, data = request.data)
             # if serializer.is_valid(raise_exception = True):
             #     serializer.save()
+
+
             data_list.append(obj.id)
+            # break
+            j+=1
+            print(j)
         total_lead = len(data_list)
         return success_response(message="success", data={"total_lead":total_lead,"filter_data":filter_data,"ids":data_list}, status_code=status.HTTP_200_OK)
 
@@ -1857,7 +1866,7 @@ class GetDeleteLead(APIView):
         # d_list = [257,694,727,744,748,750,752,773,774,782,894,254,503,1147,3561,3795,3524,3780,3526,4109,1171,1270,4109]
         # d_list = [284]
         # d_list = [519,313,506,404,387,489,505,509]
-        d_list = []
+        d_list = [5562,5561,5403,4547,4554,4553]
 
         for i in d_list:
             d = DossierData.objects.filter(id=i)

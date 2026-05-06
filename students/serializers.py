@@ -1114,7 +1114,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
         print(validate_data)
         user_obj = User.objects.filter(id = validate_data.get('user')).first()
         datas = StudentProfile.objects.filter(user_id = validate_data.get('user')).first()
-        exp_payload = {"have_work_ex":"Fresher"}
+        exp_payload = {"have_work_ex":"Fresher (Currently Studying or Recently Graduated)"}
         print(validate_data.get('user_experience'))
         print(type(validate_data.get('user_experience')))
         if datas is not None:
@@ -1159,7 +1159,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
             query = datas
             if len(validate_data.get('user_experience')) > 0:
                 num = 1
-                exp_payload["have_work_ex"] = "Experienced"
+                exp_payload["have_work_ex"] = "Experienced (Currently Working or Have Past Experience)"
                 StudentExperience.objects.filter(student_profile = query).delete()
                 for exp in validate_data.get('user_experience'):
                     experience = StudentExperience(

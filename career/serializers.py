@@ -423,24 +423,24 @@ class ListDossierAbondantSerializer(serializers.ModelSerializer):
 ############### MERITTO UPLOAD BULK ###########################
 
 def push_to_meritto(obj):
-    if not settings.MERITO_STATUS:
-        return
+    # if not settings.MERITO_STATUS:
+    #     return
 
-    source_map = {
-        1: "gccwebsite",
-        2: "gccefos",
-        3: "gccaffiliateOne",
-        4: "gccaffiliateTwo",
-        5: "gccaffiliateThree",
-        6: "gccaffiliateFour",
-        7: "gccaffiliateFive",
-        8: "gccipuniversity",
-        9: "gccdelhiuniversity",
-        10: "gccccs",
-        11: "gcckuk",
-    }
+    # source_map = {
+    #     1: "gccwebsite",
+    #     2: "gccefos",
+    #     3: "gccaffiliateOne",
+    #     4: "gccaffiliateTwo",
+    #     5: "gccaffiliateThree",
+    #     6: "gccaffiliateFour",
+    #     7: "gccaffiliateFive",
+    #     8: "gccipuniversity",
+    #     9: "gccdelhiuniversity",
+    #     10: "gccccs",
+    #     11: "gcckuk",
+    # }
 
-    m_source = source_map.get(obj.source, "gcc")
+    # m_source = source_map.get(obj.source, "gcc")
 
     url = f"{settings.MERITO_BASE_URL}/lead/v1/createOrUpdate"
 
@@ -455,22 +455,27 @@ def push_to_meritto(obj):
         "email": obj.email,
         "mobile": obj.phone,
         "search_criteria": "email",
-        "city": obj.city,
-        "state": obj.state,
         "country": "India",
-        "source": m_source,
-        "cf_source": m_source,
-        "cf_utmsource1": obj.utm_source,
-        "medium": obj.utm_medium,
-        "campaign": obj.utm_campaign,
-        "cf_payment_status": "Complete",
-        "cf_fee_waiver_category": obj.fee_waiver_category,
-        "cf_institution_university":obj.university
+        "source": "gccvsloptin",
+        "cf_source": "gccvsloptin",
+        "cf_utmsource1": str(obj.utm_source).encode("ascii", "ignore").decode().strip(),
+        "medium": str(obj.utm_medium).encode("ascii", "ignore").decode().strip(),
+        "campaign": str(obj.utm_campaign).encode("ascii", "ignore").decode().strip(),
+        # "cf_payment_status": "Complete",
     }
+    if obj.city:
+        payload["city"] = obj.city
+    if obj.state:
+        payload["state"] = obj.state
+    if obj.university:
+        payload["cf_fee_waiver_category"] = obj.fee_waiver_category
+
+    print("merito data.......",payload)
 
     try:
-        response = requests.post(url, headers=headers, json=payload, timeout=10)
-        response.raise_for_status()
+        response = requests.post(url, headers=headers, json=payload)
+        print(response.status_code)
+        print(response.text)
         return response.json()
     except requests.exceptions.RequestException as e:
         print("Meritto API Error:", str(e))

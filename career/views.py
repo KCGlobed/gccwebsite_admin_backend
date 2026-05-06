@@ -116,8 +116,11 @@ class DossierMeritto_CreateUpdate(APIView):
     def post(self, request, format=None):
         data_list = []
         j = 0
-        dossier_obj = DossierData.objects.filter(id__gte=2766, source=SourceType.VslOptin)
+        yesterday = datetime.now().date() - timedelta(days=2)
+        # dossier_obj = DossierData.objects.filter(created_at__date=yesterday,source=SourceType.VslOptin)
+        dossier_obj = DossierData.objects.filter(id=3757,source=SourceType.VslOptin)
         filter_data = dossier_obj.count()
+        print("count data...",filter_data)
         for obj in dossier_obj:
             print("email.......",obj.email)
             push_to_meritto(obj)
@@ -133,7 +136,116 @@ class DossierMeritto_CreateUpdate(APIView):
             j+=1
             print(j)
         total_lead = len(data_list)
+
         return success_response(message="success", data={"total_lead":total_lead,"filter_data":filter_data,"ids":data_list}, status_code=status.HTTP_200_OK)
+
+
+
+
+class ExcelPhoneMatchAPI(APIView):
+
+    def post(self, request, *args, **kwargs):
+        print("calling...!!")
+        file = request.FILES.get('file')
+
+        if not file:
+            return Response({"error": "No file uploaded"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Read Excel file
+            df = pd.read_excel(file)
+
+            # Ensure column exists (change 'phone' to your column name)
+            if 'Mobile' not in df.columns:
+                return Response({"error": "Column 'mobile' not found in file"}, status=400)
+
+            # Clean phone numbers
+            df['Mobile'] = df['Mobile'].astype(str).str.strip()
+
+            phone_list = df['Mobile'].dropna().unique().tolist()
+            data_list = []
+            j = 0
+            print("listing data.....",phone_list)
+            for i in phone_list:
+                matched_data = DossierData.objects.filter(phone=i[4:], source=12).first()
+                print(matched_data)
+                if matched_data:
+                    push_to_meritto(matched_data)
+                    data_list.append(matched_data.id)
+                    # break
+                    print("success")
+                j+=1
+                print(j)
+            total_lead = len(data_list)
+            
+
+            # # Query DB
+            # matched_data = DossierData.objects.filter(
+            #     phone__in=phone_list
+            # ).values('id', 'email', 'phone', 'created_at')
+
+            # matched_phones = {item['phone'] for item in matched_data}
+
+            # # Logic: find unmatched numbers
+            # unmatched = [p for p in phone_list if p not in matched_phones]
+
+
+            # url = f"{settings.MERITO_BASE_URL}/lead/v1/createOrUpdate"
+
+            # headers = {
+            #     "Content-Type": "application/json",
+            #     "secret-key": settings.MERITO_SECRETE_KEY,
+            #     "access-key": settings.MERITO_ACCESS_KEY
+            # }
+
+            # payload = {
+            #     "name": obj.full_name,
+            #     "email": obj.email,
+            #     "mobile": obj.phone,
+            #     "search_criteria": "mobile",
+            #     "country": "India",
+            #     "source": "gccvsloptin",
+            #     "cf_source": "gccvsloptin",
+            #     "cf_utmsource1": str(obj.utm_source).encode("ascii", "ignore").decode().strip(),
+            #     "medium": str(obj.utm_medium).encode("ascii", "ignore").decode().strip(),
+            #     "campaign": str(obj.utm_campaign).encode("ascii", "ignore").decode().strip(),
+            #     # "cf_payment_status": "Complete",
+            # }
+            # if obj.city:
+            #     payload["city"] = obj.city
+            # if obj.state:
+            #     payload["state"] = obj.state
+            # if obj.university:
+            #     payload["cf_fee_waiver_category"] = obj.fee_waiver_category
+
+            # print("merito data.......",payload)
+
+            # try:
+            #     response = requests.post(url, headers=headers, json=payload)
+            #     print(response.status_code)
+            #     print(response.text)
+            #     return response.json()
+            # except requests.exceptions.RequestException as e:
+            #     print("Meritto API Error:", str(e))
+            #     return None
+
+
+
+
+
+            return Response({
+                "total_uploaded": len(phone_list),
+                "total_lead": total_lead,
+            })
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
+
+
+
+
+
+
 
 
 class DossierDocument_Create(APIView):

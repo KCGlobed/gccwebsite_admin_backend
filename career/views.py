@@ -168,7 +168,8 @@ class ExcelPhoneMatchAPI(APIView):
             j = 0
             print("listing data.....",phone_list)
             for i in phone_list:
-                matched_data = DossierData.objects.filter(phone=i[4:], source=12).first()
+                print(i[4:])
+                matched_data = DossierData.objects.filter(phone=i[5:], source=12).first()
                 print(matched_data)
                 if matched_data:
                     push_to_meritto(matched_data)
@@ -1989,4 +1990,452 @@ class GetDeleteLead(APIView):
                 message="Success",
                 data={},
                 status_code=status.HTTP_200_OK
+            )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+###################### Extra ###################
+from openpyxl import Workbook
+from openpyxl.styles import Font
+# from django.http import HttpResponse
+import pandas as pd
+from io import BytesIO
+from django.http import HttpResponse
+import uuid
+
+# class ExcelLogicProcessAPI(APIView):
+
+#     def post(self, request, *args, **kwargs):
+#         print("starting...")
+#         file = request.FILES.get("file")
+#         print("starting...1")
+
+#         if not file:
+#             return Response(
+#                 {"error": "Excel file is required"},
+#                 status=status.HTTP_400_BAD_REQUEST
+#             )
+#         print("dd")
+#         try:
+#             # =========================
+#             # READ EXCEL FILE
+#             # =========================
+#             df = pd.read_csv(file)
+#             # print(df)
+#             # =========================
+#             # VALIDATE REQUIRED COLUMN
+#             # =========================
+#             required_columns = [
+#                 "Registered Name",
+#                 "Registered Email",
+#                 "Registered Mobile"
+#             ]
+
+#             print("starting...2")
+#             missing_columns = [
+#                 col for col in required_columns
+#                 if col not in df.columns
+#             ]
+
+#             if missing_columns:
+#                 return Response(
+#                     {
+#                         "error": f"Missing columns: {missing_columns}"
+#                     },
+#                     status=400
+#                 )
+
+#             # =========================
+#             # CLEAN DATA
+#             # =========================
+#             df["Registered Mobile"] = (
+#                 df["Registered Mobile"]
+#                 .astype(str)
+#                 .str.replace("+91", "", regex=False)
+#                 .str.replace("-", "", regex=False)
+#                 .str.replace(" ", "", regex=False)
+#                 .str.replace("`", "", regex=False)
+#                 .str.strip()
+#             )
+
+#             df["Registered Email"] = (
+#                 df["Registered Email"]
+#                 .astype(str)
+#                 .str.lower()
+#                 .str.strip()
+#             )
+
+#             # =========================
+#             # REMOVE DUPLICATES
+#             # =========================
+#             df.drop_duplicates(
+#                 subset=["Registered Mobile"],
+#                 keep="first",
+#                 inplace=True
+#             )
+#             print(df)
+#             # =========================
+#             # LOGIC PROCESS
+#             # =========================
+#             updated_data = []
+
+#             for _, row in df.iterrows():
+
+#                 mobile = row["Registered Mobile"]
+#                 email = row["Registered Email"]
+#                 print(mobile)
+#                 print(email)
+
+
+
+#             #     # Match with database
+#             #     lead = DossierData.objects.filter(
+#             #         mobile__icontains=mobile
+#             #     ).first()
+
+#             #     if lead:
+#             #         status_value = "EXISTING LEAD"
+#             #         db_email = lead.email
+#             #     else:
+#             #         status_value = "NEW LEAD"
+#             #         db_email = ""
+
+#                 updated_data.append({
+#                     "Registered Name": row["Registered Name"],
+#                     "Registered Email": email,
+#                     "Registered Mobile": mobile
+#                 })
+
+#             # =========================
+#             # CREATE OUTPUT EXCEL
+#             # =========================
+#             wb = Workbook()
+#             ws = wb.active
+#             ws.title = "Processed Data"
+
+#             headers = [
+#                 "Registered Name",
+#                 "Registered Email",
+#                 "Registered Mobile"
+#             ]
+
+#             # Add Header
+#             for col_num, header in enumerate(headers, 1):
+#                 cell = ws.cell(row=1, column=col_num)
+#                 cell.value = header
+#                 cell.font = Font(bold=True)
+
+#             # Add Rows
+#             for row_num, item in enumerate(updated_data, 2):
+#                 ws.cell(row=row_num, column=1).value = item["Registered Name"]
+#                 ws.cell(row=row_num, column=2).value = item["Registered Email"]
+#                 ws.cell(row=row_num, column=3).value = item["Registered Mobile"]
+
+#             # =========================
+#             # RETURN EXCEL RESPONSE
+#             # =========================
+#             output = BytesIO()
+#             wb.save(output)
+#             output.seek(0)
+
+#             with tempfile.NamedTemporaryFile(
+#                 suffix='.xlsx',
+#                 delete=False
+#             ) as temp_file:
+
+#                 excel_path = temp_file.name
+
+#                 output_df = pd.DataFrame(updated_data)
+
+#                 output_df.to_excel(
+#                     excel_path,
+#                     index=False
+#                 )
+
+#             try:
+
+#                 # =========================
+#                 # GCP STORAGE UPLOAD
+#                 # =========================
+
+#                 timestamp = datetime.now().strftime(
+#                     "%d_%m_%Y_%H_%M_%S"
+#                 )
+
+#                 report_name = "processed_leads"
+
+#                 gcs_folder_name = (
+#                     "media/reports/excel"
+#                 )
+
+#                 gcs_file_name = (
+#                     f"{gcs_folder_name}/"
+#                     f"{report_name}_{timestamp}.xlsx"
+#                 )
+
+#                 # Initialize GCP Client
+#                 client = storage.Client()
+
+#                 # Bucket
+#                 bucket = client.get_bucket(
+#                     settings.GS_BUCKET_NAME
+#                 )
+
+#                 # Blob
+#                 blob = bucket.blob(gcs_file_name)
+
+#                 # Upload File
+#                 blob.upload_from_filename(excel_path)
+
+#                 # Public URL
+#                 file_url = blob.public_url
+
+#                 # =========================
+#                 # RESPONSE
+#                 # =========================
+#                 return Response(
+#                     {
+#                         "status": True,
+#                         "message": "Excel processed successfully",
+#                         "file_url": file_url
+#                     },
+#                     status=status.HTTP_200_OK
+#                 )
+
+#             finally:
+
+#                 # Delete Temp File
+#                 if os.path.exists(excel_path):
+#                     os.remove(excel_path)
+
+#         except Exception as e:
+#             return Response(
+#                 {"error": str(e)},
+#                 status=500
+#             )
+
+
+
+import os
+import pandas as pd
+import tempfile
+from datetime import datetime
+from google.cloud import storage
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.conf import settings
+
+
+class ExcelLogicProcessAPI(APIView):
+
+    def post(self, request, *args, **kwargs):
+
+        try:
+
+            file = request.FILES.get("file")
+
+            if not file:
+                return Response(
+                    {"error": "Excel file is required"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # =========================
+            # READ FILE
+            # =========================
+            file_name = file.name.lower()
+
+            if file_name.endswith(".csv"):
+                df = pd.read_csv(file)
+
+            elif file_name.endswith(".xlsx"):
+                df = pd.read_excel(file, engine="openpyxl")
+
+            else:
+                return Response(
+                    {"error": "Only CSV/XLSX files allowed"},
+                    status=400
+                )
+
+            # =========================
+            # VALIDATE REQUIRED COLUMNS
+            # =========================
+            required_columns = [
+                "Registered Name",
+                "Registered Email",
+                "Registered Mobile"
+            ]
+
+            missing_columns = [
+                col for col in required_columns
+                if col not in df.columns
+            ]
+
+            if missing_columns:
+                return Response(
+                    {
+                        "error": f"Missing columns: {missing_columns}"
+                    },
+                    status=400
+                )
+
+            # =========================
+            # CLEAN DATA
+            # =========================
+            df["Registered Mobile"] = (
+                df["Registered Mobile"]
+                .astype(str)
+                .str.replace("+91", "", regex=False)
+                .str.replace("-", "", regex=False)
+                .str.replace(" ", "", regex=False)
+                .str.replace("`", "", regex=False)
+                .str.strip()
+            )
+
+            df["Registered Email"] = (
+                df["Registered Email"]
+                .astype(str)
+                .str.lower()
+                .str.strip()
+            )
+
+            # =========================
+            # REMOVE DUPLICATES
+            # =========================
+            df.drop_duplicates(
+                subset=["Registered Mobile"],
+                keep="first",
+                inplace=True
+            )
+
+            # =========================
+            # APPLY LOGIC
+            # =========================
+            updated_data = []
+
+            for _, row in df.iterrows():
+
+                mobile = row["Registered Mobile"]
+                email = row["Registered Email"]
+                # if mobile and email:
+                print(mobile, email)
+                if (str(mobile).upper() != "NA") & (str(email).upper() != "NA"):
+                    
+                # =========================
+                # YOUR DB LOGIC
+                # =========================
+
+                # lead = DossierData.objects.filter(
+                #     mobile__icontains=mobile
+                # ).first()
+
+                # if lead:
+                #     lead_status = "EXISTING"
+                # else:
+                #     lead_status = "NEW"
+
+                    updated_data.append({
+                        "Registered Name": row["Registered Name"],
+                        "Registered Email": email,
+                        "Registered Mobile": mobile,
+                    })
+
+            # =========================
+            # CREATE TEMP EXCEL FILE
+            # =========================
+            with tempfile.NamedTemporaryFile(
+                suffix='.xlsx',
+                delete=False
+            ) as temp_file:
+
+                excel_path = temp_file.name
+
+                output_df = pd.DataFrame(updated_data)
+
+                output_df.to_excel(
+                    excel_path,
+                    index=False
+                )
+
+            try:
+
+                # =========================
+                # GCP STORAGE UPLOAD
+                # =========================
+
+                timestamp = datetime.now().strftime(
+                    "%d_%m_%Y_%H_%M_%S"
+                )
+
+                report_name = "processed_leads"
+
+                gcs_folder_name = (
+                    "media/reports/excel"
+                )
+
+                gcs_file_name = (
+                    f"{gcs_folder_name}/"
+                    f"{report_name}_{timestamp}.xlsx"
+                )
+
+                # Initialize GCP Client
+                client = storage.Client()
+
+                # Bucket
+                bucket = client.get_bucket(
+                    settings.GS_BUCKET_NAME
+                )
+
+                # Blob
+                blob = bucket.blob(gcs_file_name)
+
+                # Upload File
+                blob.upload_from_filename(excel_path)
+
+                # Public URL
+                file_url = blob.public_url
+
+                # =========================
+                # RESPONSE
+                # =========================
+                return Response(
+                    {
+                        "status": True,
+                        "message": "Excel processed successfully",
+                        "file_url": file_url
+                    },
+                    status=status.HTTP_200_OK
+                )
+
+            finally:
+
+                # Delete Temp File
+                if os.path.exists(excel_path):
+                    os.remove(excel_path)
+
+        except Exception as e:
+
+            return Response(
+                {
+                    "status": False,
+                    "error": str(e)
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

@@ -496,6 +496,40 @@ class GetSourcePaymentReportExcelView(APIView):
         else:
             data_objs = Payments.objects.filter(source=SourceType.Website).order_by('-id')
 
+        full_name = request.GET.get('full_name')
+        if full_name:
+            data_objs = data_objs.filter(dossier_form__full_name__icontains=full_name)
+
+        email = request.GET.get('email')
+        if email:
+            data_objs = data_objs.filter(dossier_form__email__icontains=email)
+
+
+        phone = request.GET.get('phone')
+        if phone:
+            data_objs = data_objs.filter(dossier_form__phone__icontains=phone)
+
+
+        state = request.GET.get('state')
+        if state:
+            data_objs = data_objs.filter(dossier_form__state__icontains=state)
+
+        city = request.GET.get('city')
+        if city:
+            data_objs = data_objs.filter(dossier_form__city__icontains=city)
+
+        university = request.GET.get('university')
+        if university:
+            data_objs = data_objs.filter(dossier_form__university__icontains=university)
+        fee_waiver_category = request.GET.get('fee_waiver_category')
+        if fee_waiver_category:
+            data_objs = data_objs.filter(fee_waiver_category__icontains=fee_waiver_category)
+
+        status = request.GET.get('status')
+        if status:
+            data_objs = data_objs.filter(status__icontains=status)
+
+
         # Date range filter
         start_date = request.GET.get('start_date')
         end_date = request.GET.get('end_date')

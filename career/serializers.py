@@ -433,7 +433,7 @@ class ListDossierAbondantSerializer(serializers.ModelSerializer):
 
 
 
-############### MERITTO UPLOAD BULK ###########################
+############### MERITTO UPLOAD BULK ################
 
 def push_to_meritto(obj):
     # if not settings.MERITO_STATUS:

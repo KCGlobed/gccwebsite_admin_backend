@@ -359,7 +359,7 @@ class GetSessionReportExcelView(APIView):
 class GetPaymentReportExcelView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        print("calling.. payment_report_excel")
+        # print("calling.. payment_report_excel")
         data_objs = Payments.objects.filter(source=SourceType.Website).order_by("-id")
 
         full_name = request.GET.get('full_name')

@@ -86,10 +86,8 @@ class ListPaymentExcelReportSerializer(serializers.ModelSerializer) :
 
         if form_obj:
             form_data = ListDossierDataReportSerializer(form_obj).data
-            print("lead....",form_data)
             form_data.pop('id')
             # Merge form fields into main response
-            print("payment data.......",data)
             data.update(form_data)
 
         return data

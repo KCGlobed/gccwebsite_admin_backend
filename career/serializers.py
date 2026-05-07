@@ -78,9 +78,12 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 "country": "India",
                 "source":m_source,
                 "cf_source":m_source,
-                "cf_utmsource1":instance.utm_source,
-                "medium":instance.utm_medium,
-                "campaign":instance.utm_campaign,
+                # "cf_utmsource1":instance.utm_source,
+                # "medium":instance.utm_medium,
+                # "campaign":instance.utm_campaign,
+                "cf_utmsource1": str(instance.utm_source).encode("ascii", "ignore").decode().strip(),
+                "medium": str(instance.utm_medium).encode("ascii", "ignore").decode().strip(),
+                "campaign": str(instance.utm_campaign).encode("ascii", "ignore").decode().strip(),
                 "cf_payment_status":"Pending",
                 "cf_fee_waiver_category":instance.fee_waiver_category,
                 "cf_institution_university":instance.university
@@ -149,9 +152,12 @@ class CreateVslDataSerializer(serializers.ModelSerializer):
                 
                 "source":m_source,
                 "cf_source":m_source,
-                "cf_utmsource1":vsl_obj.utm_source,
-                "medium":vsl_obj.utm_medium,
-                "campaign":vsl_obj.utm_campaign,
+                # "cf_utmsource1":vsl_obj.utm_source,
+                # "medium":vsl_obj.utm_medium,
+                # "campaign":vsl_obj.utm_campaign,
+                "cf_utmsource1": str(vsl_obj.utm_source).encode("ascii", "ignore").decode().strip(),
+                "medium": str(vsl_obj.utm_medium).encode("ascii", "ignore").decode().strip(),
+                "campaign": str(vsl_obj.utm_campaign).encode("ascii", "ignore").decode().strip(),
                 "cf_payment_status":"Pending",
                 "cf_fee_waiver_category":vsl_obj.fee_waiver_category
                 # "cf_institution_university":vsl_obj.university
@@ -210,9 +216,12 @@ class CreateVslFinalDataSerializer(serializers.ModelSerializer):
                 "country": "India",
                 "source":m_source,
                 "cf_source":m_source,
-                "cf_utmsource1":vsl_obj.utm_source,
-                "medium":vsl_obj.utm_medium,
-                "campaign":vsl_obj.utm_campaign,
+                # "cf_utmsource1":vsl_obj.utm_source,
+                # "medium":vsl_obj.utm_medium,
+                # "campaign":vsl_obj.utm_campaign,
+                "cf_utmsource1": str(vsl_obj.utm_source).encode("ascii", "ignore").decode().strip(),
+                "medium": str(vsl_obj.utm_medium).encode("ascii", "ignore").decode().strip(),
+                "campaign": str(vsl_obj.utm_campaign).encode("ascii", "ignore").decode().strip(),
                 "cf_payment_status":"Pending",
                 "cf_fee_waiver_category":vsl_obj.fee_waiver_category,
                 "cf_institution_university":vsl_obj.university
@@ -391,9 +400,12 @@ class CreateDossierAbondantSerializer(serializers.ModelSerializer):
                 # "country": "India",
                 "source":m_source,
                 "cf_source":m_source,
-                "cf_utmsource1":instance.utm_source,
-                "medium":instance.utm_medium,
-                "campaign":instance.utm_campaign,
+                # "cf_utmsource1":instance.utm_source,
+                # "medium":instance.utm_medium,
+                # "campaign":instance.utm_campaign,
+                "cf_utmsource1": str(instance.utm_source).encode("ascii", "ignore").decode().strip(),
+                "medium": str(instance.utm_medium).encode("ascii", "ignore").decode().strip(),
+                "campaign": str(instance.utm_campaign).encode("ascii", "ignore").decode().strip(),
                 "cf_payment_status":"Pending"
                 # "cf_fee_waiver_category":instance.fee_waiver_category
             }

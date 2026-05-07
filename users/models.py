@@ -125,6 +125,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     #Added
     application_id = models.CharField(max_length=50, blank=True, null=True)
     fee_waiver_category = models.CharField(max_length=200, default="No Waiver")
+    referral_code = models.CharField(max_length=50, null=True, blank=True)
+    referred_code = models.CharField(max_length=50, null=True, blank=True)
 
 
     objects = UserManager()
@@ -154,3 +156,34 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_staff(self):
         "Is the user a member of staff?"
         return self.is_admin
+    
+
+
+
+class ManageReferal(models.Model):
+    user = models.ForeignKey(
+        'users.User',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name='referral_owner'
+    )
+
+    used_by = models.ForeignKey(
+        'users.User',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name='referral_used_by'
+    )
+
+    referral_code = models.CharField(
+        max_length=50,
+        unique=True
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.referral_code

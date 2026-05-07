@@ -19,3 +19,40 @@ class CreateUniversityStudentView(APIView):
             return success_response(message="User Created Successfully", data={}, status_code=status.HTTP_200_OK)
         return error_response(message="failed", data = serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
     
+
+
+
+
+class VerifyRefferalCodeView(APIView):
+    def post(self, request, format=None):
+        code = request.data.get('refferal_code')
+        user_obj = User.objects.filter(referred_code=code)
+        status = False
+        if not user_obj:
+            status = True
+
+            return success_response(message="success", data={"status":status}, status_code=status.HTTP_200_OK)
+        return error_response(message="failed", data = {"status":status}, status_code=status.HTTP_400_BAD_REQUEST)
+    
+
+
+import random
+import string
+def generate_referral_code():
+    characters = string.ascii_uppercase + string.digits
+    return ''.join(random.choices(characters, k=20))
+
+
+
+
+
+class CreateStudentRefferalCodeView(APIView):
+    def post(self, request, format=None):
+        user = User.objects.all()
+        for i in user:
+            data = generate_referral_code()
+            user_data = User.objects.filter(referral_code=data)
+            if len(user_data) == 0 and not i.referral_code:
+                i.referral_code = data
+                i.save()
+        return success_response(message="User Created Successfully", data={}, status_code=status.HTTP_200_OK)

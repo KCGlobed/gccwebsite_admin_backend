@@ -28,6 +28,10 @@ urlpatterns = [
     ## Admin
     path('create_university_student/', CreateUniversityStudentView.as_view(), name="create_university_student"),
 
+    path('create_referal_code/', CreateStudentRefferalCodeView.as_view(), name="create_code"),
+    
+    path('verify_refferal_code/', VerifyRefferalCodeView.as_view(), name="verify_refferal_code"),
+
 
     
 ]

@@ -33,7 +33,7 @@ class ListStudentPaymentSerializer(serializers.ModelSerializer) :
 class ListDossierDataReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = DossierData
-        exclude = ["created_at","updated_at"]
+        exclude = ["created_at","updated_at","fee_waiver_category"]
 
 
 
@@ -76,7 +76,7 @@ class ListPaymentExcelReportSerializer(serializers.ModelSerializer) :
     created_at = serializers.SerializerMethodField('get_created_at')
     class Meta:
         model = Payments
-        fields = ["razorpay_order_id","razorpay_payment_id","amount","status","created_at"]
+        fields = ["razorpay_order_id","razorpay_payment_id","amount","status","created_at","fee_waiver_category"]
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -86,8 +86,10 @@ class ListPaymentExcelReportSerializer(serializers.ModelSerializer) :
 
         if form_obj:
             form_data = ListDossierDataReportSerializer(form_obj).data
+            print("lead....",form_data)
             form_data.pop('id')
             # Merge form fields into main response
+            print("payment data.......",data)
             data.update(form_data)
 
         return data

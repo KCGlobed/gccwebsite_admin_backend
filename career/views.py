@@ -116,9 +116,10 @@ class DossierMeritto_CreateUpdate(APIView):
     def post(self, request, format=None):
         data_list = []
         j = 0
-        yesterday = datetime.now().date() - timedelta(days=2)
-        # dossier_obj = DossierData.objects.filter(created_at__date=yesterday,source=SourceType.VslOptin)
-        dossier_obj = DossierData.objects.filter(id=3757,source=SourceType.VslOptin)
+        # yesterday = datetime.now().date() - timedelta(days=2)
+        today = datetime.now().date()
+        dossier_obj = DossierData.objects.filter(created_at__date=today, source=SourceType.VslOptin)
+        # dossier_obj = DossierData.objects.filter(id=3757,source=SourceType.VslOptin)
         filter_data = dossier_obj.count()
         print("count data...",filter_data)
         for obj in dossier_obj:
@@ -240,7 +241,6 @@ class ExcelPhoneMatchAPI(APIView):
 
         except Exception as e:
             return Response({"error": str(e)}, status=500)
-
 
 
 

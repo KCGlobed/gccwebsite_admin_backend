@@ -201,3 +201,4 @@ class ManageFreeReferal(models.Model):
     def __str__(self):
         return self.free_referral_code
 
+    

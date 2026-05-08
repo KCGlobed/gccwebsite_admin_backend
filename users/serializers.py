@@ -194,6 +194,9 @@ class CreateStudentSerializer(serializers.ModelSerializer):
                 reff = ManageReferal(user=user, used_by=None, referral_code=validate_data.get('referred_code'))
             reff.save()
 
+        DossierData.objects.filter(email=validate_data.get('email').lower()).update(referral_code=refferals_code)
+
+
         if settings.MERITO_STATUS == "True":
             
             # API URL
@@ -324,6 +327,7 @@ class CreateUniversityStudentSerializer(serializers.ModelSerializer):
                     reff = ManageReferal(user=user, used_by=None, referral_code=validate_data.get('referred_code'))
                 reff.save()
 
+            DossierData.objects.filter(email=validate_data.get('email').lower()).update(referral_code=refferals_code)
 
             if settings.MERITO_STATUS == "True":
                 

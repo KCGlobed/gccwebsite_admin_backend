@@ -121,6 +121,7 @@ class DossierData(models.Model):
     remarks_timestamp = models.DateTimeField(null=True, blank=True)
     fee_waiver_category = models.CharField(max_length=200, default="No Waiver")
     referred_code = models.CharField(max_length=50, null=True, blank=True)
+    referral_code = models.CharField(max_length=50, null=True, blank=True)
 
 
 class DossierDocument(models.Model):

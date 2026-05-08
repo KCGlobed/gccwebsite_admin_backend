@@ -194,7 +194,7 @@ class CreateStudentSerializer(serializers.ModelSerializer):
                 reff = ManageReferal(user=user, used_by=None, referral_code=validate_data.get('referred_code'))
             reff.save()
 
-        DossierData.objects.filter(email=validate_data.get('email').lower()).update(referral_code=refferals_code)
+        DossierData.objects.filter(email=validate_data.get('email').lower()).update(referral_code=refferals_code, referred_code=validate_data.get('referred_code'))
 
 
         if settings.MERITO_STATUS == "True":
@@ -212,9 +212,10 @@ class CreateStudentSerializer(serializers.ModelSerializer):
                 "email": user.email,
                 "search_criteria": "email",
                 "cf_payment_status":"Complete",
-                "cf_refferal_code":validate_data.get('referred_code')
+                "cf_refferal_code":validate_data.get('referred_code'),
+                "cf_reference_code":refferals_code
             }
-
+            print("user create meritto payload...",payload)
             try:
                 response = requests.post(url, headers=headers, json=payload)
                 print(response.status_code)

@@ -86,7 +86,8 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 "campaign": str(instance.utm_campaign).encode("ascii", "ignore").decode().strip(),
                 "cf_payment_status":"Pending",
                 "cf_fee_waiver_category":instance.fee_waiver_category,
-                "cf_institution_university":instance.university
+                "cf_institution_university":instance.university,
+                # "cf_refferal_code":instance.get('referred_code')
             }
 
             try:
@@ -159,7 +160,8 @@ class CreateVslDataSerializer(serializers.ModelSerializer):
                 "medium": str(vsl_obj.utm_medium).encode("ascii", "ignore").decode().strip(),
                 "campaign": str(vsl_obj.utm_campaign).encode("ascii", "ignore").decode().strip(),
                 "cf_payment_status":"Pending",
-                "cf_fee_waiver_category":vsl_obj.fee_waiver_category
+                "cf_fee_waiver_category":vsl_obj.fee_waiver_category,
+                # "cf_refferal_code":vsl_obj.get('referred_code')
                 # "cf_institution_university":vsl_obj.university
             }
 
@@ -224,7 +226,8 @@ class CreateVslFinalDataSerializer(serializers.ModelSerializer):
                 "campaign": str(vsl_obj.utm_campaign).encode("ascii", "ignore").decode().strip(),
                 "cf_payment_status":"Pending",
                 "cf_fee_waiver_category":vsl_obj.fee_waiver_category,
-                "cf_institution_university":vsl_obj.university
+                "cf_institution_university":vsl_obj.university,
+                # "cf_refferal_code":vsl_obj.referred_code
             }
 
             try:

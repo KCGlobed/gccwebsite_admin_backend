@@ -27,6 +27,9 @@ class VerifyRefferalCodeView(APIView):
     def post(self, request, format=None):
         code = request.data.get('refferal_code')
         statuss = False
+        if ManageFreeReferal.objects.filter(free_referral_code=code).exists():
+                statuss = True
+                return success_response(message="success", data={"verified_status":statuss}, status_code=status.HTTP_200_OK)
         if User.objects.filter(referral_code=code).exists():
             user_obj = User.objects.filter(referred_code=code)
             if not user_obj:

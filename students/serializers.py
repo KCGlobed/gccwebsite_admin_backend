@@ -118,6 +118,9 @@ class ListStudentProfileExcelReportSerializer(serializers.ModelSerializer) :
     higher_education_status = serializers.SerializerMethodField('get_higher_education_status')
     pg_status = serializers.SerializerMethodField('get_pg_status')
     medium_instruction = serializers.SerializerMethodField('get_medium_instruction')
+    referral_code = serializers.SerializerMethodField("get_referral_code")
+    referred_code = serializers.SerializerMethodField("get_referred_code")
+    
     class Meta:
         model = StudentProfile
         fields = "__all__"
@@ -126,7 +129,15 @@ class ListStudentProfileExcelReportSerializer(serializers.ModelSerializer) :
     #     data = super().to_representation(instance)
 
     #     return data
-    
+
+    def get_referral_code(self, obj):
+        name = obj.user.referral_code if obj.user else ""
+        return name
+
+    def get_referred_code(self, obj):
+        name = obj.user.referred_code if obj.user else ""
+        return name
+     
     def get_created_at(self, obj):
         if obj.created_at:
             # Convert to project TIME_ZONE automatically
@@ -768,11 +779,6 @@ class StudentReAttemptSerializer(serializers.ModelSerializer):
         fields = ["status"]
 
 
-
-class StudentUserDetailSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ["referral_code","referred_code"]
 
 
 class StudentProfileSerializer(serializers.ModelSerializer):

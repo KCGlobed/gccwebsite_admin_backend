@@ -182,14 +182,14 @@ class CreateStudentSerializer(serializers.ModelSerializer):
         user.application_id = generate_application_id
         user.fee_waiver_category = waive_value
         user.referral_code = refferals_code
-        user.referred_code = validate_data.get('referred_code')
+        # user.referred_code = validate_data.get('referred_code')
         user.save()
         num = user.id
 
-        if validate_data.get('referred_code'):
-            used_by_user = User.objects.filter(referral_code=validate_data.get('referred_code')).first()
-            reff = ManageReferal(user=user, used_by=used_by_user, referral_code=validate_data.get('referred_code'))
-            reff.save()
+        # if validate_data.get('referred_code'):
+        #     used_by_user = User.objects.filter(referral_code=validate_data.get('referred_code')).first()
+            # reff = ManageReferal(user=user, used_by=used_by_user, referral_code=validate_data.get('referred_code'))
+            # reff.save()
 
         if settings.MERITO_STATUS == "True":
             
@@ -309,14 +309,14 @@ class CreateUniversityStudentSerializer(serializers.ModelSerializer):
             user.application_id = generate_application_id
             user.fee_waiver_category = fee_waive
             user.referral_code = refferals_code
-            user.referred_code = validate_data.get('referred_code')
+            # user.referred_code = validate_data.get('referred_code')
             user.save()
             num = user.id
 
-            if validate_data.get('referred_code'):
-                used_by_user = User.objects.filter(referral_code=validate_data.get('referred_code')).first()
-                reff = ManageReferal(user=user, used_by=used_by_user, referral_code=validate_data.get('referred_code'))
-                reff.save()
+            # if validate_data.get('referred_code'):
+            #     used_by_user = User.objects.filter(referral_code=validate_data.get('referred_code')).first()
+            #     reff = ManageReferal(user=user, used_by=used_by_user, referral_code=validate_data.get('referred_code'))
+            #     reff.save()
 
 
             if settings.MERITO_STATUS == "True":

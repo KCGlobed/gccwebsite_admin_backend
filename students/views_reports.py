@@ -742,7 +742,9 @@ class GetStudentProfileReportExcelView(APIView):
             "slot_time": "Slot Time",
             "application_id": "Application ID",
             "created_at": "Create Date",
-            "fee_waiver_category": "Fee Waiver Category"
+            "fee_waiver_category": "Fee Waiver Category",
+            "referral_code": "Refferal Code",
+            "referred_code": "Reffered Code"
             }
         # print(data_list)
         # return Response({"message":"success", "data":data_list})

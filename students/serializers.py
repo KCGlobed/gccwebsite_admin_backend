@@ -768,12 +768,29 @@ class StudentReAttemptSerializer(serializers.ModelSerializer):
         fields = ["status"]
 
 
+
+class StudentUserDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["referral_code","referred_code"]
+
+
 class StudentProfileSerializer(serializers.ModelSerializer):
     student_experience = serializers.SerializerMethodField()
     exam_status = serializers.SerializerMethodField()
     created_at = serializers.DateTimeField(read_only=True, format="%Y-%m-%d %H:%M:%S")
     application_id = serializers.SerializerMethodField("get_application_id")
     result_status = serializers.SerializerMethodField("get_result_status")
+    referral_code = serializers.SerializerMethodField("get_referral_code")
+    referred_code = serializers.SerializerMethodField("get_referred_code")
+
+    def get_referral_code(self, obj):
+        name = obj.user.referral_code if obj.user else ""
+        return name
+
+    def get_referred_code(self, obj):
+        name = obj.user.referred_code if obj.user else ""
+        return name
 
     def get_student_experience(self, obj):
         answe = StudentExperience.objects.filter(student_profile_id =obj.id).order_by("id")
@@ -825,6 +842,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
         if obj.user:
             app_id = obj.user.application_id
         return app_id
+    
     
     class Meta:
         model = StudentProfile

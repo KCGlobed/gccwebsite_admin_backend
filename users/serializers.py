@@ -205,7 +205,8 @@ class CreateStudentSerializer(serializers.ModelSerializer):
             payload = {
                 "email": user.email,
                 "search_criteria": "email",
-                "cf_payment_status":"Complete"
+                "cf_payment_status":"Complete",
+                "cf_refferal_code":validate_data.get('referred_code')
             }
 
             try:
@@ -333,7 +334,8 @@ class CreateUniversityStudentSerializer(serializers.ModelSerializer):
                     "email": user.email,
                     "search_criteria": "email",
                     "cf_payment_status":"Complete",
-                    "cf_fee_waiver_category": fee_waive
+                    "cf_fee_waiver_category": fee_waive,
+                    "cf_refferal_code":validate_data.get('referred_code')
                 }
 
                 try:

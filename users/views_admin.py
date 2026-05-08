@@ -26,13 +26,13 @@ class CreateUniversityStudentView(APIView):
 class VerifyRefferalCodeView(APIView):
     def post(self, request, format=None):
         code = request.data.get('refferal_code')
-        user_obj = User.objects.filter(referred_code=code)
-        status = False
-        if not user_obj:
-            status = True
-
-            return success_response(message="success", data={"status":status}, status_code=status.HTTP_200_OK)
-        return error_response(message="failed", data = {"status":status}, status_code=status.HTTP_400_BAD_REQUEST)
+        if User.objects.filter(referral_code=code).exists():
+            user_obj = User.objects.filter(referred_code=code)
+            statuss = False
+            if not user_obj:
+                statuss = True
+                return success_response(message="success", data={"status":statuss}, status_code=status.HTTP_200_OK)
+        return error_response(message="failed", data = {"status":statuss}, status_code=status.HTTP_400_BAD_REQUEST)
     
 
 

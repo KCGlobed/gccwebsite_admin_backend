@@ -117,6 +117,12 @@ class UserLoginSerializer(serializers.ModelSerializer):
 
 
 
+import random
+import string
+def generate_referral_code():
+    characters = string.ascii_uppercase + string.digits
+    return ''.join(random.choices(characters, k=20))
+
 
 
 
@@ -158,6 +164,9 @@ class CreateStudentSerializer(serializers.ModelSerializer):
                 pay_obj = pay_obj.last()
                 waive_value = pay_obj.fee_waiver_category
 
+        refferals_code = generate_referral_code()
+
+
         formatted_emp = str(user.id).zfill(4)
         formatted_month = str(datetime.now().date().month).zfill(2)
         formatted_year = str(datetime.now().date().year)
@@ -171,6 +180,7 @@ class CreateStudentSerializer(serializers.ModelSerializer):
         user.phone1 = validate_data.get('phone1')
         user.application_id = generate_application_id
         user.fee_waiver_category = waive_value
+        user.referral_code = refferals_code
         user.save()
         num = user.id
 
@@ -272,6 +282,7 @@ class CreateUniversityStudentSerializer(serializers.ModelSerializer):
             #         waive_value = pay_obj.fee_waiver_category
 
             fee_waive = "Free of cost (FOC)"
+            refferals_code = generate_referral_code()
 
             password = generate_random_password(8)
             info = { "first_name": validate_data.get('full_name'), "last_name":"", 'email': validate_data.get('email').lower(), 'password': password}
@@ -291,6 +302,7 @@ class CreateUniversityStudentSerializer(serializers.ModelSerializer):
             user.phone1 = validate_data.get('phone1')
             user.application_id = generate_application_id
             user.fee_waiver_category = fee_waive
+            user.referral_code = refferals_code
             user.save()
             num = user.id
 

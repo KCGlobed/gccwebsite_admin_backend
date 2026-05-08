@@ -188,7 +188,10 @@ class CreateStudentSerializer(serializers.ModelSerializer):
 
         if validate_data.get('referred_code'):
             used_by_user = User.objects.filter(referral_code=validate_data.get('referred_code')).first()
-            reff = ManageReferal(user=user, used_by=used_by_user, referral_code=validate_data.get('referred_code'))
+            if used_by_user:
+                reff = ManageReferal(user=user, used_by=used_by_user, referral_code=validate_data.get('referred_code'))
+            else:
+                reff = ManageReferal(user=user, used_by=None, referral_code=validate_data.get('referred_code'))
             reff.save()
 
         if settings.MERITO_STATUS == "True":

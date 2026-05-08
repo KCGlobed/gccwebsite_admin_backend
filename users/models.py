@@ -178,8 +178,7 @@ class ManageReferal(models.Model):
     )
 
     referral_code = models.CharField(
-        max_length=50,
-        unique=True
+        max_length=50
     )
 
     created_at = models.DateTimeField(auto_now_add=True)

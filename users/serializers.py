@@ -134,9 +134,10 @@ class CreateStudentSerializer(serializers.ModelSerializer):
     state = serializers.CharField(max_length = 255, required=False, allow_blank=True)
     country = serializers.CharField(max_length = 255, required=False, allow_blank=True)
     phone1 = serializers.CharField(max_length = 255, required=False, allow_blank=True)
+    referred_code = serializers.CharField(max_length = 255, required=False, allow_blank=True)
     class Meta:
         model = User
-        fields = ['email','full_name',"city","state","country","phone1"]
+        fields = ['email','full_name',"city","state","country","phone1","referred_code"]
         
 
     def validate(self, data):
@@ -181,11 +182,14 @@ class CreateStudentSerializer(serializers.ModelSerializer):
         user.application_id = generate_application_id
         user.fee_waiver_category = waive_value
         user.referral_code = refferals_code
+        user.referred_code = validate_data.get('referred_code')
         user.save()
         num = user.id
 
-
-
+        if validate_data.get('referred_code'):
+            used_by_user = User.objects.filter(referral_code=validate_data.get('referred_code')).first()
+            reff = ManageReferal(user=user, used_by=used_by_user, referral_code=validate_data.get('referred_code'))
+            reff.save()
 
         if settings.MERITO_STATUS == "True":
             
@@ -247,10 +251,11 @@ class CreateUniversityStudentSerializer(serializers.ModelSerializer):
     phone1 = serializers.CharField(max_length = 255, required=False, allow_blank=True)
     remarks = serializers.CharField(max_length = 255, required=True)
     document_status = serializers.IntegerField(required=True)
+    referred_code = serializers.CharField(max_length = 255, required=False, allow_blank=True)
 
     class Meta:
         model = User
-        fields = ['dossier_id','email','full_name',"city","state","country","phone1","remarks","document_status"]
+        fields = ['dossier_id','email','full_name',"city","state","country","phone1","remarks","document_status","referred_code"]
         
 
     # def validate(self, data):
@@ -303,8 +308,15 @@ class CreateUniversityStudentSerializer(serializers.ModelSerializer):
             user.application_id = generate_application_id
             user.fee_waiver_category = fee_waive
             user.referral_code = refferals_code
+            user.referred_code = validate_data.get('referred_code')
             user.save()
             num = user.id
+
+            if validate_data.get('referred_code'):
+                used_by_user = User.objects.filter(referral_code=validate_data.get('referred_code')).first()
+                reff = ManageReferal(user=user, used_by=used_by_user, referral_code=validate_data.get('referred_code'))
+                reff.save()
+
 
             if settings.MERITO_STATUS == "True":
                 

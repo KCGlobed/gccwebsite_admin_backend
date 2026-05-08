@@ -32,7 +32,7 @@ class VerifyRefferalCodeView(APIView):
             if not user_obj:
                 statuss = True
                 return success_response(message="success", data={"status":statuss}, status_code=status.HTTP_200_OK)
-        return error_response(message="failed", data = {"status":statuss}, status_code=status.HTTP_400_BAD_REQUEST)
+        return error_response(message="Invalid Code", data = {"status":statuss}, status_code=status.HTTP_400_BAD_REQUEST)
     
 
 

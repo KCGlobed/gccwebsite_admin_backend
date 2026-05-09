@@ -346,9 +346,10 @@ class CreateUniversityStudentSerializer(serializers.ModelSerializer):
                     "search_criteria": "email",
                     "cf_payment_status":"Complete",
                     "cf_fee_waiver_category": fee_waive,
-                    "cf_refferal_code":validate_data.get('referred_code')
+                    "cf_refferal_code":validate_data.get('referred_code'),
+                    "cf_reference_code":refferals_code
                 }
-
+                print("user create meritto payload...",payload)
                 try:
                     response = requests.post(url, headers=headers, json=payload)
                     print(response.status_code)

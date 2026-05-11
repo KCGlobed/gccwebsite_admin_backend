@@ -470,7 +470,7 @@ def push_to_meritto(obj):
         "name": obj.full_name,
         "email": obj.email,
         "mobile": obj.phone,
-        "search_criteria": "mobile",
+        "search_criteria": "email",
         "country": "India",
         "source": "gccvsloptin",
         "cf_source": "gccvsloptin",

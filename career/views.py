@@ -118,8 +118,8 @@ class DossierMeritto_CreateUpdate(APIView):
         j = 0
         # yesterday = datetime.now().date() - timedelta(days=2)
         today = datetime.now().date()
-        dossier_obj = DossierData.objects.filter(created_at__date=today, source=SourceType.VslOptin)
-        # dossier_obj = DossierData.objects.filter(id=3757,source=SourceType.VslOptin)
+        # dossier_obj = DossierData.objects.filter(created_at__date=today, source=SourceType.VslOptin)
+        dossier_obj = DossierData.objects.filter(id=6222,source=SourceType.VslOptin)
         filter_data = dossier_obj.count()
         print("count data...",filter_data)
         for obj in dossier_obj:
@@ -919,7 +919,9 @@ class GetDossierReportExcelView(APIView):
                 "remarks_timestamp":'',
                 "fee_waiver_category":'',
                 "total_questions":'',
-                "document_status":''
+                "document_status":'',
+                "referral_code":'',
+                "referred_code":''
             })
 
        
@@ -945,7 +947,9 @@ class GetDossierReportExcelView(APIView):
                 "remarks_timestamp":'',
                 "fee_waiver_category":'',
                 "total_questions":'',
-                "document_status":''
+                "document_status":'',
+                "referral_code":'',
+                "referred_code":''
             })
         
         lis.append({
@@ -970,7 +974,9 @@ class GetDossierReportExcelView(APIView):
                 "remarks_timestamp":'Remarks Timestamp',
                 "fee_waiver_category":'Fee Waiver Category',
                 "total_questions":'Created At',
-                "document_status":'Document Status'
+                "document_status":'Document Status',
+                "referral_code":'Referral Code',
+                "referred_code":'Referred Code'
             })
         
         
@@ -997,7 +1003,9 @@ class GetDossierReportExcelView(APIView):
                 "remarks_timestamp":chapter_data['remarks_timestamp'],
                 "fee_waiver_category":chapter_data['fee_waiver_category'],
                 "total_questions":chapter_data['created_at'],
-                "document_status":chapter_data['document_status']
+                "document_status":chapter_data['document_status'],
+                "referral_code":chapter_data['referral_code'],
+                "referred_code":chapter_data['referred_code']
             })
 
 
@@ -1416,7 +1424,9 @@ class GetDossierSourceReportExcelView(APIView):
                 "remarks_timestamp":'',
                 "fee_waiver_category":'',
                 "total_questions":'',
-                "document_status":''
+                "document_status":'',
+                "referral_code":'',
+                "referred_code":''
             })
 
        
@@ -1442,7 +1452,9 @@ class GetDossierSourceReportExcelView(APIView):
                 "remarks_timestamp":'',
                 "fee_waiver_category":'',
                 "total_questions":'',
-                "document_status":''
+                "document_status":'',
+                "referral_code":'',
+                "referred_code":''
             })
         
         lis.append({
@@ -1467,7 +1479,9 @@ class GetDossierSourceReportExcelView(APIView):
                 "remarks_timestamp":'Remarks Timestamp',
                 "fee_waiver_category":'Fee Waiver Category',
                 "total_questions":'Created At',
-                "document_status":'Document Status'
+                "document_status":'Document Status',
+                "referral_code":'Referral Code',
+                "referred_code":'Referred Code'
             })
         
         
@@ -1494,7 +1508,9 @@ class GetDossierSourceReportExcelView(APIView):
                 "remarks_timestamp":chapter_data['remarks_timestamp'],
                 "fee_waiver_category":chapter_data['fee_waiver_category'],
                 "total_questions":chapter_data['created_at'],
-                "document_status":chapter_data['document_status']
+                "document_status":chapter_data['document_status'],
+                "referral_code":chapter_data['referral_code'],
+                "referred_code":chapter_data['referred_code']
             })
 
 

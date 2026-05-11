@@ -2048,7 +2048,7 @@ class AddProfileToMerittoView(APIView):
                             "field_337926":query.pincode,
                             # "field_340085":query.address,
                             # "field_340065":query.contact_name,
-                            "field_340066":f"+91-{query.contact_phone}",
+                            "field_340066":f"+91-{query.contact_phone}" if query.contact_phone else "",
                             "field_333993_1_1":query.tenth_passing_year,
                             "field_333993_1_2":tenth_score_type,
                             "field_333993_1_3":query.tenth_passing_percentage,

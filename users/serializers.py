@@ -119,11 +119,30 @@ class UserLoginSerializer(serializers.ModelSerializer):
 
 import random
 import string
-def generate_referral_code():
-    characters = string.ascii_uppercase + string.digits
-    return ''.join(random.choices(characters, k=20))
+import re
+# def generate_referral_code():
+#     characters = string.ascii_uppercase + string.digits
+#     return ''.join(random.choices(characters, k=20))
+
+def generate_referral_code(full_name):
+    # Validate name: only letters and spaces allowed
+    if not re.match(r'^[A-Za-z ]+$', full_name):
+        raise ValueError("Full name should contain only alphabets and spaces.")
+
+    # Remove spaces and convert to uppercase
+    cleaned_name = full_name.replace(" ", "").upper()
 
 
+    # Take first 4 characters
+    name_part = cleaned_name[:4]
+
+    # Generate 5 random alphanumeric characters
+    random_part = ''.join(
+        random.choices(string.ascii_uppercase + string.digits, k=5)
+    )
+
+    # Final referral code
+    return f"{name_part}_{random_part}"
 
 
 
@@ -165,7 +184,7 @@ class CreateStudentSerializer(serializers.ModelSerializer):
                 pay_obj = pay_obj.last()
                 waive_value = pay_obj.fee_waiver_category
 
-        refferals_code = generate_referral_code()
+        refferals_code = generate_referral_code(validate_data.get('full_name'))
 
 
         formatted_emp = str(user.id).zfill(4)
@@ -295,7 +314,8 @@ class CreateUniversityStudentSerializer(serializers.ModelSerializer):
             #         waive_value = pay_obj.fee_waiver_category
 
             fee_waive = "Free of cost (FOC)"
-            refferals_code = generate_referral_code()
+            # refferals_code = generate_referral_code()
+            refferals_code = generate_referral_code(validate_data.get('full_name'))
 
             password = generate_random_password(8)
             info = { "first_name": validate_data.get('full_name'), "last_name":"", 'email': validate_data.get('email').lower(), 'password': password}

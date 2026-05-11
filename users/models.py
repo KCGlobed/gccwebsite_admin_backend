@@ -209,46 +209,36 @@ class ManageFreeReferal(models.Model):
         unique=True
     )
     code_length = models.IntegerField(default=20)
+    non_auto = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
+        if not self.non_auto:
+            # If user provides referral name
+            if self.free_referral_code:
 
-        # If user provides referral name
-        if self.free_referral_code:
+                # Take first name only
+                first_name = self.free_referral_code.strip().split(" ")[0]
 
-            # Take first name only
-            first_name = self.free_referral_code.strip().split(" ")[0]
+                # Remove special characters
+                first_name = re.sub(r'[^A-Za-z0-9]', '', first_name)
 
-            # Remove special characters
-            first_name = re.sub(r'[^A-Za-z0-9]', '', first_name)
+                base_name = first_name.upper()
 
-            base_name = first_name.upper()
+                if not base_name:
+                    raise ValidationError(
+                        "Referral code must contain valid alphabets or numbers."
+                    )
 
-            if not base_name:
-                raise ValidationError(
-                    "Referral code must contain valid alphabets or numbers."
-                )
+                # Validation
+                if len(base_name) >= self.code_length:
+                    raise ValidationError(
+                        f"First name length must be less than {self.code_length}"
+                    )
 
-            # Validation
-            if len(base_name) >= self.code_length:
-                raise ValidationError(
-                    f"First name length must be less than {self.code_length}"
-                )
-
-            # Remaining length after "_"
-            remaining_length = self.code_length - len(base_name) - 1
-
-            random_code = generate_referral_code(
-                remaining_length
-            )
-
-            code = f"{base_name}_{random_code}"
-
-            # Ensure unique code
-            while ManageFreeReferal.objects.filter(
-                free_referral_code=code
-            ).exclude(id=self.id).exists():
+                # Remaining length after "_"
+                remaining_length = self.code_length - len(base_name) - 1
 
                 random_code = generate_referral_code(
                     remaining_length
@@ -256,21 +246,32 @@ class ManageFreeReferal(models.Model):
 
                 code = f"{base_name}_{random_code}"
 
-            self.free_referral_code = code
+                # Ensure unique code
+                while ManageFreeReferal.objects.filter(
+                    free_referral_code=code
+                ).exclude(id=self.id).exists():
 
-        else:
-            # Fully random code
-            code = generate_referral_code(self.code_length)
+                    random_code = generate_referral_code(
+                        remaining_length
+                    )
 
-            while ManageFreeReferal.objects.filter(
-                free_referral_code=code
-            ).exclude(id=self.id).exists():
+                    code = f"{base_name}_{random_code}"
 
-                code = generate_referral_code(
-                    self.code_length
-                )
+                self.free_referral_code = code
 
-            self.free_referral_code = code
+            else:
+                # Fully random code
+                code = generate_referral_code(self.code_length)
+
+                while ManageFreeReferal.objects.filter(
+                    free_referral_code=code
+                ).exclude(id=self.id).exists():
+
+                    code = generate_referral_code(
+                        self.code_length
+                    )
+
+                self.free_referral_code = code
 
         super().save(*args, **kwargs)
 

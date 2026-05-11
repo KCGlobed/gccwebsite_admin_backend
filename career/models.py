@@ -75,6 +75,7 @@ class SourceType(models.IntegerChoices):
     Kuk = 11, 'Kuk'
     VslOptin = 12, 'VslOptin'
     VslFinal = 13, 'VslFinal'
+    ARC = 14, 'ARC'
 
 class SourceFormType(models.IntegerChoices):
     ApplyNow = 1, 'ApplyNow'

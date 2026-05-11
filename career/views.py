@@ -319,7 +319,7 @@ class DossierDataForm_List(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPageNumberPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['id',"full_name","email","phone","city","state"]
+    search_fields = ['id',"full_name","email","phone","city","state","referred_code","referral_code"]
     ordering_fields = ['id',"full_name","email","phone","city","state","created_at"]
     def get(self, request):
 
@@ -455,7 +455,7 @@ class DossierDataSourceForm_List(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPageNumberPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['id',"full_name","email","phone","city","state"]
+    search_fields = ['id',"full_name","email","phone","city","state","referred_code","referral_code"]
     ordering_fields = ['id',"full_name","email","phone","city","state","created_at"]
     def get(self, request):
 
@@ -1289,7 +1289,6 @@ class GetVSLAdvisorReportPDFView(APIView):
             if end_date:
                 datas = datas.filter(created_at__date__lte=end_date)
 
-
         search_filter = filters.SearchFilter()
         datas = search_filter.filter_queryset(request, datas, self)
 
@@ -1298,13 +1297,11 @@ class GetVSLAdvisorReportPDFView(APIView):
 
         serializers = ListDossierDataSerializer(datas, many=True)
 
-
         data = {
                     "user_data":serializers.data,
                     "report_date": datetime.now().strftime("%d-%m-%Y, %H:%M")
                 }
         
-
         template = get_template('pdf/dossier_report.html')
         html  = template.render(data)
         with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as temp_file:

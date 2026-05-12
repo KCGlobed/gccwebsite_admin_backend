@@ -1792,7 +1792,7 @@ class GetAdminStudentScoreCardView(APIView):
         score_objs = StudentRealExamResult.objects.filter(student_profile=std_data).first()
 
         if not score_objs:
-            return Response({"message": "No data found"},data={}, status=404)
+            return Response({"message": "No data found", "status":404, "data":{}})
         
         datas = []
         for i in score_objs.json_data:

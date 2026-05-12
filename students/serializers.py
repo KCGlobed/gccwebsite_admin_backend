@@ -786,6 +786,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     exam_status = serializers.SerializerMethodField()
     created_at = serializers.DateTimeField(read_only=True, format="%Y-%m-%d %H:%M:%S")
     application_id = serializers.SerializerMethodField("get_application_id")
+    student_result = serializers.SerializerMethodField("get_student_result")
     result_status = serializers.SerializerMethodField("get_result_status")
     referral_code = serializers.SerializerMethodField("get_referral_code")
     referred_code = serializers.SerializerMethodField("get_referred_code")
@@ -848,6 +849,16 @@ class StudentProfileSerializer(serializers.ModelSerializer):
         if obj.user:
             app_id = obj.user.application_id
         return app_id
+    
+    def get_student_result(self, obj):
+
+        total_score = ""
+        std_result  = StudentRealExamResult.objects.filter(student_profile=obj.id)
+        if std_result:
+            result      = std_result.last()
+            total_score = result.totalscore
+
+        return total_score
     
     
     class Meta:

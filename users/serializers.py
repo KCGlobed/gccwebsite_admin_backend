@@ -126,8 +126,8 @@ import re
 
 def generate_referral_code(full_name):
     # Validate name: only letters and spaces allowed
-    if not re.match(r'^[A-Za-z ]+$', full_name):
-        raise ValueError("Full name should contain only alphabets and spaces.")
+    # if not re.match(r'^[A-Za-z ]+$', full_name):
+    #     raise ValueError("Full name should contain only alphabets and spaces.")
 
     # Remove spaces and convert to uppercase
     cleaned_name = full_name.replace(" ", "").upper()
@@ -213,7 +213,7 @@ class CreateStudentSerializer(serializers.ModelSerializer):
                 reff = ManageReferal(user=user, used_by=None, referral_code=validate_data.get('referred_code'))
             reff.save()
 
-        DossierData.objects.filter(email=validate_data.get('email').lower()).update(referral_code=refferals_code, referred_code=validate_data.get('referred_code'))
+        DossierData.objects.filter(email=validate_data.get('email').lower()).update(referral_code=refferals_code)
 
 
         if settings.MERITO_STATUS == "True":

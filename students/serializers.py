@@ -856,7 +856,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
         std_result  = StudentRealExamResult.objects.filter(student_profile=obj.id)
         if std_result:
             result      = std_result.last()
-            total_score = result.totalscore
+            total_score = result.totalcorrectanswers
 
         return total_score
     

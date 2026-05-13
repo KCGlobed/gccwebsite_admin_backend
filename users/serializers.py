@@ -120,6 +120,7 @@ class UserLoginSerializer(serializers.ModelSerializer):
 import random
 import string
 import re
+
 # def generate_referral_code():
 #     characters = string.ascii_uppercase + string.digits
 #     return ''.join(random.choices(characters, k=20))

@@ -858,7 +858,6 @@ class StudentProfileSerializer(serializers.ModelSerializer):
             result      = std_result.last()
             total_score = str(round((float(result.totalcorrectanswers) / float(result.totalquestions)) * 100, 2))
 
-
         return total_score
     
     
@@ -1121,11 +1120,34 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
     photo = serializers.FileField(required=False,allow_null=True)
     signature = serializers.FileField(required=False,allow_null=True)
     user_experience = serializers.JSONField()
+    ## Added
+    identity_proof = serializers.FileField(required=False,allow_null=True)
+    tenth_marksheet = serializers.FileField(required=False,allow_null=True)
+    twelth_marksheet = serializers.FileField(required=False,allow_null=True)
+    graduation_first_marksheet = serializers.FileField(required=False,allow_null=True)
+    graduation_second_marksheet = serializers.FileField(required=False,allow_null=True)
+    graduation_third_marksheet = serializers.FileField(required=False,allow_null=True)
+    graduation_forth_marksheet = serializers.FileField(required=False,allow_null=True)
+    graduation_fifth_marksheet = serializers.FileField(required=False,allow_null=True)
+    graduation_sixth_marksheet = serializers.FileField(required=False,allow_null=True)
+    additional_qualification = serializers.CharField(required=False, allow_blank=True)
+    additional_document = serializers.FileField(required=False,allow_null=True)
+    co_applicant_pan_card = serializers.FileField(required=False,allow_null=True)
+    co_applicant_aadhaar = serializers.FileField(required=False,allow_null=True)
+    co_applicant_profession = models.IntegerField(default=0, null=True)
+    co_applicant_sallary_slip = serializers.FileField(required=False,allow_null=True)
+    co_applicant_form16 = serializers.FileField(required=False,allow_null=True)
+    co_applicant_employee_id_card = serializers.FileField(required=False,allow_null=True)
+    co_applicant_passport_size = serializers.FileField(required=False,allow_null=True)
+    co_applicant_income_tax_return = serializers.FileField(required=False,allow_null=True)
+    co_applicant_compute_income = serializers.FileField(required=False,allow_null=True)
+    co_applicant_six_month_bank = serializers.FileField(required=False,allow_null=True)
+    co_applicant_agriculture_income = serializers.FileField(required=False,allow_null=True)
     
 
     class Meta:
         model = StudentProfile
-        fields = ["user",'first_name','last_name','email','phone',"state","city","contact_name","contact_phone","date_of_birth","gender","nationality","pincode","address","tenth_passing_year","tenth_passing_percentage","tenth_score_type","tenth_medium","twelveth_passing_year","twelveth_passing_percentage","twelveth_score_type","twelveth_medium","medium_instruction","other_instruction","pg_status","pg_percentage","ug_score_type","institution","higher_education_status","higher_qualification","higher_qualification_institution","employement_status","aadhaar","dob_certificate","photo","signature","user_experience"]
+        fields = ["user",'first_name','last_name','email','phone',"state","city","contact_name","contact_phone","date_of_birth","gender","nationality","pincode","address","tenth_passing_year","tenth_passing_percentage","tenth_score_type","tenth_medium","twelveth_passing_year","twelveth_passing_percentage","twelveth_score_type","twelveth_medium","medium_instruction","other_instruction","pg_status","pg_percentage","ug_score_type","institution","higher_education_status","higher_qualification","higher_qualification_institution","employement_status","aadhaar","dob_certificate","photo","signature","user_experience","identity_proof","tenth_marksheet","twelth_marksheet","graduation_first_marksheet"]
         
     def validate(self, data):
         return data

@@ -238,6 +238,12 @@ class Gender(models.IntegerChoices):
     OTHER = 3, 'OTHER'
 
 
+class Profession(models.IntegerChoices):
+    SALARIED = 1, 'SALARIED'
+    SELFEMP = 2, 'SELFEMP'
+    AGRICULTURE = 3, 'AGRICULTURE'
+
+
 class StudentProfile(models.Model):
     user = models.ForeignKey('users.User', null=True, blank=True, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=255, null=True, blank=True)
@@ -288,9 +294,30 @@ class StudentProfile(models.Model):
     re_attempt_btn = models.IntegerField(default=0, null=True)
     application_id = models.CharField(max_length=200, blank=True, null=True)
     fee_waiver_category = models.CharField(max_length=200, default="No Waiver")
+    ## Additional data
+    identity_proof = models.FileField(blank=True, null=True)
+    tenth_marksheet = models.FileField(blank=True, null=True)
+    twelth_marksheet = models.FileField(blank=True, null=True)
+    graduation_first_marksheet = models.FileField(blank=True, null=True)
+    graduation_second_marksheet = models.FileField(blank=True, null=True)
+    graduation_third_marksheet = models.FileField(blank=True, null=True)
+    graduation_forth_marksheet = models.FileField(blank=True, null=True)
+    graduation_fifth_marksheet = models.FileField(blank=True, null=True)
+    graduation_sixth_marksheet = models.FileField(blank=True, null=True)
+    additional_qualification = models.CharField(max_length=100, blank=True, null=True)
+    additional_document = models.FileField(blank=True, null=True)
+    co_applicant_pan_card = models.FileField(blank=True, null=True)
+    co_applicant_aadhaar = models.FileField(blank=True, null=True)
+    co_applicant_profession = models.IntegerField(choices=Profession.choices, blank=True, null=True)
+    co_applicant_sallary_slip = models.FileField(blank=True, null=True)
+    co_applicant_form16 = models.FileField(blank=True, null=True)
+    co_applicant_employee_id_card = models.FileField(blank=True, null=True)
+    co_applicant_passport_size = models.FileField(blank=True, null=True)
+    co_applicant_income_tax_return = models.FileField(blank=True, null=True)
+    co_applicant_compute_income = models.FileField(blank=True, null=True)
+    co_applicant_six_month_bank = models.FileField(blank=True, null=True)
+    co_applicant_agriculture_income = models.FileField(blank=True, null=True)
 
-    
-    
     class Meta:
         verbose_name = 'Student Profile'
         verbose_name_plural = 'Student Profile'
@@ -298,8 +325,6 @@ class StudentProfile(models.Model):
     def __str__(self):
         return '%s' % self.id
     
-
-
 
 class StudentExperience(models.Model):
     student_profile = models.ForeignKey('StudentProfile', null=True, blank=True, on_delete=models.CASCADE)

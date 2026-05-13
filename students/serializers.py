@@ -1225,6 +1225,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
             datas.graduation_sixth_marksheet = validate_data.get('graduation_sixth_marksheet',datas.graduation_sixth_marksheet)
             datas.additional_qualification = validate_data.get('additional_qualification',datas.additional_qualification)
             datas.additional_document = validate_data.get('additional_document',datas.additional_document)
+            datas.accounting_profession = validate_data.get('accounting_profession', datas.accounting_profession)
             datas.co_applicant_pan_card = validate_data.get('co_applicant_pan_card',datas.co_applicant_pan_card)
             datas.co_applicant_aadhaar = validate_data.get('co_applicant_aadhaar',datas.co_applicant_aadhaar)
             datas.co_applicant_profession = validate_data.get('co_applicant_profession',datas.co_applicant_profession)

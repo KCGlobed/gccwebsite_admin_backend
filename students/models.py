@@ -238,6 +238,10 @@ class Gender(models.IntegerChoices):
     OTHER = 3, 'OTHER'
 
 
+class AccountingProfession(models.IntegerChoices):
+    SELF = 1, 'SELF'
+    LOAN = 2, 'LOAN'
+
 class Profession(models.IntegerChoices):
     SALARIED = 1, 'SALARIED'
     SELFEMP = 2, 'SELFEMP'
@@ -297,6 +301,7 @@ class StudentProfile(models.Model):
     ## Additional data
     identity_proof = models.FileField(blank=True, null=True)
     tenth_marksheet = models.FileField(blank=True, null=True)
+    accounting_profession = models.IntegerField(choices=AccountingProfession.choices, blank=True, null=True)
     twelth_marksheet = models.FileField(blank=True, null=True)
     graduation_first_marksheet = models.FileField(blank=True, null=True)
     graduation_second_marksheet = models.FileField(blank=True, null=True)

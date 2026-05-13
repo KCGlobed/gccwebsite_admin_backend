@@ -1147,7 +1147,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
 
     class Meta:
         model = StudentProfile
-        fields = ["user",'first_name','last_name','email','phone',"state","city","contact_name","contact_phone","date_of_birth","gender","nationality","pincode","address","tenth_passing_year","tenth_passing_percentage","tenth_score_type","tenth_medium","twelveth_passing_year","twelveth_passing_percentage","twelveth_score_type","twelveth_medium","medium_instruction","other_instruction","pg_status","pg_percentage","ug_score_type","institution","higher_education_status","higher_qualification","higher_qualification_institution","employement_status","aadhaar","dob_certificate","photo","signature","user_experience","identity_proof","tenth_marksheet","twelth_marksheet","graduation_first_marksheet"]
+        fields = ["user",'first_name','last_name','email','phone',"state","city","contact_name","contact_phone","date_of_birth","gender","nationality","pincode","address","tenth_passing_year","tenth_passing_percentage","tenth_score_type","tenth_medium","twelveth_passing_year","twelveth_passing_percentage","twelveth_score_type","twelveth_medium","medium_instruction","other_instruction","pg_status","pg_percentage","ug_score_type","institution","higher_education_status","higher_qualification","higher_qualification_institution","employement_status","aadhaar","dob_certificate","photo","signature","user_experience","identity_proof","tenth_marksheet","twelth_marksheet","graduation_first_marksheet","graduation_second_marksheet","graduation_third_marksheet","graduation_forth_marksheet","graduation_fifth_marksheet","graduation_sixth_marksheet","additional_qualification","additional_document","co_applicant_pan_card","co_applicant_aadhaar","co_applicant_profession","co_applicant_sallary_slip","co_applicant_form16","co_applicant_employee_id_card","co_applicant_passport_size","co_applicant_income_tax_return","co_applicant_compute_income","co_applicant_six_month_bank","co_applicant_agriculture_income"]
         
     def validate(self, data):
         return data
@@ -1213,6 +1213,29 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
             datas.signature = validate_data.get('signature', datas.signature)
             datas.application_id = user_obj.application_id
             datas.fee_waiver_category = user_obj.fee_waiver_category
+            # Added
+            datas.identity_proof = validate_data.get('identity_proof',datas.identity_proof)
+            datas.tenth_marksheet = validate_data.get('tenth_marksheet',datas.tenth_marksheet)
+            datas.twelth_marksheet = validate_data.get('twelth_marksheet',datas.twelth_marksheet)
+            datas.graduation_first_marksheet = validate_data.get('graduation_first_marksheet',datas.graduation_first_marksheet)
+            datas.graduation_second_marksheet = validate_data.get('graduation_second_marksheet',datas.graduation_second_marksheet)
+            datas.graduation_third_marksheet = validate_data.get('graduation_third_marksheet',datas.graduation_third_marksheet)
+            datas.graduation_forth_marksheet = validate_data.get('graduation_forth_marksheet',datas.graduation_forth_marksheet)
+            datas.graduation_fifth_marksheet = validate_data.get('graduation_fifth_marksheet',datas.graduation_fifth_marksheet)
+            datas.graduation_sixth_marksheet = validate_data.get('graduation_sixth_marksheet',datas.graduation_sixth_marksheet)
+            datas.additional_qualification = validate_data.get('additional_qualification',datas.additional_qualification)
+            datas.additional_document = validate_data.get('additional_document',datas.additional_document)
+            datas.co_applicant_pan_card = validate_data.get('co_applicant_pan_card',datas.co_applicant_pan_card)
+            datas.co_applicant_aadhaar = validate_data.get('co_applicant_aadhaar',datas.co_applicant_aadhaar)
+            datas.co_applicant_profession = validate_data.get('co_applicant_profession',datas.co_applicant_profession)
+            datas.co_applicant_sallary_slip = validate_data.get('co_applicant_sallary_slip',datas.co_applicant_sallary_slip)
+            datas.co_applicant_form16 = validate_data.get('co_applicant_form16',datas.co_applicant_form16)
+            datas.co_applicant_employee_id_card = validate_data.get('co_applicant_employee_id_card',datas.co_applicant_employee_id_card)
+            datas.co_applicant_passport_size = validate_data.get('co_applicant_passport_size',datas.co_applicant_passport_size)
+            datas.co_applicant_income_tax_return = validate_data.get('co_applicant_income_tax_return',datas.co_applicant_income_tax_return)
+            datas.co_applicant_compute_income = validate_data.get('co_applicant_compute_income',datas.co_applicant_compute_income)
+            datas.co_applicant_six_month_bank = validate_data.get('co_applicant_six_month_bank',datas.co_applicant_six_month_bank)
+            datas.co_applicant_agriculture_income = validate_data.get('co_applicant_agriculture_income',datas.co_applicant_agriculture_income)
             datas.save()
             query = datas
             if len(validate_data.get('user_experience')) > 0:

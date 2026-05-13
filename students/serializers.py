@@ -1134,6 +1134,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
     additional_document = serializers.FileField(required=False,allow_null=True)
     co_applicant_pan_card = serializers.FileField(required=False,allow_null=True)
     co_applicant_aadhaar = serializers.FileField(required=False,allow_null=True)
+    accounting_profession = models.IntegerField(default=0, null=True)
     co_applicant_profession = models.IntegerField(default=0, null=True)
     co_applicant_sallary_slip = serializers.FileField(required=False,allow_null=True)
     co_applicant_form16 = serializers.FileField(required=False,allow_null=True)
@@ -1147,7 +1148,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
 
     class Meta:
         model = StudentProfile
-        fields = ["user",'first_name','last_name','email','phone',"state","city","contact_name","contact_phone","date_of_birth","gender","nationality","pincode","address","tenth_passing_year","tenth_passing_percentage","tenth_score_type","tenth_medium","twelveth_passing_year","twelveth_passing_percentage","twelveth_score_type","twelveth_medium","medium_instruction","other_instruction","pg_status","pg_percentage","ug_score_type","institution","higher_education_status","higher_qualification","higher_qualification_institution","employement_status","aadhaar","dob_certificate","photo","signature","user_experience","identity_proof","tenth_marksheet","twelth_marksheet","graduation_first_marksheet","graduation_second_marksheet","graduation_third_marksheet","graduation_forth_marksheet","graduation_fifth_marksheet","graduation_sixth_marksheet","additional_qualification","additional_document","co_applicant_pan_card","co_applicant_aadhaar","co_applicant_profession","co_applicant_sallary_slip","co_applicant_form16","co_applicant_employee_id_card","co_applicant_passport_size","co_applicant_income_tax_return","co_applicant_compute_income","co_applicant_six_month_bank","co_applicant_agriculture_income"]
+        fields = ["user",'first_name','last_name','email','phone',"state","city","contact_name","contact_phone","date_of_birth","gender","nationality","pincode","address","tenth_passing_year","tenth_passing_percentage","tenth_score_type","tenth_medium","twelveth_passing_year","twelveth_passing_percentage","twelveth_score_type","twelveth_medium","medium_instruction","other_instruction","pg_status","pg_percentage","ug_score_type","institution","higher_education_status","higher_qualification","higher_qualification_institution","employement_status","aadhaar","dob_certificate","photo","signature","user_experience","identity_proof","tenth_marksheet","twelth_marksheet","graduation_first_marksheet","graduation_second_marksheet","graduation_third_marksheet","graduation_forth_marksheet","graduation_fifth_marksheet","graduation_sixth_marksheet","additional_qualification","additional_document","co_applicant_pan_card","co_applicant_aadhaar","accounting_profession","co_applicant_profession","co_applicant_sallary_slip","co_applicant_form16","co_applicant_employee_id_card","co_applicant_passport_size","co_applicant_income_tax_return","co_applicant_compute_income","co_applicant_six_month_bank","co_applicant_agriculture_income"]
         
     def validate(self, data):
         return data

@@ -856,7 +856,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
         std_result  = StudentRealExamResult.objects.filter(student_profile=obj.id)
         if std_result:
             result      = std_result.last()
-            total_score = str(round((float(result.totalcorrectanswers) / float(result.totalquestions)) * 100, 2))
+            total_score = str(round((float(result.totalscore) / float(result.totalquestions)) * 100, 2))
 
         return total_score
     
@@ -1070,7 +1070,7 @@ class PostRealExamResultSerializer(serializers.ModelSerializer):
         
         if std_objs:
             std_profile = std_objs.first()
-            total_score = str(round((float(instance.totalcorrectanswers) / float(instance.totalquestions)) * 100, 2))
+            total_score = str(round((float(instance.totalscore) / float(instance.totalquestions)) * 100, 2))
             
             if settings.MERITO_STATUS == "True":
                 url = settings.MERITO_BASE_URL+"/application/v1/createOrUpdate"

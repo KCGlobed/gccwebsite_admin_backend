@@ -406,7 +406,7 @@ class CreateDossierAbondantSerializer(serializers.ModelSerializer):
                 # "cf_utmsource1":instance.utm_source,
                 # "medium":instance.utm_medium,
                 # "campaign":instance.utm_campaign,
-                "cf_utmsource1": str(instance.utm_source).encode("ascii", "ignore").decode().strip(),
+                # "cf_utmsource1": str(instance.utm_source).encode("ascii", "ignore").decode().strip(),
                 "medium": str(instance.utm_medium).encode("ascii", "ignore").decode().strip(),
                 "campaign": str(instance.utm_campaign).encode("ascii", "ignore").decode().strip(),
                 "cf_payment_status":"Pending"
@@ -442,21 +442,23 @@ def push_to_meritto(obj):
     # if not settings.MERITO_STATUS:
     #     return
 
-    # source_map = {
-    #     1: "gccwebsite",
-    #     2: "gccefos",
-    #     3: "gccaffiliateOne",
-    #     4: "gccaffiliateTwo",
-    #     5: "gccaffiliateThree",
-    #     6: "gccaffiliateFour",
-    #     7: "gccaffiliateFive",
-    #     8: "gccipuniversity",
-    #     9: "gccdelhiuniversity",
-    #     10: "gccccs",
-    #     11: "gcckuk",
-    # }
+    source_map = {
+        1: "gccwebsite",
+        2: "gccefos",
+        3: "gccaffiliateOne",
+        4: "gccaffiliateTwo",
+        5: "gccaffiliateThree",
+        6: "gccaffiliateFour",
+        7: "gccaffiliateFive",
+        8: "gccipuniversity",
+        9: "gccdelhiuniversity",
+        10: "gccccs",
+        11: "gcckuk",
+        12: "gccvsloptin",
+        13: "gccvslfinal",
+    }
 
-    # m_source = source_map.get(obj.source, "gcc")
+    m_source = source_map.get(obj.source, "gcc")
 
     url = f"{settings.MERITO_BASE_URL}/lead/v1/createOrUpdate"
 
@@ -472,9 +474,9 @@ def push_to_meritto(obj):
         "mobile": obj.phone,
         "search_criteria": "email",
         "country": "India",
-        "source": "gccvsloptin",
-        "cf_source": "gccvsloptin",
-        "cf_utmsource1": str(obj.utm_source).encode("ascii", "ignore").decode().strip(),
+        "source": m_source,
+        "cf_source": m_source,
+        # "cf_utmsource1": str(obj.utm_source).encode("ascii", "ignore").decode().strip(),
         "medium": str(obj.utm_medium).encode("ascii", "ignore").decode().strip(),
         "campaign": str(obj.utm_campaign).encode("ascii", "ignore").decode().strip(),
         # "cf_payment_status": "Complete",

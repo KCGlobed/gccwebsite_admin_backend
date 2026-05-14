@@ -1060,12 +1060,42 @@ class PostRealExamResultSerializer(serializers.ModelSerializer):
         print(validated_data)
         print("serializer end request data..")
         std_obj = StudentProfile.objects.filter(application_id=validated_data.get("email"))
+        std_objs = std_obj
         if std_obj:
             validated_data["student_profile"] = std_obj.first()
         else:
             validated_data["student_profile"] = None
 
         instance = super().create(validated_data)
+        
+        if std_objs:
+            std_profile = std_objs.first()
+            total_score = str(round((float(instance.totalcorrectanswers) / float(instance.totalquestions)) * 100, 2))
+            
+            if settings.MERITO_STATUS == "True":
+                url = settings.MERITO_BASE_URL+"/application/v1/createOrUpdate"
+
+                headers = {
+                        "Content-Type": "application/json",
+                        "secret-key": settings.MERITO_SECRETE_KEY,
+                        "access-key": settings.MERITO_ACCESS_KEY
+                    }
+                meritto_payload = {
+                    "form_id": 22144,
+                    "email": std_profile.email,
+                    "search_criteria":"email",
+                    "data": {
+                            "field_349944":total_score
+                    }
+                }
+                print(meritto_payload)
+                try:
+                    response = requests.post(url, headers=headers, json=meritto_payload)
+                    print(response.status_code)
+                    print(response.text)
+                except Exception as e:
+                    print("API Error:", str(e))
+
         return instance
 
 
@@ -1406,7 +1436,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
 
             tenth_score_type = query.tenth_score_type if query.tenth_score_type == "Percentage" else "CGPA out of 10"
             twelveth_score_type = query.twelveth_score_type if query.twelveth_score_type == "Percentage" else "CGPA out of 10"
-
+            user_objs = User.objects.filter(id = validate_data.get('user')).first()
             meritto_payload = {
                 "form_id": 22144,
                 "email": query.email,
@@ -1445,7 +1475,9 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                         # "field_340078":query.higher_qualification,
                         "field_342113":query.user.application_id,
                         "field_343097":"Complete",
-                        "field_343098":"Complete"
+                        "field_343098":"Complete",
+                        "field_349945":user_objs.referral_code,
+                        "field_349946":user_objs.referred_code
                 }
             }
             print(exp_payload)

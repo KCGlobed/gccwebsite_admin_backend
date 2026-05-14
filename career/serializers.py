@@ -56,6 +56,8 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 m_source = "gccccs"
             elif src_type == 11:
                 m_source = "gcckuk"
+            elif src_type == 14:
+                m_source = "gccaffiliateSix"
             else:
                 m_source = "gcc"
             # API URL
@@ -381,6 +383,8 @@ class CreateDossierAbondantSerializer(serializers.ModelSerializer):
                 m_source = "gccvsloptin"
             elif src_type == 13:
                 m_source = "gccvslfinal"
+            elif src_type == 14:
+                m_source = "gccaffiliateSix"
             else:
                 m_source = "gcc"
             # API URL
@@ -456,6 +460,7 @@ def push_to_meritto(obj):
         11: "gcckuk",
         12: "gccvsloptin",
         13: "gccvslfinal",
+        14: "gccaffiliateSix"
     }
 
     m_source = source_map.get(obj.source, "gcc")

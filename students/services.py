@@ -12,9 +12,10 @@ class CoCubesAssessmentService:
     # Provided by CoCubes
     HASH_SALT = "e3eb8a07fa96e6f0"
 
-    POT = "67119112"
+    # POT = 67119112
+    OOT = 67119112
     # PASS_KEY = "211327"
-    PASS_KEY = "904082"
+    PASS_KEY = 904082
 
     @classmethod
     def generate_ticks(cls, minutes=30):
@@ -65,7 +66,8 @@ class CoCubesAssessmentService:
             "v": "4",
             "email": email,
             "name": f"{first_name}+{last_name}",
-            "pot": cls.POT,
+            # "pot": cls.POT,
+            "oot": cls.OOT,
             "expires": expires,
             "testexpirydays": str(test_expiry_days),
             "getsignonurl": "1",

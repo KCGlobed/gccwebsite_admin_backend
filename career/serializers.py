@@ -91,6 +91,11 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 "cf_institution_university":instance.university,
                 # "cf_refferal_code":instance.get('referred_code')
             }
+
+            user_obj = User.objects.filter(email=instance.email).exists()
+            if user_obj:
+                payload.pop('cf_payment_status')
+                payload.pop('cf_fee_waiver_category')
             try:
                 response = requests.post(url, headers=headers, json=payload)
                 print(response.status_code)
@@ -166,6 +171,10 @@ class CreateVslDataSerializer(serializers.ModelSerializer):
                 # "cf_refferal_code":vsl_obj.get('referred_code')
                 # "cf_institution_university":vsl_obj.university
             }
+            user_obj = User.objects.filter(email=vsl_obj.email).exists()
+            if user_obj:
+                payload.pop('cf_payment_status')
+                payload.pop('cf_fee_waiver_category')
 
             print("meritto payload vslf..",payload)
             try:
@@ -232,7 +241,10 @@ class CreateVslFinalDataSerializer(serializers.ModelSerializer):
                 "cf_institution_university":vsl_obj.university,
                 # "cf_refferal_code":vsl_obj.referred_code
             }
-
+            user_obj = User.objects.filter(email=vsl_obj.email).exists()
+            if user_obj:
+                payload.pop('cf_payment_status')
+                payload.pop('cf_fee_waiver_category')
             try:
                 response = requests.post(url, headers=headers, json=payload)
                 print(response.status_code)
@@ -418,7 +430,9 @@ class CreateDossierAbondantSerializer(serializers.ModelSerializer):
                 "cf_payment_status":"Pending"
                 # "cf_fee_waiver_category":instance.fee_waiver_category
             }
-
+            user_obj = User.objects.filter(email=instance.email).exists()
+            if user_obj:
+                payload.pop('cf_payment_status')
             try:
                 response = requests.post(url, headers=headers, json=payload)
                 print(response.status_code)

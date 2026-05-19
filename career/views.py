@@ -119,7 +119,7 @@ class DossierMeritto_CreateUpdate(APIView):
         # yesterday = datetime.now().date() - timedelta(days=2)
         today = datetime.now().date()
         # dossier_obj = DossierData.objects.filter(created_at__date=today, source=SourceType.VslOptin)
-        dossier_obj = DossierData.objects.filter(id=7476)
+        dossier_obj = DossierData.objects.filter(id=5158)
         filter_data = dossier_obj.count()
         print("count data...",filter_data)
         for obj in dossier_obj:

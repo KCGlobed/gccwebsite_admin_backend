@@ -165,3 +165,18 @@ class DossierAbondant(models.Model):
     utm_medium = models.CharField(max_length=250, blank=True, null=True)
     utm_campaign = models.CharField(max_length=250, blank=True, null=True)
     
+
+
+
+
+##### Logs maintain for dossier #####
+
+class DossierLog(models.Model):
+    dossier = models.ForeignKey('DossierData', null=True, blank=True, on_delete=models.CASCADE)
+    message = models.TextField()
+    status = models.IntegerField(default=0)
+    activity = models.CharField(max_length=200, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
+
+

@@ -2155,3 +2155,43 @@ class AddProfileToMerittoView(APIView):
 
 
 
+##### Cocubes registartions:
+
+from .services import CoCubesAssessmentService
+
+class ScheduleAssessmentAPIView(APIView):
+
+    def post(self, request):
+
+        email = request.data.get("email")
+        first_name = request.data.get("first_name")
+        last_name = request.data.get("last_name", "")
+
+        if not email or not first_name:
+            return Response(
+                {
+                    "message": "email and first_name required"
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+
+            result = CoCubesAssessmentService.schedule_assessment(
+                email=email,
+                first_name=first_name,
+                last_name=last_name,
+                redirect_url="https://www.cocubes.com/"
+            )
+
+            return Response(result)
+
+        except Exception as e:
+            return Response(
+                {
+                    "message": str(e)
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+

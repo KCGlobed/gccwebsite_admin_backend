@@ -96,6 +96,7 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 response = requests.post(url, headers=headers, json=payload)
                 print(response.status_code)
                 print(response.text)
+                DossierLog.objects.create(dossier=instance, message=response.text, status=int(response.status_code), activity="creating")
             except Exception as e:
                 print("API Error:", str(e))
         
@@ -172,6 +173,7 @@ class CreateVslDataSerializer(serializers.ModelSerializer):
                 response = requests.post(url, headers=headers, json=payload)
                 print(response.status_code)
                 print(response.text)
+                DossierLog.objects.create(dossier=vsl_obj, message=response.text, status=int(response.status_code), activity="creating")
             except Exception as e:
                 print("API Error:", str(e))
         
@@ -236,6 +238,7 @@ class CreateVslFinalDataSerializer(serializers.ModelSerializer):
                 response = requests.post(url, headers=headers, json=payload)
                 print(response.status_code)
                 print(response.text)
+                DossierLog.objects.create(dossier=vsl_obj, message=response.text, status=int(response.status_code), activity="creating")
             except Exception as e:
                 print("API Error:", str(e))
         
@@ -474,24 +477,23 @@ def push_to_meritto(obj):
     }
 
     payload = {
-        "name": obj.full_name,
+        # "name": obj.full_name,
         "email": obj.email,
-        "mobile": obj.phone,
+        # "mobile": obj.phone,
         "search_criteria": "email",
-        "country": "India",
-        "source": m_source,
-        "cf_source": m_source,
-        # "cf_utmsource1": str(obj.utm_source).encode("ascii", "ignore").decode().strip(),
-        "medium": str(obj.utm_medium).encode("ascii", "ignore").decode().strip(),
-        "campaign": str(obj.utm_campaign).encode("ascii", "ignore").decode().strip(),
-        # "cf_payment_status": "Complete",
+        # "country": "India",
+        # "source": m_source,
+        # "cf_source": m_source,
+        # "medium": str(obj.utm_medium).encode("ascii", "ignore").decode().strip(),
+        # "campaign": str(obj.utm_campaign).encode("ascii", "ignore").decode().strip(),
+        "cf_payment_status": "Pending",
     }
-    if obj.city:
-        payload["city"] = obj.city
-    if obj.state:
-        payload["state"] = obj.state
-    if obj.university:
-        payload["cf_fee_waiver_category"] = obj.fee_waiver_category
+    # if obj.city:
+    #     payload["city"] = obj.city
+    # if obj.state:
+    #     payload["state"] = obj.state
+    # if obj.university:
+    #     payload["cf_fee_waiver_category"] = obj.fee_waiver_category
 
     print("merito data.......",payload)
 

@@ -704,28 +704,6 @@ class GetStudentProfileReportExcelView(APIView):
         if end_slot_date:
             datas = datas.filter(slot_date__lte=end_slot_date)
 
-        # Date range filter
-        
-        start_date = request.GET.get('start_date')
-        end_date = request.GET.get('end_date')
-        if start_date:
-            start_date = parse_date(start_date)
-            if start_date:
-                datas = datas.filter(created_at__date__gte=start_date)
-
-        if end_date:
-            end_date = parse_date(end_date)
-            if end_date:
-                datas = datas.filter(created_at__date__lte=end_date)
-        
-        # slot_date range filter
-        start_slot_date = request.GET.get('start_slot_date')
-        end_slot_date = request.GET.get('end_slot_date')
-        if start_slot_date:
-            datas = datas.filter(slot_date__gte=start_slot_date)
-
-        if end_slot_date:
-            datas = datas.filter(slot_date__lte=end_slot_date)
 
         fee_waiver_category = request.GET.get('fee_waiver_category')
         if fee_waiver_category:
@@ -791,7 +769,8 @@ class GetStudentProfileReportExcelView(APIView):
             "created_at": "Create Date",
             "fee_waiver_category": "Fee Waiver Category",
             "referral_code": "Refferal Code",
-            "referred_code": "Reffered Code"
+            "referred_code": "Reffered Code",
+            "student_result": "Result Score %"
             }
         # print(data_list)
         # return Response({"message":"success", "data":data_list})
@@ -875,6 +854,32 @@ class GetStudentProfileReportPDFView(APIView):
 
         if end_slot_date:
             datas = datas.filter(slot_date__lte=end_slot_date)
+
+        
+        fee_waiver_category = request.GET.get('fee_waiver_category')
+        if fee_waiver_category:
+            datas = datas.filter(fee_waiver_category=fee_waiver_category)
+
+        first_name = request.GET.get('first_name')
+        if first_name:
+            datas = datas.filter(first_name__icontains=first_name)
+        last_name = request.GET.get('last_name')
+        if last_name:
+            datas = datas.filter(last_name__icontains=last_name)
+
+        email = request.GET.get('email')
+        if email:
+            datas = datas.filter(email__icontains=email)
+        phone = request.GET.get('phone')
+        if phone:
+            datas = datas.filter(phone__icontains=phone)
+        state = request.GET.get('state')
+        if state:
+            datas = datas.filter(state__icontains=state)
+        city = request.GET.get('city')
+        if city:
+            datas = datas.filter(city__icontains=city)
+
 
 
         data_list = ListStudentProfileExcelReportSerializer(datas, many=True).data

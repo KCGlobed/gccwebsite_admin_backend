@@ -120,6 +120,7 @@ class ListStudentProfileExcelReportSerializer(serializers.ModelSerializer) :
     medium_instruction = serializers.SerializerMethodField('get_medium_instruction')
     referral_code = serializers.SerializerMethodField("get_referral_code")
     referred_code = serializers.SerializerMethodField("get_referred_code")
+    student_result = serializers.SerializerMethodField("get_student_result")
     
     class Meta:
         model = StudentProfile
@@ -176,6 +177,17 @@ class ListStudentProfileExcelReportSerializer(serializers.ModelSerializer) :
         else:
             name = "No"
         return name
+    def get_student_result(self, obj):
+
+        total_score = ""
+        std_result  = StudentRealExamResult.objects.filter(student_profile=obj.id)
+        if std_result:
+            result      = std_result.last()
+            total_score = str(round((float(result.totalscore) / float(result.totalquestions)) * 100, 2))
+
+        return total_score
+
+
 
 
 class ListCampusFacultySerializer(serializers.ModelSerializer) :

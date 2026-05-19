@@ -176,6 +176,7 @@ class DossierLog(models.Model):
     message = models.TextField()
     status = models.IntegerField(default=0)
     activity = models.CharField(max_length=200, null=True, blank=True)
+    datas = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
 

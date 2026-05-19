@@ -91,12 +91,11 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 "cf_institution_university":instance.university,
                 # "cf_refferal_code":instance.get('referred_code')
             }
-
             try:
                 response = requests.post(url, headers=headers, json=payload)
                 print(response.status_code)
                 print(response.text)
-                DossierLog.objects.create(dossier=instance, message=response.text, status=int(response.status_code), activity="creating")
+                DossierLog.objects.create(dossier=instance, message=response.text, status=int(response.status_code), activity="creating", datas=validated_data)
             except Exception as e:
                 print("API Error:", str(e))
         
@@ -173,7 +172,7 @@ class CreateVslDataSerializer(serializers.ModelSerializer):
                 response = requests.post(url, headers=headers, json=payload)
                 print(response.status_code)
                 print(response.text)
-                DossierLog.objects.create(dossier=vsl_obj, message=response.text, status=int(response.status_code), activity="creating")
+                DossierLog.objects.create(dossier=vsl_obj, message=response.text, status=int(response.status_code), activity="creating", datas=validated_data)
             except Exception as e:
                 print("API Error:", str(e))
         
@@ -238,7 +237,7 @@ class CreateVslFinalDataSerializer(serializers.ModelSerializer):
                 response = requests.post(url, headers=headers, json=payload)
                 print(response.status_code)
                 print(response.text)
-                DossierLog.objects.create(dossier=vsl_obj, message=response.text, status=int(response.status_code), activity="creating")
+                DossierLog.objects.create(dossier=vsl_obj, message=response.text, status=int(response.status_code), activity="creating", datas=validated_data)
             except Exception as e:
                 print("API Error:", str(e))
         

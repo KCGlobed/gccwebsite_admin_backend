@@ -2183,7 +2183,7 @@ class ScheduleAssessmentAPIView(APIView):
                 last_name=last_name,
                 redirect_url="https://www.cocubes.com/"
             )
-
+            print(result)
             return Response(result)
 
         except Exception as e:

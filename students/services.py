@@ -10,10 +10,11 @@ class CoCubesAssessmentService:
     BASE_URL = "https://www.cocubes.com/partner-assessment/sassl"
 
     # Provided by CoCubes
-    HASH_SALT = "YOUR_HASH_SALT"
+    HASH_SALT = "e3eb8a07fa96e6f0"
 
-    POT = "12345"
-    PASS_KEY = "211327"
+    POT = "67119112"
+    # PASS_KEY = "211327"
+    PASS_KEY = "904082"
 
     @classmethod
     def generate_ticks(cls, minutes=30):
@@ -63,7 +64,7 @@ class CoCubesAssessmentService:
             "servicename": "sassl",
             "v": "4",
             "email": email,
-            "name": f"{first_name} {last_name}",
+            "name": f"{first_name}+{last_name}",
             "pot": cls.POT,
             "expires": expires,
             "testexpirydays": str(test_expiry_days),
@@ -83,5 +84,6 @@ class CoCubesAssessmentService:
             params=payload,
             timeout=30
         )
-
+        print(response.json)
+        print(response.text)
         return response.json()

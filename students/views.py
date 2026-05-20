@@ -2170,7 +2170,8 @@ class ScheduleAssessmentAPIView(APIView):
         if not email or not first_name:
             return Response(
                 {
-                    "message": "email and first_name required"
+                    "message": "email and first_name required",
+                    "data":{}
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
@@ -2193,7 +2194,8 @@ class ScheduleAssessmentAPIView(APIView):
         except Exception as e:
             return Response(
                 {
-                    "message": str(e)
+                    "message": str(e),
+                    "data":{}
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

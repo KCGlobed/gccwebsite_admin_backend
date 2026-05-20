@@ -1086,11 +1086,20 @@ class PostRealExamResultSerializer(serializers.ModelSerializer):
         std_objs = std_obj
         if std_obj:
             validated_data["student_profile"] = std_obj.first()
+            try:
+                ManageMasterKey.objects.filter(user=std_objs.user, status=False).update(status=True)
+            except:
+                pass
         else:
             validated_data["student_profile"] = None
 
         instance = super().create(validated_data)
         
+        try:
+            ManageMasterKey.objects.filter(user=std_objs.user, status=False).update(status=True)
+        except:
+            pass
+
         if std_objs:
             std_profile = std_objs.first()
             total_score = str(round((float(instance.totalscore) / float(instance.totalquestions)) * 100, 2))

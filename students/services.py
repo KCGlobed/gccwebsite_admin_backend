@@ -16,7 +16,7 @@ class CoCubesAssessmentService:
     OOT = 67119112
     # PASS_KEY = "211327"
     # PASS_KEY = 904082
-    PASS_KEY = 619673
+    PASS_KEY = 115143
     ##
     @classmethod
     def generate_ticks(cls, minutes=30):

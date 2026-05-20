@@ -2185,7 +2185,7 @@ class ScheduleAssessmentAPIView(APIView):
                     last_name=last_name,
                     redirect_url="https://www.cocubes.com/"
                 )
-                ManageMasterKey.objects.create(user=user_data, )
+                ManageMasterKey.objects.create(user=user_data, key=None, exam_url=result["assessmentlink"])
                 print(result)
                 return Response({"status":200,"message":"Success","data":result})
             else:

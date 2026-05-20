@@ -1186,6 +1186,8 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
     co_applicant_compute_income = serializers.FileField(required=False,allow_null=True)
     co_applicant_six_month_bank = serializers.FileField(required=False,allow_null=True)
     co_applicant_agriculture_income = serializers.FileField(required=False,allow_null=True)
+    #Added
+    resume = serializers.FileField(required=False,allow_null=True)
     
 
     class Meta:

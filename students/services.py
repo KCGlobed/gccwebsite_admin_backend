@@ -15,8 +15,9 @@ class CoCubesAssessmentService:
     # POT = 67119112
     OOT = 67119112
     # PASS_KEY = "211327"
-    PASS_KEY = 904082
-
+    # PASS_KEY = 904082
+    PASS_KEY = 619673
+    ##
     @classmethod
     def generate_ticks(cls, minutes=30):
         """
@@ -39,13 +40,13 @@ class CoCubesAssessmentService:
         sorted_params = OrderedDict(sorted(params.items()))
 
         values = list(sorted_params.values())
-
+        print(values)
         hash_string = (
             cls.HASH_SALT
             + cls.HASH_SALT.join(values)
             + cls.HASH_SALT
         )
-
+        print(hash_string)
         sha1_hash = hashlib.sha1(
             hash_string.encode("utf-8")
         ).digest()
@@ -60,23 +61,25 @@ class CoCubesAssessmentService:
     def schedule_assessment(cls,email, first_name, last_name="", test_expiry_days=1, redirect_url=None):
 
         expires = cls.generate_ticks()
-
+        print("expire..", expires)
         payload = {
             "servicename": "sassl",
             "v": "4",
             "email": email,
             "name": f"{first_name}+{last_name}",
             # "pot": cls.POT,
-            "oot": cls.OOT,
-            "expires": expires,
+            "oot": str(cls.OOT),
+            "expires": str(expires),
             "testexpirydays": str(test_expiry_days),
             "getsignonurl": "1",
-            "pk": cls.PASS_KEY,
+            "pk": str(cls.PASS_KEY)
         }
         if redirect_url:
             payload["rurl"] = redirect_url
+        print("paylo", payload)
 
         # Generate hash key
+        # print("hhh", cls.generate_hash(payload))
         payload["hk"] = cls.generate_hash(payload)
 
         print("payload.....",payload)

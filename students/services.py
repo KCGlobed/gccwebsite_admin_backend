@@ -40,13 +40,13 @@ class CoCubesAssessmentService:
         sorted_params = OrderedDict(sorted(params.items()))
 
         values = list(sorted_params.values())
-        print(values)
+        # print(values)
         hash_string = (
             cls.HASH_SALT
             + cls.HASH_SALT.join(values)
             + cls.HASH_SALT
         )
-        print(hash_string)
+        # print(hash_string)
         sha1_hash = hashlib.sha1(
             hash_string.encode("utf-8")
         ).digest()

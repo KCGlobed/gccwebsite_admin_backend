@@ -802,6 +802,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     result_status = serializers.SerializerMethodField("get_result_status")
     referral_code = serializers.SerializerMethodField("get_referral_code")
     referred_code = serializers.SerializerMethodField("get_referred_code")
+    exam_url = serializers.SerializerMethodField("get_exam_url")
 
     def get_referral_code(self, obj):
         name = obj.user.referral_code if obj.user else ""
@@ -871,6 +872,16 @@ class StudentProfileSerializer(serializers.ModelSerializer):
             total_score = str(round((float(result.totalscore) / float(result.totalquestions)) * 100, 2))
 
         return total_score
+    
+    def get_exam_url(self, obj):
+
+        exam_url = ""
+        std_exam  = ManageMasterKey.objects.filter(user=obj.user.id, status=False)
+        if std_exam:
+            result   = std_exam.last()
+            exam_url = result.exam_url
+
+        return exam_url
     
     
     class Meta:

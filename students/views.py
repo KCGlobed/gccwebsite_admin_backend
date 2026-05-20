@@ -2176,16 +2176,20 @@ class ScheduleAssessmentAPIView(APIView):
             )
 
         try:
-
-            result = CoCubesAssessmentService.schedule_assessment(
-                email=email,
-                first_name=first_name,
-                last_name=last_name,
-                redirect_url="https://www.cocubes.com/"
-            )
-            print(result)
-            return Response(result)
-
+            user_obj = User.objects.filter(application_id=email)
+            if user_obj:
+                user_data = user_obj.first()
+                result = CoCubesAssessmentService.schedule_assessment(
+                    email=email,
+                    first_name=first_name,
+                    last_name=last_name,
+                    redirect_url="https://www.cocubes.com/"
+                )
+                ManageMasterKey.objects.create(user=user_data, )
+                print(result)
+                return Response({"status":200,"message":"Success","data":result})
+            else:
+                return Response({"status":404,"message":"Invalid User","data":{}})
         except Exception as e:
             return Response(
                 {

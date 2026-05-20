@@ -419,4 +419,33 @@ class StudentRealExamResult(models.Model):
 
 
 
+class ExamMasterKey(models.Model):
+    key = models.CharField(max_length=50)
+    status = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
 
+    class Meta:
+        verbose_name = 'Exam Master Key'
+        verbose_name_plural = 'Exam Master Key'
+
+    def __str__(self):
+        return '%s' % self.id
+    
+
+
+class ManageMasterKey(models.Model):
+    user = models.ForeignKey('users.User', null=True, blank=True, on_delete=models.CASCADE)
+    key  = models.ForeignKey('ExamMasterKey', null=True, blank=True, on_delete=models.CASCADE)
+    exam_url   = models.TextField(blank=True, null=True)
+    status     = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
+
+    class Meta:
+        verbose_name = 'Manage Master Key'
+        verbose_name_plural = 'Manage Master Key'
+
+    def __str__(self):
+        return '%s' % self.id
+    

@@ -322,6 +322,8 @@ class StudentProfile(models.Model):
     co_applicant_compute_income = models.FileField(blank=True, null=True)
     co_applicant_six_month_bank = models.FileField(blank=True, null=True)
     co_applicant_agriculture_income = models.FileField(blank=True, null=True)
+    # Added
+    resume = models.FileField(blank=True, null=True)
 
     class Meta:
         verbose_name = 'Student Profile'

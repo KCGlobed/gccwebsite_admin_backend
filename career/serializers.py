@@ -462,24 +462,24 @@ def push_to_meritto(obj):
     # if not settings.MERITO_STATUS:
     #     return
 
-    source_map = {
-        1: "gccwebsite",
-        2: "gccefos",
-        3: "gccaffiliateOne",
-        4: "gccaffiliateTwo",
-        5: "gccaffiliateThree",
-        6: "gccaffiliateFour",
-        7: "gccaffiliateFive",
-        8: "gccipuniversity",
-        9: "gccdelhiuniversity",
-        10: "gccccs",
-        11: "gcckuk",
-        12: "gccvsloptin",
-        13: "gccvslfinal",
-        14: "gccaffiliateSix"
-    }
+    # source_map = {
+    #     1: "gccwebsite",
+    #     2: "gccefos",
+    #     3: "gccaffiliateOne",
+    #     4: "gccaffiliateTwo",
+    #     5: "gccaffiliateThree",
+    #     6: "gccaffiliateFour",
+    #     7: "gccaffiliateFive",
+    #     8: "gccipuniversity",
+    #     9: "gccdelhiuniversity",
+    #     10: "gccccs",
+    #     11: "gcckuk",
+    #     12: "gccvsloptin",
+    #     13: "gccvslfinal",
+    #     14: "gccaffiliateSix"
+    # }
 
-    m_source = source_map.get(obj.source, "gcc")
+    # m_source = source_map.get(obj.source, "gcc")
 
     url = f"{settings.MERITO_BASE_URL}/lead/v1/createOrUpdate"
 
@@ -499,7 +499,7 @@ def push_to_meritto(obj):
         # "cf_source": m_source,
         # "medium": str(obj.utm_medium).encode("ascii", "ignore").decode().strip(),
         # "campaign": str(obj.utm_campaign).encode("ascii", "ignore").decode().strip(),
-        "cf_payment_status": "Pending",
+        "cf_payment_status": "Complete",
     }
     # if obj.city:
     #     payload["city"] = obj.city

@@ -324,7 +324,7 @@ class StudentProfile(models.Model):
     co_applicant_agriculture_income = models.FileField(blank=True, null=True)
     # Added
     resume = models.FileField(blank=True, null=True)
-    resume_key_status = models.BooleanField(default=True)
+    resume_key_status = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Student Profile'

@@ -2194,7 +2194,8 @@ class ScheduleAssessmentAPIView(APIView):
                     email=email,
                     first_name=first_name,
                     last_name=last_name,
-                    redirect_url="https://www.cocubes.com/",
+                    # redirect_url="https://www.cocubes.com/",
+                    redirect_url="https://www.gccschool.com/myaccount",
                     pass_keys = available_pass_keys.key
                 )
                 print(result)

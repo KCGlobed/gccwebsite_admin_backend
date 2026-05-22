@@ -835,16 +835,27 @@ class StudentProfileSerializer(serializers.ModelSerializer):
                 dt2 = datetime.combine(date.today(), target_time)
 
                 diff = abs((dt1 - dt2).total_seconds())
-                print(diff)
+                print("diff time...",diff)
                 # if diff <= 3600:   # 3600 seconds = 1 hour
-                if diff <= 120:   # 120 seconds = 2 min
-                    status=True
-                elif dt1>dt2:
+                # if diff <= 120:   # 120 seconds = 2 min
+                    # status=True
+                # status=True
+                # if obj.re_attempt == 1:
+                #     status =  False
+
+                status = True
+                # if dt1>dt2:
+                #     status = False
+                if dt1<dt2:
+                    status = False
+                if dt1>dt2:
                     if diff >=5400:
                         obj.re_attempt = 1
                         obj.re_attempt_btn = 1
                         obj.save()
+                        status = False
             elif obj.slot_date <= datetime.now().date():
+                print("datetime elif")
                 start_str, end_str = obj.slot_time.split(" - ")
                 current_time = datetime.now().time().replace(microsecond=0)
                 target_time = datetime.strptime(start_str, "%I:%M %p").time()

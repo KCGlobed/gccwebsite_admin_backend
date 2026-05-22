@@ -836,7 +836,8 @@ class StudentProfileSerializer(serializers.ModelSerializer):
 
                 diff = abs((dt1 - dt2).total_seconds())
                 print(diff)
-                if diff <= 3600:   # 3600 seconds = 1 hour
+                # if diff <= 3600:   # 3600 seconds = 1 hour
+                if diff <= 120:   # 120 seconds = 2 min
                     status=True
                 elif dt1>dt2:
                     if diff >=5400:

@@ -324,6 +324,7 @@ class StudentProfile(models.Model):
     co_applicant_agriculture_income = models.FileField(blank=True, null=True)
     # Added
     resume = models.FileField(blank=True, null=True)
+    resume_key_status = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = 'Student Profile'
@@ -435,7 +436,7 @@ class ExamMasterKey(models.Model):
 
 
 class ManageMasterKey(models.Model):
-    user = models.ForeignKey('users.User', null=True, blank=True, on_delete=models.CASCADE)
+    profile = models.ForeignKey('StudentProfile', null=True, blank=True, on_delete=models.CASCADE)
     key  = models.ForeignKey('ExamMasterKey', null=True, blank=True, on_delete=models.CASCADE)
     exam_url   = models.TextField(blank=True, null=True)
     status     = models.BooleanField(default=False)

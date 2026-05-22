@@ -2177,18 +2177,34 @@ class ScheduleAssessmentAPIView(APIView):
             )
 
         try:
-            user_obj = User.objects.filter(application_id=email)
+            user_obj = StudentProfile.objects.filter(application_id=email)
             if user_obj:
                 user_data = user_obj.first()
+
+                assigned_keys = ManageMasterKey.objects.filter(profile=user_data).values_list('key__key', flat=True)
+                available_pass_keys = ExamMasterKey.objects.filter(status=True).exclude(key__in=assigned_keys)
+                if not available_pass_keys:
+                    available_pass_keys  = ExamMasterKey.objects.filter(status=True).first()
+                # print("key dtaaa.,,,",available_pass_keys)
+
+                # ManageMasterKey.objects.create(profile=user_data, key=available_pass_keys, exam_url="qwertyuiop")
+                # return Response({"msg":"success"})
+            
                 result = CoCubesAssessmentService.schedule_assessment(
                     email=email,
                     first_name=first_name,
                     last_name=last_name,
-                    redirect_url="https://www.cocubes.com/"
+                    redirect_url="https://www.cocubes.com/",
+                    pass_keys = available_pass_keys.key
                 )
-                ManageMasterKey.objects.create(user=user_data, key=None, exam_url=result["assessmentlink"])
                 print(result)
-                return Response({"status":200,"message":"Success","data":result})
+                if result["erc"] == 0:
+                    ManageMasterKey.objects.create(profile=user_data, key=available_pass_keys, exam_url=result["assessmentlink"])
+                    print(result)
+                    return Response({"status":200,"message":"Success","data":result})
+                else:
+                    print("start exam error",result)
+                    return Response({"status":404,"message":result['err'],"data":{}})
             else:
                 return Response({"status":404,"message":"Invalid User","data":{}})
         except Exception as e:

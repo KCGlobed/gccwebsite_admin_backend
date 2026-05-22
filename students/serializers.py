@@ -876,9 +876,9 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     def get_exam_url(self, obj):
 
         exam_url = ""
-        std_exam  = ManageMasterKey.objects.filter(user=obj.user.id, status=False)
+        std_exam  = ManageMasterKey.objects.filter(profile=obj.id, status=False)
         if std_exam:
-            result   = std_exam.last()
+            result   = std_exam.first()
             exam_url = result.exam_url
 
         return exam_url
@@ -1087,7 +1087,7 @@ class PostRealExamResultSerializer(serializers.ModelSerializer):
         if std_obj:
             validated_data["student_profile"] = std_obj.first()
             try:
-                ManageMasterKey.objects.filter(user=std_objs.user, status=False).update(status=True)
+                ManageMasterKey.objects.filter(profile=std_objs, status=False).update(status=True)
             except:
                 pass
         else:

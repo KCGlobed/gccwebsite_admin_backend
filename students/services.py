@@ -58,7 +58,7 @@ class CoCubesAssessmentService:
         return hk
 
     @classmethod
-    def schedule_assessment(cls,email, first_name, last_name="", test_expiry_days=1, redirect_url=None):
+    def schedule_assessment(cls,email, first_name, last_name="", test_expiry_days=1, redirect_url=None, pass_keys=""):
 
         expires = cls.generate_ticks()
         print("expire..", expires)
@@ -72,7 +72,7 @@ class CoCubesAssessmentService:
             "expires": str(expires),
             "testexpirydays": str(test_expiry_days),
             "getsignonurl": "1",
-            "pk": str(cls.PASS_KEY)
+            "pk": str(pass_keys)
         }
         if redirect_url:
             payload["rurl"] = redirect_url

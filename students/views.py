@@ -1700,7 +1700,7 @@ class GetStudentScoreCardView(APIView):
         user_obj = request.user
 
         std_data = StudentProfile.objects.filter(user=user_obj).first()
-        score_objs = StudentRealExamResult.objects.filter(student_profile=std_data).first()
+        score_objs = StudentRealExamResult.objects.filter(student_profile=std_data).last()
 
         if not score_objs:
             return Response({"message": "No data found"},data={}, status=404)
@@ -1789,7 +1789,7 @@ class GetAdminStudentScoreCardView(APIView):
     def get(self, request, stid):
         
         std_data = StudentProfile.objects.filter(id=stid).first()
-        score_objs = StudentRealExamResult.objects.filter(student_profile=std_data).first()
+        score_objs = StudentRealExamResult.objects.filter(student_profile=std_data).last()
 
         if not score_objs:
             return Response({"message": "No data found", "status":404, "data":{}})

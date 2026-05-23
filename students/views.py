@@ -26,8 +26,8 @@ from django.utils.timezone import now
 from rest_framework import status
 from django.utils import timezone
 from datetime import timedelta
-
-
+from django.db.models import F, FloatField, ExpressionWrapper
+from django.db.models.functions import Cast
 
 # Create your views here.
 
@@ -1677,6 +1677,39 @@ class GetStudentProfileListingView(APIView):
         city = request.GET.get('city')
         if city:
             datas = datas.filter(city__icontains=city)
+
+        is_result = request.GET.get('is_result')
+
+        # print(is_result)
+        if is_result:
+            # print(is_result)
+            if is_result == "60":
+
+                datas = datas.filter(
+                        id__in=StudentRealExamResult.objects.annotate(
+                            total_score_float=Cast('totalscore', FloatField()),
+                            total_questions_float=Cast('totalquestions', FloatField()),
+                        ).annotate(
+                            percentage=ExpressionWrapper(
+                                (F('total_score_float') * 100.0) / F('total_questions_float'),
+                                output_field=FloatField()
+                            )
+                        ).filter(
+                            percentage__gt=60
+                        ).values_list(
+                            "student_profile_id",
+                            flat=True
+                        )
+                    )
+            else:
+                # print("datass")
+                datas = datas.filter(
+                    id__in=StudentRealExamResult.objects.values_list(
+                        "student_profile_id",
+                        flat=True
+                    )
+                )
+
 
         search_filter = filters.SearchFilter()
         datas = search_filter.filter_queryset(request, datas, self)

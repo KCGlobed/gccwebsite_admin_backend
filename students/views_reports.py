@@ -18,7 +18,8 @@ import re
 from datetime import datetime, timedelta
 from django.utils.dateparse import parse_date
 client = storage.Client(project=settings.GS_PROJECT_ID)
-
+from django.db.models import F, FloatField, ExpressionWrapper
+from django.db.models.functions import Cast
 
 class GetSessionReportPDFView(APIView):
     permission_classes = [IsAuthenticated]
@@ -728,7 +729,37 @@ class GetStudentProfileReportExcelView(APIView):
         city = request.GET.get('city')
         if city:
             datas = datas.filter(city__icontains=city)
+        is_result = request.GET.get('is_result')
 
+        # print(is_result)
+        if is_result:
+            # print(is_result)
+            if is_result == "60":
+
+                datas = datas.filter(
+                        id__in=StudentRealExamResult.objects.annotate(
+                            total_score_float=Cast('totalscore', FloatField()),
+                            total_questions_float=Cast('totalquestions', FloatField()),
+                        ).annotate(
+                            percentage=ExpressionWrapper(
+                                (F('total_score_float') * 100.0) / F('total_questions_float'),
+                                output_field=FloatField()
+                            )
+                        ).filter(
+                            percentage__gt=60
+                        ).values_list(
+                            "student_profile_id",
+                            flat=True
+                        )
+                    )
+            else:
+                # print("datass")
+                datas = datas.filter(
+                    id__in=StudentRealExamResult.objects.values_list(
+                        "student_profile_id",
+                        flat=True
+                    )
+                )
 
         data_list = ListStudentProfileExcelReportSerializer(datas, many=True).data
         # print("datas...",data_list)

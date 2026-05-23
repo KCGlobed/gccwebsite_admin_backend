@@ -826,7 +826,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     def get_exam_status(self, obj):
         status=False
         if obj.slot_date:
-            print(datetime.now().date())
+            # print(datetime.now().date())
             if obj.slot_date == datetime.now().date():
                 start_str, end_str = obj.slot_time.split(" - ")
                 current_time = datetime.now().time().replace(microsecond=0)
@@ -835,7 +835,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
                 dt2 = datetime.combine(date.today(), target_time)
 
                 diff = abs((dt1 - dt2).total_seconds())
-                print("diff time...",diff)
+                # print("diff time...",diff)
                 # if diff <= 3600:   # 3600 seconds = 1 hour
                 # if diff <= 120:   # 120 seconds = 2 min
                     # status=True
@@ -855,7 +855,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
                         obj.save()
                         status = False
             elif obj.slot_date <= datetime.now().date():
-                print("datetime elif")
+                # print("datetime elif")
                 start_str, end_str = obj.slot_time.split(" - ")
                 current_time = datetime.now().time().replace(microsecond=0)
                 target_time = datetime.strptime(start_str, "%I:%M %p").time()
@@ -1097,9 +1097,10 @@ class PostRealExamResultSerializer(serializers.ModelSerializer):
         std_obj = StudentProfile.objects.filter(application_id=validated_data.get("email"))
         std_objs = std_obj
         if std_obj:
-            validated_data["student_profile"] = std_obj.first()
+            std = std_obj.first()
+            validated_data["student_profile"] = std
             try:
-                ManageMasterKey.objects.filter(profile=std_objs, status=False).update(status=True)
+                ManageMasterKey.objects.filter(profile=std, status=False).update(status=True)
             except:
                 pass
         else:
@@ -1107,10 +1108,10 @@ class PostRealExamResultSerializer(serializers.ModelSerializer):
 
         instance = super().create(validated_data)
         
-        try:
-            ManageMasterKey.objects.filter(user=std_objs.user, status=False).update(status=True)
-        except:
-            pass
+        # try:
+        #     ManageMasterKey.objects.filter(user=std_objs.user, status=False).update(status=True)
+        # except:
+        #     pass
 
         if std_objs:
             std_profile = std_objs.first()

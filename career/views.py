@@ -120,19 +120,19 @@ class DossierMeritto_CreateUpdate(APIView):
         today = datetime.now().date()
         # dossier_obj = DossierData.objects.filter(created_at__date__gte='2026-05-15', source=SourceType.Website)
         # dossier_obj = dossier_obj.filter(created_at__date__lte='2026-05-18')
-        dossier_obj = DossierData.objects.filter(id=2244)
+        dossier_obj = DossierData.objects.filter(id=2074)
         filter_data = dossier_obj.count()
         print("count data...",filter_data)
         cc = filter_data
-        objj = list(User.objects.values_list('email', flat=True))
+        # objj = list(User.objects.values_list('email', flat=True))
 
-        print(objj)
-        print(len(objj))
+        # print(objj)
+        # print(len(objj))
 
         for obj in dossier_obj:
-            if obj.email in objj:
-                print("email.......",obj.email)
-                push_to_meritto(obj)
+            # if obj.email in objj:
+            #     print("email.......",obj.email)
+            #     push_to_meritto(obj)
 
 
             # serializer = CreateOrUpdateDossierDataMerittoSerializer(obj, data = request.data)
@@ -140,8 +140,10 @@ class DossierMeritto_CreateUpdate(APIView):
             #     serializer.save()
 
 
-                data_list.append(obj.id)
+                # data_list.append(obj.id)
                 
+            push_to_meritto(obj)
+            data_list.append(obj.id)
             # break
             j+=1
             cc-=1

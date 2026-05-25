@@ -118,9 +118,9 @@ class DossierMeritto_CreateUpdate(APIView):
         j = 0
         # yesterday = datetime.now().date() - timedelta(days=2)
         today = datetime.now().date()
-        dossier_obj = DossierData.objects.filter(created_at__date__gte='2026-05-15', source=SourceType.Website)
-        dossier_obj = dossier_obj.filter(created_at__date__lte='2026-05-18')
-        # dossier_obj = DossierData.objects.filter(id=5158)
+        # dossier_obj = DossierData.objects.filter(created_at__date__gte='2026-05-15', source=SourceType.Website)
+        # dossier_obj = dossier_obj.filter(created_at__date__lte='2026-05-18')
+        dossier_obj = DossierData.objects.filter(id=4576)
         filter_data = dossier_obj.count()
         print("count data...",filter_data)
         cc = filter_data

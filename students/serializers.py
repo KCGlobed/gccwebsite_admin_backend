@@ -784,6 +784,8 @@ class StudentReAttemptSerializer(serializers.ModelSerializer):
         instance.slot_update_count = 0
         instance.save()
 
+        pay_data = Payments.objects.filter()
+
         return instance
     
     class Meta:
@@ -1049,7 +1051,8 @@ class CampusStudentVerifiedStatusSerializer(serializers.ModelSerializer):
 class StudentCreatePaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payments
-        fields = ["razorpay_order_id", "razorpay_payment_id","razorpay_signature","amount","currency","status","response","created_at","updated_at","form_type","form_id","dossier_form","source"]
+        # fields = ["razorpay_order_id", "razorpay_payment_id","razorpay_signature","amount","currency","status","response","created_at","updated_at","form_type","form_id","dossier_form","source"]
+        fields = "__all__"
 
     
 

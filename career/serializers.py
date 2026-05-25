@@ -499,7 +499,8 @@ def push_to_meritto(obj):
         # "cf_source": m_source,
         # "medium": str(obj.utm_medium).encode("ascii", "ignore").decode().strip(),
         # "campaign": str(obj.utm_campaign).encode("ascii", "ignore").decode().strip(),
-        "cf_payment_status": "Complete",
+        # "cf_payment_status": "Complete",
+        "cf_fee_waiver_category": "Free of cost (FOC)",
     }
     # if obj.city:
     #     payload["city"] = obj.city

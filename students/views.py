@@ -1911,11 +1911,17 @@ class GetAdminStudentScoreCardView(APIView):
 
 
 class StudentCreatePaymentView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         serializers = StudentCreatePaymentSerializer(data=request.data)
         if serializers.is_valid():
-            serializers.save()
+            obj = serializers.save()
+            lead = DossierData.objects.filter(email=request.user.email)
+            if lead:
+                lead_obj = lead.last()
+                
+                Payments.objects.filter(id=obj.id).update(dossier_form=lead_obj, re_attempt_status=True)
+
             return Response({'message':'success',"status":200,'data':{}})
         else:
             return Response({'message':'failed',"status":400,'data':serializers.errors})

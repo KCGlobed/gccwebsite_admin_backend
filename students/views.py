@@ -1916,12 +1916,12 @@ class StudentCreatePaymentView(APIView):
         serializers = StudentCreatePaymentSerializer(data=request.data)
         if serializers.is_valid():
             obj = serializers.save()
+            print("reqqq", request.user.email)
             lead = DossierData.objects.filter(email=request.user.email)
+            print(lead)
             if lead:
                 lead_obj = lead.last()
-                
-                Payments.objects.filter(id=obj.id).update(dossier_form=lead_obj, re_attempt_status=True)
-
+                Payments.objects.filter(id=obj.id).update(dossier_form=lead_obj, form_id=lead_obj.id, re_attempt_status=True)
             return Response({'message':'success',"status":200,'data':{}})
         else:
             return Response({'message':'failed',"status":400,'data':serializers.errors})

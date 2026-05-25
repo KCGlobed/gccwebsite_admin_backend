@@ -1054,7 +1054,15 @@ class StudentCreatePaymentSerializer(serializers.ModelSerializer):
         # fields = ["razorpay_order_id", "razorpay_payment_id","razorpay_signature","amount","currency","status","response","created_at","updated_at","form_type","form_id","dossier_form","source"]
         fields = "__all__"
 
-    
+    def create(self, validated_data):
+        print("serializer payment request data..")
+        print(validated_data)
+        
+        validated_data["response"] = json.loads(validated_data["response"])         
+        validated_data["created_at"] = timezone.now()           
+        validated_data["updated_at"] = timezone.now()   
+        instance = super().create(validated_data)
+        return instance
 
 class PostExamResultSerializer(serializers.ModelSerializer):
     class Meta:

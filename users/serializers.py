@@ -233,7 +233,8 @@ class CreateStudentSerializer(serializers.ModelSerializer):
                 "search_criteria": "email",
                 "cf_payment_status":"Complete",
                 "cf_refferal_code":validate_data.get('referred_code'),
-                "cf_reference_code":refferals_code
+                "cf_reference_code":refferals_code,
+                "cf_gcc_application_number":generate_application_id
             }
             print("user create meritto payload...",payload)
             try:

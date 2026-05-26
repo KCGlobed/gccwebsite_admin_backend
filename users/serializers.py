@@ -243,7 +243,7 @@ class CreateStudentSerializer(serializers.ModelSerializer):
             except Exception as e:
                 print("API Error:", str(e))
 
-        subject = 'GCC School – Payment Confirmation & Next Steps for NFET 2026'
+        subject = 'Welcome to GCC School. Here are your login details.'
 
         message = f''
         email_from = settings.DEFAULT_FROM_EMAIL

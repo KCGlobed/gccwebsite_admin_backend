@@ -1059,6 +1059,7 @@ class StudentCreatePaymentSerializer(serializers.ModelSerializer):
         print(validated_data)
         
         validated_data["response"] = json.loads(validated_data["response"])         
+        validated_data["amount"] = float(validated_data["amount"])         
         validated_data["created_at"] = timezone.now()           
         validated_data["updated_at"] = timezone.now()   
         instance = super().create(validated_data)

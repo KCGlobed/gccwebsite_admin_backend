@@ -325,6 +325,7 @@ class StudentProfile(models.Model):
     # Added
     resume = models.FileField(blank=True, null=True)
     resume_key_status = models.BooleanField(default=False)
+    
 
     class Meta:
         verbose_name = 'Student Profile'

@@ -55,3 +55,33 @@ class CampusStudentAccountMailStatusView(APIView):
         return error_response(message="failed", data = serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
     
 
+
+class ReAttemptPaymentsView(APIView):
+    def post(self, request, format=None):
+        data = Payments.objects.filter(dossier_form=None)
+        print("data listing.....",len(data))
+        # for i in data:
+        #     # print(i)
+        #     print(i.response)
+        #     email = i.response["email"]
+        #     phone = i.response["mobile"]
+        #     lead = DossierData.objects.filter(email=email, phone=phone)
+        #     print(lead)
+        #     if lead:
+        #         print(len(lead))
+        #         print(email)
+        #         print(phone)
+        #         print(i.amount)
+        #         ll = lead.first()
+        #         i.dossier_form = ll
+        #         i.form_id = ll.id
+        #         i.re_attempt_status = True
+        #         i.save()
+                
+        return success_response(message="Success", data={}, status_code=status.HTTP_200_OK)
+    
+
+
+
+
+

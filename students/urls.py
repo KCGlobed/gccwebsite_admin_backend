@@ -75,4 +75,7 @@ urlpatterns = [
     
     path("schedule-assessment/",ScheduleAssessmentAPIView.as_view(),name="schedule-assessment"),
 
+    ## admin
+    path("check_blank_payment/",ReAttemptPaymentsView.as_view(),name="check_blank_payment"),
+
 ]

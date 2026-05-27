@@ -1337,6 +1337,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
             datas.guardian_name = validate_data.get('guardian_name',datas.guardian_name)
             datas.guardian_phone = validate_data.get('guardian_phone',datas.guardian_phone)
             datas.guardian_email = validate_data.get('guardian_email',datas.guardian_email)
+            datas.guardian_dropdown = validate_data.get('guardian_dropdown',datas.guardian_dropdown)
             datas.guardian_other_reason = validate_data.get('guardian_other_reason',datas.guardian_other_reason)
             datas.save()
             query = datas

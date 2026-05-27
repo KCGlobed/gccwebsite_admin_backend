@@ -1233,12 +1233,18 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
     co_applicant_agriculture_income = serializers.FileField(required=False,allow_null=True)
     #Added
     resume = serializers.FileField(required=False,allow_null=True)
+    guardian_name = serializers.CharField(required=False, allow_null = True)
+    guardian_phone = serializers.CharField(required=False, allow_null = True)
+    guardian_email = serializers.CharField(required=False, allow_null = True)
+    guardian_dropdown = models.IntegerField(default=0, null=True)
+    guardian_other_reason = serializers.CharField(required=False, allow_null = True)
     
 
     class Meta:
         model = StudentProfile
-        fields = ["user",'first_name','last_name','email','phone',"state","city","contact_name","contact_phone","date_of_birth","gender","nationality","pincode","address","tenth_passing_year","tenth_passing_percentage","tenth_score_type","tenth_medium","twelveth_passing_year","twelveth_passing_percentage","twelveth_score_type","twelveth_medium","medium_instruction","other_instruction","pg_status","pg_percentage","ug_score_type","institution","higher_education_status","higher_qualification","higher_qualification_institution","employement_status","aadhaar","dob_certificate","photo","signature","user_experience","identity_proof","tenth_marksheet","twelth_marksheet","graduation_first_marksheet","graduation_second_marksheet","graduation_third_marksheet","graduation_forth_marksheet","graduation_fifth_marksheet","graduation_sixth_marksheet","additional_qualification","additional_document","co_applicant_pan_card","co_applicant_aadhaar","accounting_profession","co_applicant_profession","co_applicant_sallary_slip","co_applicant_form16","co_applicant_employee_id_card","co_applicant_passport_size","co_applicant_income_tax_return","co_applicant_compute_income","co_applicant_six_month_bank","co_applicant_agriculture_income","resume"]
+        fields = ["user",'first_name','last_name','email','phone',"state","city","contact_name","contact_phone","date_of_birth","gender","nationality","pincode","address","tenth_passing_year","tenth_passing_percentage","tenth_score_type","tenth_medium","twelveth_passing_year","twelveth_passing_percentage","twelveth_score_type","twelveth_medium","medium_instruction","other_instruction","pg_status","pg_percentage","ug_score_type","institution","higher_education_status","higher_qualification","higher_qualification_institution","employement_status","aadhaar","dob_certificate","photo","signature","user_experience","identity_proof","tenth_marksheet","twelth_marksheet","graduation_first_marksheet","graduation_second_marksheet","graduation_third_marksheet","graduation_forth_marksheet","graduation_fifth_marksheet","graduation_sixth_marksheet","additional_qualification","additional_document","co_applicant_pan_card","co_applicant_aadhaar","accounting_profession","co_applicant_profession","co_applicant_sallary_slip","co_applicant_form16","co_applicant_employee_id_card","co_applicant_passport_size","co_applicant_income_tax_return","co_applicant_compute_income","co_applicant_six_month_bank","co_applicant_agriculture_income","resume","guardian_name","guardian_phone","guardian_email","guardian_dropdown","guardian_other_reason"]
         
+
     def validate(self, data):
         return data
     
@@ -1328,6 +1334,10 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
             datas.co_applicant_six_month_bank = validate_data.get('co_applicant_six_month_bank',datas.co_applicant_six_month_bank)
             datas.co_applicant_agriculture_income = validate_data.get('co_applicant_agriculture_income',datas.co_applicant_agriculture_income)
             datas.resume = validate_data.get('resume',datas.resume)
+            datas.guardian_name = validate_data.get('guardian_name',datas.guardian_name)
+            datas.guardian_phone = validate_data.get('guardian_phone',datas.guardian_phone)
+            datas.guardian_email = validate_data.get('guardian_email',datas.guardian_email)
+            datas.guardian_other_reason = validate_data.get('guardian_other_reason',datas.guardian_other_reason)
             datas.save()
             query = datas
             if len(validate_data.get('user_experience')) > 0:
@@ -1409,7 +1419,12 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                 signature = validate_data.get('signature'),
                 application_id = user_obj.application_id,
                 fee_waiver_category = user_obj.fee_waiver_category,
-                resume = validate_data.get('resume')
+                resume = validate_data.get('resume'),
+                guardian_name = validate_data.get('guardian_name'),
+                guardian_phone = validate_data.get('guardian_phone'),
+                guardian_email = validate_data.get('guardian_email'),
+                guardian_dropdown = validate_data.get('guardian_dropdown'),
+                guardian_other_reason = validate_data.get('guardian_other_reason')
             )
             query.save()
             print(validate_data)

@@ -247,6 +247,12 @@ class Profession(models.IntegerChoices):
     SELFEMP = 2, 'SELFEMP'
     AGRICULTURE = 3, 'AGRICULTURE'
 
+class Guardian(models.IntegerChoices):
+    SELECT = 0, 'SELECT'
+    MOTHER = 1, 'MOTHER'
+    FATHER = 2, 'FATHER'
+    OTHER  = 3, 'OTHER'
+
 
 class StudentProfile(models.Model):
     user = models.ForeignKey('users.User', null=True, blank=True, on_delete=models.CASCADE)
@@ -325,7 +331,13 @@ class StudentProfile(models.Model):
     # Added
     resume = models.FileField(blank=True, null=True)
     resume_key_status = models.BooleanField(default=False)
-    
+    guardian_name = models.CharField(max_length=100, blank=True, null=True)
+    guardian_phone = models.CharField(max_length=100, blank=True, null=True)
+    guardian_email = models.CharField(max_length=100, blank=True, null=True)
+    guardian_dropdown = models.IntegerField(choices=Guardian.choices, blank=True, null=True)
+    guardian_other_reason = models.CharField(max_length=100, blank=True, null=True)
+    guardian_key_status = models.BooleanField(default=True)
+
 
     class Meta:
         verbose_name = 'Student Profile'

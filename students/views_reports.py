@@ -801,7 +801,11 @@ class GetStudentProfileReportExcelView(APIView):
             "fee_waiver_category": "Fee Waiver Category",
             "referral_code": "Refferal Code",
             "referred_code": "Reffered Code",
-            "student_result": "Result Score %"
+            "guardian_name": "Guardian Name",
+            "guardian_phone": "Guardian Phone",
+            "guardian_email": "Guardian Email",
+            "guardian_dropdown": "Guardian Relation",
+            "guardian_other_reason": "Guardian Others Reason"
             }
         # print(data_list)
         # return Response({"message":"success", "data":data_list})

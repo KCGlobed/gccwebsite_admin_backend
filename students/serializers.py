@@ -121,6 +121,7 @@ class ListStudentProfileExcelReportSerializer(serializers.ModelSerializer) :
     referral_code = serializers.SerializerMethodField("get_referral_code")
     referred_code = serializers.SerializerMethodField("get_referred_code")
     student_result = serializers.SerializerMethodField("get_student_result")
+    guardian_dropdown = serializers.SerializerMethodField("get_guardian_dropdown")
     
     class Meta:
         model = StudentProfile
@@ -187,6 +188,8 @@ class ListStudentProfileExcelReportSerializer(serializers.ModelSerializer) :
 
         return total_score
 
+    def get_guardian_dropdown(self, obj):
+        return obj.get_guardian_dropdown_display()
 
 
 

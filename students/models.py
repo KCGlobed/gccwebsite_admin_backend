@@ -336,7 +336,7 @@ class StudentProfile(models.Model):
     guardian_email = models.CharField(max_length=100, blank=True, null=True)
     guardian_dropdown = models.IntegerField(choices=Guardian.choices, blank=True, null=True)
     guardian_other_reason = models.CharField(max_length=100, blank=True, null=True)
-    guardian_key_status = models.BooleanField(default=True)
+    guardian_key_status = models.BooleanField(default=False)
 
 
     class Meta:

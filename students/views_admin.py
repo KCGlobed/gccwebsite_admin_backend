@@ -82,6 +82,42 @@ class ReAttemptPaymentsView(APIView):
     
 
 
+class MerittoExamResultUpdateView(APIView):
+    def post(self, request, format=None):
+        std_objs = StudentRealExamResult.objects.all()
+        print("data listing.....",len(std_objs))
+        for std_profile in std_objs:
+        # if std_objs:
+            # std_profile = std_objs.last()
+            total_score = str(round((float(std_profile.totalscore) / float(std_profile.totalquestions)) * 100, 2))
+            
+            if settings.MERITO_STATUS == "True":
+                url = settings.MERITO_BASE_URL+"/application/v1/createOrUpdate"
+
+                headers = {
+                        "Content-Type": "application/json",
+                        "secret-key": settings.MERITO_SECRETE_KEY,
+                        "access-key": settings.MERITO_ACCESS_KEY
+                    }
+                meritto_payload = {
+                    "form_id": 22144,
+                    "email": std_profile.student_profile.email,
+                    "search_criteria":"email",
+                    "data": {
+                            "field_349944":total_score
+                    }
+                }
+                print(meritto_payload)
+                try:
+                    response = requests.post(url, headers=headers, json=meritto_payload)
+                    print(response.status_code)
+                    print(response.text)
+                except Exception as e:
+                    print("API Error:", str(e))
+        return success_response(message="Success", data={}, status_code=status.HTTP_200_OK)
+    
+
+
 
 
 

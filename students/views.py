@@ -2019,10 +2019,13 @@ from datetime import datetime, timedelta, date
 class AddProfileToMerittoView(APIView):
     def post(self, request):
 
-        app_all = StudentProfile.objects.exclude(slot_date=None)
+        app_all = StudentProfile.objects.filter(id=13)
         print("app data...",len(app_all))
+        # for i in app_all:
+        #     print(i.slot_date,'---', i.application_id, '----', i.email)
+        # return Response({"start":"data"})
         for query in app_all:
-            print(query.slot_date)
+        #     print(query.slot_date)
 
         #     meritto_payload = {
         #             "form_id": 22144,
@@ -2030,8 +2033,7 @@ class AddProfileToMerittoView(APIView):
         #             "email": query.email,
         #             "search_criteria": "email",
         #             "data": {
-        #                 "field_343097": "Complete",
-        #                 "field_343098": "Complete"
+        #                 "field_343097": "Incomplete"
         #             }
         #         }
                 
@@ -2051,7 +2053,6 @@ class AddProfileToMerittoView(APIView):
         #     except Exception as e:
         #         print("API Error:", str(e))
 
-        # return Response({"start":"data"})
     
             if settings.MERITO_STATUS == "True":
                 if int(query.gender) == 1:
@@ -2103,7 +2104,15 @@ class AddProfileToMerittoView(APIView):
                     start_formatted = start_time.strftime("%H:%M:%S %p")
                     start_formatted_one = start_time.strftime("%H:%M:%S")
                     # print(f'''{query.slot_date.strftime("%d/%m/%Y")} {start_formatted}''')
-                
+
+                if int(query.guardian_dropdown) == 1:
+                    gname = "MOTHER"
+                elif int(query.guardian_dropdown) == 2:
+                    gname = "FATHER"
+                elif int(query.guardian_dropdown) == 3:
+                    gname = "OTHER"
+                else:
+                    gname = ""
 
                 meritto_payload = {
                     "form_id": 22144,
@@ -2144,18 +2153,18 @@ class AddProfileToMerittoView(APIView):
                             "field_342113":query.user.application_id,
                             # "field_343097":"Complete",
                             "field_343098":"Complete",
-                            
+                            "field_351358":query.guardian_name,
+                            "field_351359":query.guardian_phone,
+                            "field_351368":query.guardian_email,
+                            "field_351361":gname,
+                            "other_field_351361":query.guardian_other_reason
                     }
                 }
 
                 if query.slot_time:
-                    # # "field_342101":query.slot_date.strftime("%d/%m/%Y"),
-                    # "field_342102":start_formatted_one,
-                    # # "field_340093":instance.slot_date.strftime("%d/%m/%Y"),
-                    # "field_343386":f'''{query.slot_date.strftime("%d/%m/%Y")} {start_formatted}''',
-                    # "field_340094":instance.slot_time
-                    meritto_payload["data"]["field_342102"] = start_formatted_one
+                    # meritto_payload["data"]["field_342102"] = start_formatted_one
                     meritto_payload["data"]["field_343386"] = f'''{query.slot_date.strftime("%d/%m/%Y")} {start_formatted}'''
+                    meritto_payload["data"]["field_343097"] = "Complete"
 
                 exp_payload = {"have_work_ex":"Fresher"}
                 std_exp = StudentExperience.objects.filter(student_profile=query)

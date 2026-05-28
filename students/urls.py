@@ -77,5 +77,6 @@ urlpatterns = [
 
     ## admin
     path("check_blank_payment/",ReAttemptPaymentsView.as_view(),name="check_blank_payment"),
+    path("meritto_update_result/",MerittoExamResultUpdateView.as_view(),name="meritto_update_result"),
 
 ]

@@ -1515,6 +1515,12 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
             else:
                 pg_status = "Pursuing"
 
+            if int(query.guardian_dropdown) == 1:
+                gname = "MOTHER"
+            elif int(query.guardian_dropdown) == 2:
+                gname = "FATHER"
+            else:
+                gname = "OTHER"
 
             tenth_score_type = query.tenth_score_type if query.tenth_score_type == "Percentage" else "CGPA out of 10"
             twelveth_score_type = query.twelveth_score_type if query.twelveth_score_type == "Percentage" else "CGPA out of 10"
@@ -1556,10 +1562,16 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                         "field_340079":query.higher_qualification_institution,
                         # "field_340078":query.higher_qualification,
                         "field_342113":query.user.application_id,
-                        "field_343097":"Complete",
+                        # "field_343097":"Incomplete",
                         "field_343098":"Complete",
                         "field_349945":user_objs.referral_code,
-                        "field_349946":user_objs.referred_code
+                        "field_349946":user_objs.referred_code,
+
+                        "field_351358":user_objs.guardian_name,
+                        "field_351359":user_objs.guardian_phone,
+                        "field_351368":user_objs.guardian_email,
+                        "field_351361":gname,
+                        "other_field_351361":user_objs.guardian_other_reason
                 }
             }
             print(exp_payload)

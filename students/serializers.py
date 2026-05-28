@@ -1575,7 +1575,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                         "field_351359":user_objs.guardian_phone,
                         "field_351368":user_objs.guardian_email,
                         "field_351361":gname,
-                        "other_field_351361":user_objs.guardian_other_reason
+                        "field_351381":user_objs.guardian_other_reason
                 }
             }
             print(exp_payload)

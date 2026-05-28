@@ -796,6 +796,7 @@ class GetStudentProfileReportExcelView(APIView):
             "employement_status":"Experience",
             "slot_date": "Slot Date",
             "slot_time": "Slot Time",
+            "student_result":"Student Result",
             "application_id": "Application ID",
             "created_at": "Create Date",
             "fee_waiver_category": "Fee Waiver Category",

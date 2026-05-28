@@ -632,7 +632,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                         "field_340079":query.higher_qualification_institution,
                         # "field_340078":query.higher_qualification,
                         "field_342113":query.user.application_id,
-                        "field_343097":"Complete",
+                        # "field_343097":"Complete",
                         "field_343098":"Complete"
                 }
             }
@@ -737,7 +737,8 @@ class StudentSlotBookSerializer(serializers.ModelSerializer):
                         # "field_342101":instance.slot_date.strftime("%d/%m/%Y"),
                         # "field_342102":start_formatted_one,
                         # "field_340093":instance.slot_date.strftime("%d/%m/%Y"),
-                        "field_343386":f'''{instance.slot_date.strftime("%d/%m/%Y")} {start_formatted}'''
+                        "field_343386":f'''{instance.slot_date.strftime("%d/%m/%Y")} {start_formatted}''',
+                        "field_343097": "Complete"
                         # "field_340094":instance.slot_time
                 }
             }
@@ -787,7 +788,7 @@ class StudentReAttemptSerializer(serializers.ModelSerializer):
         instance.slot_update_count = 0
         instance.save()
 
-        pay_data = Payments.objects.filter()
+        # pay_data = Payments.objects.filter()
 
         return instance
     

@@ -810,6 +810,10 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     referral_code = serializers.SerializerMethodField("get_referral_code")
     referred_code = serializers.SerializerMethodField("get_referred_code")
     exam_url = serializers.SerializerMethodField("get_exam_url")
+    guardian_dropdown = serializers.SerializerMethodField("get_guardian_dropdown")
+
+    def get_guardian_dropdown(self, obj):
+        return obj.get_guardian_dropdown_display()
 
     def get_referral_code(self, obj):
         name = obj.user.referral_code if obj.user else ""

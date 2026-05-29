@@ -796,6 +796,7 @@ class GetStudentProfileReportExcelView(APIView):
             "employement_status":"Experience",
             "slot_date": "Slot Date",
             "slot_time": "Slot Time",
+            "student_result":"Student Result",
             "application_id": "Application ID",
             "created_at": "Create Date",
             "fee_waiver_category": "Fee Waiver Category",
@@ -804,8 +805,7 @@ class GetStudentProfileReportExcelView(APIView):
             "guardian_name": "Guardian Name",
             "guardian_phone": "Guardian Phone",
             "guardian_email": "Guardian Email",
-            "guardian_dropdown": "Guardian Relation",
-            "guardian_other_reason": "Guardian Others Reason"
+            "guardian_dropdown": "Guardian Relationship"
             }
         # print(data_list)
         # return Response({"message":"success", "data":data_list})

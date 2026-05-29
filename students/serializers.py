@@ -1571,11 +1571,11 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                         "field_349945":user_objs.referral_code,
                         "field_349946":user_objs.referred_code,
 
-                        "field_351358":user_objs.guardian_name,
-                        "field_351359":user_objs.guardian_phone,
-                        "field_351368":user_objs.guardian_email,
+                        "field_351358":query.guardian_name,
+                        "field_351359":query.guardian_phone,
+                        "field_351368":query.guardian_email,
                         "field_351361":gname,
-                        "field_351381":user_objs.guardian_other_reason
+                        "field_351381":query.guardian_other_reason
                 }
             }
             print(exp_payload)

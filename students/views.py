@@ -2019,7 +2019,7 @@ from datetime import datetime, timedelta, date
 class AddProfileToMerittoView(APIView):
     def post(self, request):
 
-        app_all = StudentProfile.objects.filter(id=13)
+        app_all = StudentProfile.objects.filter(id=504)
         print("app data...",len(app_all))
         # for i in app_all:
         #     print(i.slot_date,'---', i.application_id, '----', i.email)
@@ -2157,7 +2157,7 @@ class AddProfileToMerittoView(APIView):
                             "field_351359":query.guardian_phone,
                             "field_351368":query.guardian_email,
                             "field_351361":gname,
-                            "other_field_351361":query.guardian_other_reason
+                            "field_351381":query.guardian_other_reason
                     }
                 }
 

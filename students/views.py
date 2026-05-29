@@ -1621,7 +1621,7 @@ class GetStudentReAttemptView(APIView):
                 return Response({'message':'failed',"status":400,'data':serializers.errors})
         return Response({'message':'failed',"status":400,'data':{}})
     
-
+from django.db.models import OuterRef, Subquery
 
     
 class GetStudentProfileListingView(APIView):
@@ -1686,23 +1686,78 @@ class GetStudentProfileListingView(APIView):
         if is_result:
             # print(is_result)
             if str(is_result) == "50":
+                # latest_results = (
+                #     StudentRealExamResult.objects
+                #     .order_by('student_profile_id', '-id')
+                #     .distinct('student_profile_id')
+                #     .annotate(
+                #         total_score_float=Cast('totalscore', FloatField()),
+                #         total_questions_float=Cast('totalquestions', FloatField()),
+                #     )
+                #     .annotate(
+                #         percentage=ExpressionWrapper(
+                #             (F('total_score_float') * 100.0) / F('total_questions_float'),
+                #             output_field=FloatField()
+                #         )
+                #     )
+                #     .filter(
+                #         percentage__gt=50
+                #     )
+                #     .values_list(
+                #         "student_profile_id",
+                #         flat=True
+                #     )
+                # )
+                # datas = datas.filter(id__in=latest_results)
 
-                datas = datas.filter(
-                        id__in=StudentRealExamResult.objects.annotate(
-                            total_score_float=Cast('totalscore', FloatField()),
-                            total_questions_float=Cast('totalquestions', FloatField()),
-                        ).annotate(
-                            percentage=ExpressionWrapper(
-                                (F('total_score_float') * 100.0) / F('total_questions_float'),
-                                output_field=FloatField()
-                            )
-                        ).filter(
-                            percentage__gt=50
-                        ).values_list(
-                            "student_profile_id",
-                            flat=True
+                latest_result_subquery = StudentRealExamResult.objects.filter(
+                            student_profile=OuterRef('student_profile')
+                        ).order_by('-id')
+
+                latest_results = (
+                    StudentRealExamResult.objects
+                    .filter(
+                        id=Subquery(latest_result_subquery.values('id')[:1])
+                    )
+                    .annotate(
+                        total_score_float=Cast('totalscore', FloatField()),
+                        total_questions_float=Cast('totalquestions', FloatField()),
+                    )
+                    .annotate(
+                        percentage=ExpressionWrapper(
+                            (F('total_score_float') * 100.0) / F('total_questions_float'),
+                            output_field=FloatField()
                         )
                     )
+                    .filter(
+                        percentage__gt=50
+                    )
+                    .values_list(
+                        'student_profile_id',
+                        flat=True
+                    )
+                )
+                datas = datas.filter(id__in=latest_results)
+
+                # return Response({"abc":"abc","data":list(latest_results)})
+            
+                # datas = datas.filter(
+                #         id__in=StudentRealExamResult.objects.annotate(
+                #             total_score_float=Cast('totalscore', FloatField()),
+                #             total_questions_float=Cast('totalquestions', FloatField()),
+                #         ).annotate(
+                #             percentage=ExpressionWrapper(
+                #                 (F('total_score_float') * 100.0) / F('total_questions_float'),
+                #                 output_field=FloatField()
+                #             )
+                #         ).filter(
+                #             percentage__gt=50
+                #         ).values_list(
+                #             "student_profile_id",
+                #             flat=True
+                #         )
+                #     )
+
             else:
                 # print("datass")
                 datas = datas.filter(
@@ -1711,7 +1766,7 @@ class GetStudentProfileListingView(APIView):
                         flat=True
                     )
                 )
-
+                datas = datas.values_list('id',flat=True)
 
         search_filter = filters.SearchFilter()
         datas = search_filter.filter_queryset(request, datas, self)
@@ -2019,7 +2074,7 @@ from datetime import datetime, timedelta, date
 class AddProfileToMerittoView(APIView):
     def post(self, request):
 
-        app_all = StudentProfile.objects.filter(id=504)
+        app_all = StudentProfile.objects.filter(id=507)
         print("app data...",len(app_all))
         # for i in app_all:
         #     print(i.slot_date,'---', i.application_id, '----', i.email)
@@ -2106,11 +2161,11 @@ class AddProfileToMerittoView(APIView):
                     # print(f'''{query.slot_date.strftime("%d/%m/%Y")} {start_formatted}''')
 
                 if int(query.guardian_dropdown) == 1:
-                    gname = "MOTHER"
+                    gname = "Mother"
                 elif int(query.guardian_dropdown) == 2:
-                    gname = "FATHER"
+                    gname = "Father"
                 elif int(query.guardian_dropdown) == 3:
-                    gname = "OTHER"
+                    gname = "Other"
                 else:
                     gname = ""
 

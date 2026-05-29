@@ -1766,7 +1766,6 @@ class GetStudentProfileListingView(APIView):
                         flat=True
                     )
                 )
-                datas = datas.values_list('id',flat=True)
 
         search_filter = filters.SearchFilter()
         datas = search_filter.filter_queryset(request, datas, self)

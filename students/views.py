@@ -1685,7 +1685,7 @@ class GetStudentProfileListingView(APIView):
         # print(is_result)
         if is_result:
             # print(is_result)
-            if is_result == "60":
+            if str(is_result) == "50":
 
                 datas = datas.filter(
                         id__in=StudentRealExamResult.objects.annotate(
@@ -1697,7 +1697,7 @@ class GetStudentProfileListingView(APIView):
                                 output_field=FloatField()
                             )
                         ).filter(
-                            percentage__gt=60
+                            percentage__gt=50
                         ).values_list(
                             "student_profile_id",
                             flat=True

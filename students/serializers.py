@@ -1615,7 +1615,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                 response = requests.post(url, headers=headers, json=meritto_payload)
                 print(response.status_code)
                 print(response.text)
-                ApplicationLog.objects.create(application=query, message=response.text, status=int(response.status_code), activity="creating updating application", datas=validate_data)
+                ApplicationLog.objects.create(application=query, message=response.text, status=int(response.status_code), activity="creating updating application", datas=validate_data, payload_request=meritto_payload)
             except Exception as e:
                 print("API Error:", str(e))
 

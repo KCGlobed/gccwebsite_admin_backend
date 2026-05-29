@@ -1520,11 +1520,11 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                 pg_status = "Pursuing"
 
             if int(query.guardian_dropdown) == 1:
-                gname = "MOTHER"
+                gname = "Mother"
             elif int(query.guardian_dropdown) == 2:
-                gname = "FATHER"
+                gname = "Father"
             else:
-                gname = "OTHER"
+                gname = "Other"
 
             tenth_score_type = query.tenth_score_type if query.tenth_score_type == "Percentage" else "CGPA out of 10"
             twelveth_score_type = query.twelveth_score_type if query.twelveth_score_type == "Percentage" else "CGPA out of 10"
@@ -1574,10 +1574,16 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                         "field_351358":query.guardian_name,
                         "field_351359":query.guardian_phone,
                         "field_351368":query.guardian_email,
-                        "field_351361":gname,
-                        "field_351381":query.guardian_other_reason
+                        "field_351361":gname
+                        # "field_351381":query.guardian_other_reason
                 }
             }
+            if str(gname).lower() == "other":
+                other_guardian = {
+                    "field_351381":query.guardian_other_reason
+                }
+                meritto_payload["data"].update(other_guardian)
+
             print(exp_payload)
             meritto_payload["data"].update(exp_payload) 
             leads = list(DossierData.objects.filter(email=query.email).values_list('id'))

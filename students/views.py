@@ -2323,12 +2323,21 @@ class ScheduleAssessmentAPIView(APIView):
                 # assigned_keys = ManageMasterKey.objects.filter(profile=user_data).values_list('key__key', flat=True)
                 # available_pass_keys = ExamMasterKey.objects.filter(status=True).exclude(key__in=assigned_keys)
                 # print("key dtaaa.,,,",available_pass_keys)
-                day = datetime.now().day
-                available_pass_keys = ExamMasterKey.objects.filter(id=day, status=True)
-                if not available_pass_keys:
-                    available_pass_keys  = ExamMasterKey.objects.filter(status=True).first()
+                status = False
+                if not StudentRealExamResult.objects.filter(student_profile=user_data).exists():
+                    day = datetime.now().day
+                    available_pass_keys = ExamMasterKey.objects.filter(id=day, status=True)
+                    if available_pass_keys:
+                    #     available_pass_keys  = ExamMasterKey.objects.filter(status=True).first()
+                    # else:
+                        available_pass_keys = available_pass_keys.first()
                 else:
-                    available_pass_keys = available_pass_keys.first()
+                    assigned_keys = list(ManageMasterKey.objects.filter(profile=user_data).values_list('key__key', flat=True))
+                    if assigned_keys:
+                        available_pass_keys = ExamMasterKey.objects.filter(status=True).exclude(key__in=assigned_keys)
+                    else:
+                        available_pass_keys = ExamMasterKey.objects.filter(status=True).last()
+                    status= True
 
 
                 # print("data", type(available_pass_keys))
@@ -2348,8 +2357,8 @@ class ScheduleAssessmentAPIView(APIView):
                 )
                 print(result)
                 if result["erc"] == 0:
-                    ManageMasterKey.objects.create(profile=user_data, key=available_pass_keys, exam_url=result["assessmentlink"])
-                    print(result)
+                    ManageMasterKey.objects.create(profile=user_data, key=available_pass_keys, exam_url=result["assessmentlink"], reattempt_status=status)
+                    print("result..", result)
                     return Response({"status":200,"message":"Success","data":result})
                 else:
                     print("start exam error",result)

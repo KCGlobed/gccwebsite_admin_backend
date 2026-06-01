@@ -453,6 +453,7 @@ class ManageMasterKey(models.Model):
     key  = models.ForeignKey('ExamMasterKey', null=True, blank=True, on_delete=models.CASCADE)
     exam_url   = models.TextField(blank=True, null=True)
     status     = models.BooleanField(default=False)
+    reattempt_status = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
 

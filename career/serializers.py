@@ -427,7 +427,7 @@ class CreateDossierAbondantSerializer(serializers.ModelSerializer):
                 # "cf_utmsource1": str(instance.utm_source).encode("ascii", "ignore").decode().strip(),
                 "medium": str(instance.utm_medium).encode("ascii", "ignore").decode().strip(),
                 "campaign": str(instance.utm_campaign).encode("ascii", "ignore").decode().strip(),
-                "cf_payment_status":"Pending"
+                # "cf_payment_status":"Pending"
                 # "cf_fee_waiver_category":instance.fee_waiver_category
             }
             user_obj = User.objects.filter(email=instance.email).exists()

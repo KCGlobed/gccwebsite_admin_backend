@@ -21,6 +21,10 @@ client = storage.Client(project=settings.GS_PROJECT_ID)
 from django.db.models import F, FloatField, ExpressionWrapper
 from django.db.models.functions import Cast
 
+from openpyxl import load_workbook
+
+
+
 class GetSessionReportPDFView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
@@ -826,7 +830,35 @@ class GetStudentProfileReportExcelView(APIView):
             # Rename columns for Excel headers
             df.rename(columns=COLUMN_MAPPING, inplace=True)
 
+            # df.to_excel(pdf_path, header=True, index=False)
             df.to_excel(pdf_path, header=True, index=False)
+
+            # Make Resume column clickable
+            wb = load_workbook(pdf_path)
+            ws = wb.active
+
+            resume_column = None
+
+            # Find Resume column
+            for col_num, cell in enumerate(ws[1], start=1):
+                if cell.value == "Resume":
+                    resume_column = col_num
+                    break
+
+            # Add hyperlink
+            if resume_column:
+                for row_num in range(2, ws.max_row + 1):
+                    cell = ws.cell(row=row_num, column=resume_column)
+
+                    if cell.value:
+                        resume_url = str(cell.value).strip()
+
+                        if resume_url.startswith(("http://", "https://")):
+                            cell.hyperlink = resume_url
+                            cell.value = "View Resume"  # Optional
+                            cell.style = "Hyperlink"
+
+            wb.save(pdf_path)
         
         # After the 'with' block, the file is closed but not deleted
         try:
@@ -856,9 +888,6 @@ class GetStudentProfileReportExcelView(APIView):
 
         finally:
             os.remove(pdf_path)
-
-
-
 
 
 

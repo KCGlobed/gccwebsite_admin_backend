@@ -2466,3 +2466,133 @@ class ExcelLogicProcessAPI(APIView):
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+
+
+
+##########################################################################################################
+### testing ###
+
+import pandas as pd
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+
+class ImportEmailView(APIView):
+
+    def post(self, request):
+        excel_file = request.FILES.get("file")
+
+        if not excel_file:
+            return Response(
+                {"message": "Please upload an Excel file."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            # Read Excel
+            df = pd.read_excel(excel_file)
+
+            # Check column exists
+            if "Registered Email" not in df.columns:
+                return Response(
+                    {"message": "Registered Email column not found."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Get emails
+            emails = (
+                df["Registered Email"]
+                .dropna()
+                .astype(str)
+                .str.strip()
+                .tolist()
+            )
+
+            # # print(emails)
+            # j = 0
+            # # all_data = list(DossierData.objects.all().values_list('email', flat=True))
+            # all_data = list(User.objects.all().values('email','application_id'))
+            # # all_data = User.objects.all().values('email','application_id')
+            # for i in emails:
+            #     for k in all_data:
+            #         if i.lower() == str(k["email"]).lower():
+            #             print(k)
+            #             j+=1
+                        
+            #             url = settings.MERITO_BASE_URL+"/lead/v1/createOrUpdate"
+            #             headers = {
+            #                 "Content-Type": "application/json",
+            #                 "secret-key": settings.MERITO_SECRETE_KEY,
+            #                 "access-key": settings.MERITO_ACCESS_KEY
+            #             }
+            #             payload = {
+            #                 "email": i.lower(),
+            #                 "search_criteria": "email",
+            #                 "cf_gcc_application_number":k["application_id"]
+            #             }
+            #             try:
+            #                 response = requests.post(url, headers=headers, json=payload)
+            #                 print(response.status_code)
+            #                 print(response.text)
+            #             except Exception as e:
+            #                 print("API Error:", str(e))
+
+            #         # j+=1
+
+            # print(j)
+
+            headers = {
+                "Content-Type": "application/json",
+                "secret-key": settings.MERITO_SECRETE_KEY,
+                "access-key": settings.MERITO_ACCESS_KEY
+            }
+
+            all_users = {
+                    str(user["email"]).lower(): user["application_id"]
+                    for user in User.objects.exclude(email__isnull=True)
+                    .values("email", "application_id")
+                }
+            matched_count = 0
+            l = 0
+            for email in emails:
+                ee = all_users.get(email.lower())
+                # print(type(ee))
+                if ee:
+                    payload = {
+                        "email": email,
+                        "search_criteria": "email",
+                        "cf_gcc_application_number": ee
+                    }
+
+                    try:
+                        response = requests.post(
+                            settings.MERITO_BASE_URL + "/lead/v1/createOrUpdate",
+                            headers=headers,
+                            json=payload,
+                            timeout=30
+                        )
+
+                        print(email, response.status_code)
+                        l+=1
+                    except Exception as e:
+                        print(f"{email}: {str(e)}")
+
+                    matched_count+=1
+                        
+                
+            return Response({
+                "message": "Success",
+                "total_emails": len(emails),
+                "total_website_emails": matched_count,
+                "l":l,
+                "emails": emails
+            })
+
+        except Exception as e:
+            return Response(
+                {"message": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+

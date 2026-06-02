@@ -2335,6 +2335,10 @@ class ScheduleAssessmentAPIView(APIView):
                     assigned_keys = list(ManageMasterKey.objects.filter(profile=user_data).values_list('key__key', flat=True))
                     if assigned_keys:
                         available_pass_keys = ExamMasterKey.objects.filter(status=True).exclude(key__in=assigned_keys)
+                        if available_pass_keys:
+                            available_pass_keys = available_pass_keys.last()
+                        else:
+                            return Response({"status":404,"message":"Something went wrong","data":{}})
                     else:
                         available_pass_keys = ExamMasterKey.objects.filter(status=True).last()
                     status= True

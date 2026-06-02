@@ -46,5 +46,11 @@ urlpatterns = [
     path("meritto_lead_push_refresh", DossierMeritto_CreateUpdate.as_view()),
     path("meritto_lead_excel_match", ExcelPhoneMatchAPI.as_view()),
     path("excel_file_create", ExcelLogicProcessAPI.as_view()),
+
+
+    ### test ###
+    path("excel_import", ImportEmailView.as_view()),
+    
+
 ]
 

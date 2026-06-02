@@ -163,6 +163,17 @@ class CreateStudentView(APIView):
     
 
 
+class UpdateStudentView(APIView):
+    def post(self, request, format=None):
+        serializer = UpdateStudentSerializer(data = request.data)
+        if serializer.is_valid(raise_exception = True):
+            user  = serializer.save()
+            generated_password = serializer.generated_password
+            return success_response(message="User Updated Successfully", data={"email":request.data['email'],"password":generated_password}, status_code=status.HTTP_200_OK)
+        return error_response(message="failed", data = serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
+    
+
+
 
 class UserForgotPasswordView(APIView):
     def post(self, request, format=None):

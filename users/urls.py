@@ -13,6 +13,7 @@ urlpatterns = [
 
 
     path('create_student/', CreateStudentView.as_view(), name='create_student'),
+    path('update_student/', UpdateStudentView.as_view(), name='update_student'),
     path('forgot-password/', UserForgotPasswordView.as_view(), name="forgot-password"),
     path('check_email/', CheckEmail.as_view(), name="check_email"),
 

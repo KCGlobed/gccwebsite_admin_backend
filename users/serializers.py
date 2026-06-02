@@ -268,6 +268,88 @@ class CreateStudentSerializer(serializers.ModelSerializer):
         return user
 
 
+class UpdateStudentSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(max_length = 255, required=True)
+    lid = serializers.CharField(max_length = 255, required=True)
+    class Meta:
+        model = User
+        fields = ['email','lid']
+        
+
+    # def validate(self, data):
+    #     user_count = User.objects.filter(email = data.get('email').lower()).count()
+    #     if user_count > 0:
+    #         raise serializers.ValidationError('Email address is already registered with Us')
+    #     return data
+
+
+    def create(self, validate_data):
+        password = generate_random_password(8)
+        self.generated_password = password
+        lead = DossierData.objects.filter(id=validate_data.get('lid'))
+        if lead:
+            lead_obj = lead.first()
+            user = User.objects.filter(email=lead_obj.email)
+            if user:
+                u_obj = user.first()
+                u_obj.email = validate_data.get('email').lower()
+                u_obj.set_password(password)
+                u_obj.save()
+
+                DossierData.objects.filter(id=validate_data.get('lid')).update(email=validate_data.get('email'))
+
+                # if settings.MERITO_STATUS == "True":
+            
+                #     # API URL
+                #     url = settings.MERITO_BASE_URL+"/lead/v1/createOrUpdate"
+
+                #     headers = {
+                #         "Content-Type": "application/json",
+                #         "secret-key": settings.MERITO_SECRETE_KEY,
+                #         "access-key": settings.MERITO_ACCESS_KEY
+                #     }
+
+                #     payload = {
+                #         "email": validate_data.get('email').lower(),
+                #         "search_criteria": "mobile",
+                #         "mobile":u_obj.phone
+                #     }
+                #     print("user create meritto payload...",payload)
+                #     try:
+                #         response = requests.post(url, headers=headers, json=payload)
+                #         print(response.status_code)
+                #         print(response.text)
+                #     except Exception as e:
+                #         print("API Error:", str(e))
+
+                subject = 'Welcome to GCC School. Here are your login details.'
+
+                message = f''
+                email_from = settings.DEFAULT_FROM_EMAIL
+                recipient_list = [u_obj.email, ]
+                html_message = loader.render_to_string(
+                    'user_login_detail_email.html',
+                    {
+                        'name': u_obj.first_name,
+                        'candidate_id': u_obj.application_id,
+                        'slot_booking': 'https://forms.gle/UQqKnCsmJzVLK6qU8',
+                        'website_url': settings.WEBSITE_BASE_URL,
+                        'login_url': settings.WEBSITE_BASE_URL+"/login",
+                        "email": u_obj.email,
+                        "password": password,               
+
+                    }
+                )
+
+                send_mail( subject, message, email_from, recipient_list,html_message=html_message )
+
+                return user
+            else:
+                raise serializers.ValidationError({'message':'Wrong User data','status':404,'data':[]})
+        else:
+            raise serializers.ValidationError({'message':'Wrong lead data','status':404,'data':[]})
+
+
 
 
 class CreateUniversityStudentSerializer(serializers.ModelSerializer):

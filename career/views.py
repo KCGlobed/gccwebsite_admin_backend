@@ -2491,7 +2491,8 @@ class ImportEmailView(APIView):
 
         try:
             # Read Excel
-            df = pd.read_excel(excel_file)
+            # df = pd.read_excel(excel_file)
+            df = pd.read_csv(excel_file)
 
             # Check column exists
             if "Registered Email" not in df.columns:
@@ -2548,38 +2549,39 @@ class ImportEmailView(APIView):
                 "access-key": settings.MERITO_ACCESS_KEY
             }
 
-            all_users = {
-                    str(user["email"]).lower(): user["application_id"]
-                    for user in User.objects.exclude(email__isnull=True)
-                    .values("email", "application_id")
-                }
+            # all_users = {
+            #         str(user["email"]).lower(): user["application_id"]
+            #         for user in User.objects.exclude(email__isnull=True)
+            #         .values("email", "application_id")
+            #     }
+            all_data = list(DossierData.objects.all().values_list('email', flat=True))
             matched_count = 0
             l = 0
             for email in emails:
-                ee = all_users.get(email.lower())
+                # ee = all_users.get(email.lower())
                 # print(type(ee))
-                if ee:
-                    payload = {
-                        "email": email,
-                        "search_criteria": "email",
-                        "cf_gcc_application_number": ee
-                    }
+                # if str(email).lower() in all_data:
+                payload = {
+                    "email": str(email).lower(),
+                    "search_criteria": "email",
+                    "cf_payment_status":"Pending"
+                }
 
-                    try:
-                        response = requests.post(
-                            settings.MERITO_BASE_URL + "/lead/v1/createOrUpdate",
-                            headers=headers,
-                            json=payload,
-                            timeout=30
-                        )
+                try:
+                    response = requests.post(
+                        settings.MERITO_BASE_URL + "/lead/v1/createOrUpdate",
+                        headers=headers,
+                        json=payload,
+                        timeout=30
+                    )
 
-                        print(email, response.status_code)
-                        l+=1
-                    except Exception as e:
-                        print(f"{email}: {str(e)}")
+                    print(email, response.status_code)
+                    l+=1
+                except Exception as e:
+                    print(f"{email}: {str(e)}")
 
-                    matched_count+=1
-                        
+                matched_count+=1
+                print(matched_count)
                 
             return Response({
                 "message": "Success",

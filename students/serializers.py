@@ -1373,19 +1373,19 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                     value2 = exp.get('position')
                     key3 = f"field_334047_{num}_3"
                     value3 = exp.get('area')
-                    key4 = f"field_334047_{num}_4"
-                    value4 = exp.get('start_date').strftime("%d/%m/%Y")
-                    key5 = f"field_334047_{num}_5"
-                    print("experience.end_date....",experience.end_date)
-                    value5 = exp.get('end_date').strftime("%d/%m/%Y") if experience.end_date else exp.get('start_date').strftime("%d/%m/%Y")
+                    # key4 = f"field_334047_{num}_4"
+                    # value4 = exp.get('start_date').strftime("%d/%m/%Y")
+                    # key5 = f"field_334047_{num}_5"
+                    # print("experience.end_date....",experience.end_date)
+                    # value5 = exp.get('end_date').strftime("%d/%m/%Y") if experience.end_date else exp.get('start_date').strftime("%d/%m/%Y")
                     key6 = f"field_334047_{num}_6"
                     value6 = ""
                     print("values5...",value5)
                     exp_payload[key1] = value1
                     exp_payload[key2] = value2
                     exp_payload[key3] = value3
-                    exp_payload[key4] = value4
-                    exp_payload[key5] = value5
+                    # exp_payload[key4] = value4
+                    # exp_payload[key5] = value5
                     exp_payload[key6] = value6
                     print(exp_payload)
                     num+=1
@@ -1460,21 +1460,21 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                     value2 = exp.get('position')
                     key3 = f"field_334047_{num}_3"
                     value3 = exp.get('area')
-                    key4 = f"field_334047_{num}_4"
-                    value4 = exp.get('start_date').strftime("%d/%m/%Y")
-                    key5 = f"field_334047_{num}_5"
-                    print("experience.end_date....",experience.end_date)
-                    value5 = exp.get('end_date').strftime("%d/%m/%Y") if experience.end_date else exp.get('start_date').strftime("%d/%m/%Y")
+                    # key4 = f"field_334047_{num}_4"
+                    # value4 = exp.get('start_date').strftime("%d/%m/%Y")
+                    # key5 = f"field_334047_{num}_5"
+                    # print("experience.end_date....",experience.end_date)
+                    # value5 = exp.get('end_date').strftime("%d/%m/%Y") if experience.end_date else exp.get('start_date').strftime("%d/%m/%Y")
                     key6 = f"field_334047_{num}_6"
                     value6 = ""
 
-                    print("values5...",value5)
+                    # print("values5...",value5)
 
                     exp_payload[key1] = value1
                     exp_payload[key2] = value2
                     exp_payload[key3] = value3
-                    exp_payload[key4] = value4
-                    exp_payload[key5] = value5
+                    # exp_payload[key4] = value4
+                    # exp_payload[key5] = value5
                     exp_payload[key6] = value6
 
                     print(exp_payload)
@@ -1519,13 +1519,16 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                 pg_status = "Completed"
             else:
                 pg_status = "Pursuing"
-
-            if int(query.guardian_dropdown) == 1:
-                gname = "Mother"
-            elif int(query.guardian_dropdown) == 2:
-                gname = "Father"
+            
+            if query.guardian_dropdown:
+                if int(query.guardian_dropdown) == 1:
+                    gname = "Mother"
+                elif int(query.guardian_dropdown) == 2:
+                    gname = "Father"
+                else:
+                    gname = "Other"
             else:
-                gname = "Other"
+                gname = ""
 
             tenth_score_type = query.tenth_score_type if query.tenth_score_type == "Percentage" else "CGPA out of 10"
             twelveth_score_type = query.twelveth_score_type if query.twelveth_score_type == "Percentage" else "CGPA out of 10"
@@ -1549,7 +1552,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                         "field_337926":query.pincode,
                         "field_340085":query.address,
                         "field_340065":query.contact_name,
-                        "field_340066":f"+91-{query.contact_phone}",
+                        "field_340066":f"+91-{query.contact_phone}" if query.contact_phone else "",
                         "field_333993_1_1":query.tenth_passing_year,
                         "field_333993_1_2":tenth_score_type,
                         "field_333993_1_3":query.tenth_passing_percentage,
@@ -1558,7 +1561,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                         "field_333994_1_2":twelveth_score_type,
                         "field_333994_1_3":query.twelveth_passing_percentage,
                         "field_333994_1_4":mthmedium,
-                        "field_340097_1_1":query.institution,
+                        "field_340097_1_1":str(query.institution).replace("’",""),
                         "field_340097_1_2":query.ug_score_type,
                         "field_340097_1_3":query.pg_percentage,
                         "field_340097_1_4":query.pg_percentage,
@@ -1572,9 +1575,12 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                         "field_349945":user_objs.referral_code,
                         "field_349946":user_objs.referred_code,
 
-                        "field_351358":query.guardian_name,
-                        "field_351359":query.guardian_phone,
-                        "field_351368":query.guardian_email,
+                        # "field_351358":query.guardian_name,
+                        # "field_351359":query.guardian_phone,
+                        # "field_351368":query.guardian_email,
+                        "field_351358":query.guardian_name if query.guardian_name else "",
+                        "field_351359":query.guardian_phone if query.guardian_phone else "",
+                        "field_351368":query.guardian_email if query.guardian_email else "",
                         "field_351361":gname
                         # "field_351381":query.guardian_other_reason
                 }
@@ -1602,8 +1608,6 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                 }
                 meritto_payload["data"].update(payment_payload)
 
-            # "field_351644":"Appeared"
-            # if 
             std_result = StudentRealExamResult.objects.filter(student_profile=query)
             if std_result:
                 meritto_payload["data"]["field_351644"] = "Appeared"

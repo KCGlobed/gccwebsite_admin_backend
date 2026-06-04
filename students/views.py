@@ -2072,8 +2072,42 @@ from datetime import datetime, timedelta, date
 
 class AddProfileToMerittoView(APIView):
     def post(self, request):
+        datas = [
+            "RK5063196@GMAIL.COM",
+            "ST283899@GMAIL.COM",
+            "AJAYKUMARSHRIVAS0003@GMAIL.COM",
+            "SHEETALSHARMA88261007@GMAIL.COM",
+            "SHIVANIBASATIYA@GMAIL.COM",
+            "ADITYASRIVASTAV830@GMAIL.COM",
+            "TG83321@GMAIL.COM",
+            "MANYAKOLI684@GMAIL.COM",
+            "KHUSHBOOCHORA04@GMAIL.COM",
+            "BAISAKHIDASH20@GMAIL.COM",
+            "AMITKUMARAYA1980@GMAIL.COM",
+            "SHIVAMARORA131324@GMAIL.COM",
+            "PRADIPCHAND.913@REDIFFMAIL.COM",
+            "SAMYAKJ573@GMAIL.COM",
+            "MALLIREDDYMARUTHIKUMAR@GMAIL.COM",
+            "PANDEYVAISHNAWI0606@GMAIL.COM",
+            "PREMAMAYAPADHI2@GMAIL.COM",
+            "TANANIA003@GMAIL.COM",
+            "SATEESHPINNINTI3244@GMAIL.COM",
+            "JAIVESHPB13@GMAIL.COM",
+            "GANPATHYIYER2899@GMAIL.COM",
+            "AHMEDKHAN741999@GMAIL.COM",
+            "SHIVANISHING973@GMAIL.COM",
+            "NK2550027@GMAIL.COM",
+            "AYUSHSHRIVASTAVA436@GMAIL.COM",
+            "CHADHAGAUTAM132@GMAIL.COM",
+            "DR.HANZALAHABIB@GMAIL.COM"
 
-        app_all = StudentProfile.objects.filter(id=507)
+        ]
+        # datasp = []
+        # for i in datas:
+        #     datasp.append(i.lower())
+        # print(datasp)
+        datasp = [emaill.lower() for emaill in datas]
+        app_all = StudentProfile.objects.filter(email__in=datasp)
         print("app data...",len(app_all))
         # for i in app_all:
         #     print(i.slot_date,'---', i.application_id, '----', i.email)
@@ -2159,12 +2193,15 @@ class AddProfileToMerittoView(APIView):
                     start_formatted_one = start_time.strftime("%H:%M:%S")
                     # print(f'''{query.slot_date.strftime("%d/%m/%Y")} {start_formatted}''')
 
-                if int(query.guardian_dropdown) == 1:
-                    gname = "Mother"
-                elif int(query.guardian_dropdown) == 2:
-                    gname = "Father"
-                elif int(query.guardian_dropdown) == 3:
-                    gname = "Other"
+                if query.guardian_dropdown:
+                    if int(query.guardian_dropdown) == 1:
+                        gname = "Mother"
+                    elif int(query.guardian_dropdown) == 2:
+                        gname = "Father"
+                    elif int(query.guardian_dropdown) == 3:
+                        gname = "Other"
+                    else:
+                        gname = ""
                 else:
                     gname = ""
 
@@ -2196,7 +2233,7 @@ class AddProfileToMerittoView(APIView):
                             "field_333994_1_2":twelveth_score_type,
                             "field_333994_1_3":query.twelveth_passing_percentage,
                             "field_333994_1_4":mthmedium,
-                            "field_340097_1_1":query.institution,
+                            "field_340097_1_1":str(query.institution).replace("’",""),
                             "field_340097_1_2":query.ug_score_type,
                             "field_340097_1_3":format(float(query.pg_percentage), ".2f"),
                             "field_340097_1_4":format(float(query.pg_percentage), ".2f"),
@@ -2207,11 +2244,11 @@ class AddProfileToMerittoView(APIView):
                             "field_342113":query.user.application_id,
                             # "field_343097":"Complete",
                             "field_343098":"Complete",
-                            "field_351358":query.guardian_name,
-                            "field_351359":query.guardian_phone,
-                            "field_351368":query.guardian_email,
+                            "field_351358":query.guardian_name if query.guardian_name else "",
+                            "field_351359":query.guardian_phone if query.guardian_phone else "",
+                            "field_351368":query.guardian_email if query.guardian_email else "",
                             "field_351361":gname,
-                            "field_351381":query.guardian_other_reason
+                            "field_351381":query.guardian_other_reason if query.guardian_other_reason else ""
                     }
                 }
 
@@ -2271,7 +2308,11 @@ class AddProfileToMerittoView(APIView):
                     }
                     meritto_payload["data"].update(payment_payload)
 
-                
+                std_profile = StudentRealExamResult.objects.filter(student_profile=query)
+                if std_profile:
+                    meritto_payload["data"]["field_351644"] = "Appeared"
+                else:
+                    meritto_payload["data"]["field_351644"] = "Not Appeared"
                 print("meritto_payload...",meritto_payload)
                 url = settings.MERITO_BASE_URL+"/application/v1/createOrUpdate"
 

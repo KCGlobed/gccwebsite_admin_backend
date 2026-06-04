@@ -120,7 +120,7 @@ class DossierMeritto_CreateUpdate(APIView):
         today = datetime.now().date()
         # dossier_obj = DossierData.objects.filter(created_at__date__gte='2026-05-15', source=SourceType.Website)
         # dossier_obj = dossier_obj.filter(created_at__date__lte='2026-05-18')
-        dossier_obj = DossierData.objects.filter(id=2097)
+        dossier_obj = DossierData.objects.filter(id=request.data['lid'])
         filter_data = dossier_obj.count()
         print("count data...",filter_data)
         cc = filter_data
@@ -128,7 +128,8 @@ class DossierMeritto_CreateUpdate(APIView):
 
         # print(objj)
         # print(len(objj))
-
+        
+        
         for obj in dossier_obj:
             # if obj.email in objj:
             #     print("email.......",obj.email)

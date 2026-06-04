@@ -79,7 +79,7 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 "state": instance.state,
                 "country": "India",
                 "source":m_source,
-                # "cf_source":m_source,
+                "cf_source":m_source,
                 # "cf_utmsource1":instance.utm_source,
                 # "medium":instance.utm_medium,
                 # "campaign":instance.utm_campaign,
@@ -97,6 +97,7 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 payload.pop('cf_payment_status')
                 payload.pop('cf_fee_waiver_category')
             try:
+                print("mer..",payload)
                 response = requests.post(url, headers=headers, json=payload)
                 print(response.status_code)
                 print(response.text)
@@ -420,14 +421,14 @@ class CreateDossierAbondantSerializer(serializers.ModelSerializer):
                 # "state": instance.state,
                 # "country": "India",
                 "source":m_source,
-                # "cf_source":m_source,
+                "cf_source":m_source,
                 # "cf_utmsource1":instance.utm_source,
                 # "medium":instance.utm_medium,
                 # "campaign":instance.utm_campaign,
                 # "cf_utmsource1": str(instance.utm_source).encode("ascii", "ignore").decode().strip(),
                 "medium": str(instance.utm_medium).encode("ascii", "ignore").decode().strip(),
                 "campaign": str(instance.utm_campaign).encode("ascii", "ignore").decode().strip(),
-                # "cf_payment_status":"Pending"
+                "cf_payment_status":"Pending"
                 # "cf_fee_waiver_category":instance.fee_waiver_category
             }
             user_obj = User.objects.filter(email=instance.email).exists()
@@ -455,31 +456,31 @@ class ListDossierAbondantSerializer(serializers.ModelSerializer):
 
 
 
-
 ############### MERITTO UPLOAD BULK ################
+import re
 
 def push_to_meritto(obj):
     # if not settings.MERITO_STATUS:
     #     return
 
-    # source_map = {
-    #     1: "gccwebsite",
-    #     2: "gccefos",
-    #     3: "gccaffiliateOne",
-    #     4: "gccaffiliateTwo",
-    #     5: "gccaffiliateThree",
-    #     6: "gccaffiliateFour",
-    #     7: "gccaffiliateFive",
-    #     8: "gccipuniversity",
-    #     9: "gccdelhiuniversity",
-    #     10: "gccccs",
-    #     11: "gcckuk",
-    #     12: "gccvsloptin",
-    #     13: "gccvslfinal",
-    #     14: "gccaffiliateSix"
-    # }
+    source_map = {
+        1: "gccwebsite",
+        2: "gccefos",
+        3: "gccaffiliateOne",
+        4: "gccaffiliateTwo",
+        5: "gccaffiliateThree",
+        6: "gccaffiliateFour",
+        7: "gccaffiliateFive",
+        8: "gccipuniversity",
+        9: "gccdelhiuniversity",
+        10: "gccccs",
+        11: "gcckuk",
+        12: "gccvsloptin",
+        13: "gccvslfinal",
+        14: "gccaffiliateSix"
+    }
 
-    # m_source = source_map.get(obj.source, "gcc")
+    m_source = source_map.get(obj.source, "gcc")
 
     url = f"{settings.MERITO_BASE_URL}/lead/v1/createOrUpdate"
 
@@ -488,20 +489,23 @@ def push_to_meritto(obj):
         "secret-key": settings.MERITO_SECRETE_KEY,
         "access-key": settings.MERITO_ACCESS_KEY
     }
-
+    name = re.sub(r'[^\w\s]', '', obj.full_name).strip()
     payload = {
-        # "name": obj.full_name,
+        "name": name,
         "email": obj.email,
-        # "mobile": obj.phone,
+        "mobile": obj.phone,
         "search_criteria": "email",
-        # "country": "India",
-        # "source": m_source,
+        "country": "India",
+        "source": m_source,
         # "cf_source": m_source,
         # "medium": str(obj.utm_medium).encode("ascii", "ignore").decode().strip(),
         # "campaign": str(obj.utm_campaign).encode("ascii", "ignore").decode().strip(),
-        "cf_payment_status": "Pending",
-        "cf_fee_waiver_category": "No Waiver",
-        # "cf_fee_waiver_category": "Free of cost (FOC)",
+        "cf_payment_status": "Complete",
+        "cf_fee_waiver_category": "Free of cost (FOC)",
+        "cf_institution_university": obj.university,
+        # "cf_refferal_code":validate_data.get('referred_code'),
+        # "cf_reference_code":refferals_code,
+        # "cf_gcc_application_number":generate_application_id
     }
     # if obj.city:
     #     payload["city"] = obj.city
@@ -509,7 +513,14 @@ def push_to_meritto(obj):
     #     payload["state"] = obj.state
     # if obj.university:
     #     payload["cf_fee_waiver_category"] = obj.fee_waiver_category
-
+    users = User.objects.filter(email=obj.email)
+    if users:
+        uu = users.first()
+        clean_value = re.sub(r'[^A-Za-z0-9_]', '', uu.referred_code)
+        print("clean values...",clean_value)
+        payload["cf_refferal_code"] = clean_value
+        payload["cf_reference_code"] = uu.referral_code
+        payload["cf_gcc_application_number"] = uu.application_id
     print("merito data.......",payload)
 
     try:

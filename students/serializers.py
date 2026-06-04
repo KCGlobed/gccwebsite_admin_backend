@@ -1151,7 +1151,8 @@ class PostRealExamResultSerializer(serializers.ModelSerializer):
                     "email": std_profile.email,
                     "search_criteria":"email",
                     "data": {
-                            "field_349944":total_score
+                            "field_349944":total_score,
+                            "field_351644":"Appeared"
                     }
                 }
                 print(meritto_payload)
@@ -1601,6 +1602,13 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                 }
                 meritto_payload["data"].update(payment_payload)
 
+            # "field_351644":"Appeared"
+            # if 
+            std_result = StudentRealExamResult.objects.filter(student_profile=query)
+            if std_result:
+                meritto_payload["data"]["field_351644"] = "Appeared"
+            else:
+                meritto_payload["data"]["field_351644"] = "Not Appeared"
             
             print("meritto_payload...",meritto_payload)
             url = settings.MERITO_BASE_URL+"/application/v1/createOrUpdate"

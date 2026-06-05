@@ -1409,6 +1409,18 @@ class CreateStudentProfileView(APIView):
         return Response(serializer.errors)
 
 
+class CreateStudentProfileDraftView(APIView):
+    # permission_classes = [IsAuthenticated]
+    def post(self, request, format=None):
+        print("calling....")
+        print(request.data)
+        serializer = CompleteStudentDraftSerializer(data = request.data)
+        if serializer.is_valid(raise_exception = True):
+            user  = serializer.save()
+            return Response({'message':'Message sent Successfully','data':[]})
+        return Response(serializer.errors)
+
+
 class StudentSlotBookView(APIView):
     permission_classes = [IsAuthenticated]
     def patch(self, request):
@@ -1594,6 +1606,17 @@ class GetStudentProfileView(APIView):
         datas = StudentProfile.objects.filter(user = request.user).first()
         if datas is not None:
             serializers = StudentProfileSerializer(datas)
+            return Response({'message':'success',"status":200,'data':serializers.data})
+
+        return Response({'message':'failed',"status":400,'data':[]})
+    
+
+class GetStudentProfileDraftView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        datas = StudentProfileDraft.objects.filter(user = request.user).first()
+        if datas is not None:
+            serializers = StudentProfileDraftSerializer(datas)
             return Response({'message':'success',"status":200,'data':serializers.data})
 
         return Response({'message':'failed',"status":400,'data':[]})

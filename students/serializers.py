@@ -317,6 +317,13 @@ class ExperienceSerializer(serializers.Serializer):
     start_date = serializers.DateField(required=False, allow_null = True)
     end_date = serializers.DateField(required=False, allow_null = True)
 
+class ExperienceDraftSerializer(serializers.Serializer):
+    company_name = serializers.CharField(required=False, allow_blank=True)
+    position = serializers.CharField(required=False, allow_blank=True)
+    area = serializers.CharField(required=False, allow_blank=True)
+    start_date = serializers.DateField(required=False, allow_null = True)
+    end_date = serializers.DateField(required=False, allow_null = True)
+
 class CompleteStudentSerializer(serializers.ModelSerializer) :
     user = serializers.IntegerField(required=True)
     first_name = serializers.CharField(max_length = 255, required=True)
@@ -375,7 +382,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                 raise serializers.ValidationError("Malformed JSON string.")
 
         # 2. Run the data through a nested serializer for strict validation
-        serializer = ExperienceSerializer(data=value, many=True)
+        serializer = ExperienceDraftSerializer(data=value, many=True)
         if serializer.is_valid():
             return serializer.validated_data
         raise serializers.ValidationError(serializer.errors)
@@ -760,6 +767,12 @@ class StudentExperienceRelationSerializer(serializers.ModelSerializer):
         model = StudentExperience
         fields = "__all__"
 
+class StudentExperienceDraftRelationSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = StudentExperience
+        fields = "__all__"
+
 class StudentReAttemptSerializer(serializers.ModelSerializer):
     status = serializers.BooleanField(required=True)
     class Meta:
@@ -909,6 +922,118 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = StudentProfile
+        fields = "__all__"
+
+
+class StudentProfileDraftSerializer(serializers.ModelSerializer):
+    student_experience = serializers.SerializerMethodField()
+    exam_status = serializers.SerializerMethodField()
+    created_at = serializers.DateTimeField(read_only=True, format="%Y-%m-%d %H:%M:%S")
+    application_id = serializers.SerializerMethodField("get_application_id")
+    student_result = serializers.SerializerMethodField("get_student_result")
+    result_status = serializers.SerializerMethodField("get_result_status")
+    referral_code = serializers.SerializerMethodField("get_referral_code")
+    referred_code = serializers.SerializerMethodField("get_referred_code")
+    exam_url = serializers.SerializerMethodField("get_exam_url")
+    # guardian_dropdown = serializers.SerializerMethodField("get_guardian_dropdown")
+
+    # def get_guardian_dropdown(self, obj):
+    #     return obj.get_guardian_dropdown_display()
+
+    def get_referral_code(self, obj):
+        name = obj.user.referral_code if obj.user else ""
+        return name
+
+    def get_referred_code(self, obj):
+        name = obj.user.referred_code if obj.user else ""
+        return name
+
+    def get_student_experience(self, obj):
+        answe = StudentExperienceDraft.objects.filter(student_profile_id =obj.id).order_by("id")
+        return StudentExperienceDraftRelationSerializer(answe, many=True).data
+    
+    def get_result_status(self, obj):
+        status = False
+        std_result = StudentRealExamResult.objects.filter(student_profile=obj.id)
+        if std_result:
+            status = True
+        return status
+    
+    def get_exam_status(self, obj):
+        status=False
+        if obj.slot_date:
+            # print(datetime.now().date())
+            if obj.slot_date == datetime.now().date():
+                start_str, end_str = obj.slot_time.split(" - ")
+                current_time = datetime.now().time().replace(microsecond=0)
+                target_time = datetime.strptime(start_str, "%I:%M %p").time()
+                dt1 = datetime.combine(date.today(), current_time)
+                dt2 = datetime.combine(date.today(), target_time)
+
+                diff = abs((dt1 - dt2).total_seconds())
+                # print("diff time...",diff)
+                # if diff <= 3600:   # 3600 seconds = 1 hour
+                # if diff <= 120:   # 120 seconds = 2 min
+                    # status=True
+                # status=True
+                # if obj.re_attempt == 1:
+                #     status =  False
+
+                status = True
+                # if dt1>dt2:
+                #     status = False
+                if dt1<dt2:
+                    status = False
+                if dt1>dt2:
+                    if diff >=5400:
+                        obj.re_attempt = 1
+                        obj.re_attempt_btn = 1
+                        obj.save()
+                        status = False
+            elif obj.slot_date <= datetime.now().date():
+                # print("datetime elif")
+                start_str, end_str = obj.slot_time.split(" - ")
+                current_time = datetime.now().time().replace(microsecond=0)
+                target_time = datetime.strptime(start_str, "%I:%M %p").time()
+                dt1 = datetime.combine(date.today(), current_time)
+                dt2 = datetime.combine(date.today(), target_time)
+                diff = abs((dt1 - dt2).total_seconds())
+                if dt1>dt2:
+                    if diff >=5400:
+                        obj.re_attempt = 1
+                        obj.re_attempt_btn = 1
+                        obj.save()
+        return status
+    
+    def get_application_id(self, obj):
+        app_id = "--"
+        if obj.user:
+            app_id = obj.user.application_id
+        return app_id
+    
+    def get_student_result(self, obj):
+
+        total_score = ""
+        std_result  = StudentRealExamResult.objects.filter(student_profile=obj.id)
+        if std_result:
+            result      = std_result.last()
+            total_score = str(round((float(result.totalscore) / float(result.totalquestions)) * 100, 2))
+
+        return total_score
+    
+    def get_exam_url(self, obj):
+
+        exam_url = ""
+        std_exam  = ManageMasterKey.objects.filter(profile=obj.id, status=False)
+        if std_exam:
+            result   = std_exam.first()
+            exam_url = result.exam_url
+
+        return exam_url
+    
+    
+    class Meta:
+        model = StudentProfileDraft
         fields = "__all__"
 
 
@@ -1217,30 +1342,6 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
     photo = serializers.FileField(required=False,allow_null=True)
     signature = serializers.FileField(required=False,allow_null=True)
     user_experience = serializers.JSONField()
-    ## Added
-    identity_proof = serializers.FileField(required=False,allow_null=True)
-    tenth_marksheet = serializers.FileField(required=False,allow_null=True)
-    twelth_marksheet = serializers.FileField(required=False,allow_null=True)
-    graduation_first_marksheet = serializers.FileField(required=False,allow_null=True)
-    graduation_second_marksheet = serializers.FileField(required=False,allow_null=True)
-    graduation_third_marksheet = serializers.FileField(required=False,allow_null=True)
-    graduation_forth_marksheet = serializers.FileField(required=False,allow_null=True)
-    graduation_fifth_marksheet = serializers.FileField(required=False,allow_null=True)
-    graduation_sixth_marksheet = serializers.FileField(required=False,allow_null=True)
-    additional_qualification = serializers.CharField(required=False, allow_blank=True)
-    additional_document = serializers.FileField(required=False,allow_null=True)
-    co_applicant_pan_card = serializers.FileField(required=False,allow_null=True)
-    co_applicant_aadhaar = serializers.FileField(required=False,allow_null=True)
-    accounting_profession = models.IntegerField(default=0, null=True)
-    co_applicant_profession = models.IntegerField(default=0, null=True)
-    co_applicant_sallary_slip = serializers.FileField(required=False,allow_null=True)
-    co_applicant_form16 = serializers.FileField(required=False,allow_null=True)
-    co_applicant_employee_id_card = serializers.FileField(required=False,allow_null=True)
-    co_applicant_passport_size = serializers.FileField(required=False,allow_null=True)
-    co_applicant_income_tax_return = serializers.FileField(required=False,allow_null=True)
-    co_applicant_compute_income = serializers.FileField(required=False,allow_null=True)
-    co_applicant_six_month_bank = serializers.FileField(required=False,allow_null=True)
-    co_applicant_agriculture_income = serializers.FileField(required=False,allow_null=True)
     #Added
     resume = serializers.FileField(required=False,allow_null=True)
     guardian_name = serializers.CharField(required=False, allow_null = True)
@@ -1252,7 +1353,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
 
     class Meta:
         model = StudentProfile
-        fields = ["user",'first_name','last_name','email','phone',"state","city","contact_name","contact_phone","date_of_birth","gender","nationality","pincode","address","tenth_passing_year","tenth_passing_percentage","tenth_score_type","tenth_medium","twelveth_passing_year","twelveth_passing_percentage","twelveth_score_type","twelveth_medium","medium_instruction","other_instruction","pg_status","pg_percentage","ug_score_type","institution","higher_education_status","higher_qualification","higher_qualification_institution","employement_status","aadhaar","dob_certificate","photo","signature","user_experience","identity_proof","tenth_marksheet","twelth_marksheet","graduation_first_marksheet","graduation_second_marksheet","graduation_third_marksheet","graduation_forth_marksheet","graduation_fifth_marksheet","graduation_sixth_marksheet","additional_qualification","additional_document","co_applicant_pan_card","co_applicant_aadhaar","accounting_profession","co_applicant_profession","co_applicant_sallary_slip","co_applicant_form16","co_applicant_employee_id_card","co_applicant_passport_size","co_applicant_income_tax_return","co_applicant_compute_income","co_applicant_six_month_bank","co_applicant_agriculture_income","resume","guardian_name","guardian_phone","guardian_email","guardian_dropdown","guardian_other_reason"]
+        fields = ["user",'first_name','last_name','email','phone',"state","city","contact_name","contact_phone","date_of_birth","gender","nationality","pincode","address","tenth_passing_year","tenth_passing_percentage","tenth_score_type","tenth_medium","twelveth_passing_year","twelveth_passing_percentage","twelveth_score_type","twelveth_medium","medium_instruction","other_instruction","pg_status","pg_percentage","ug_score_type","institution","higher_education_status","higher_qualification","higher_qualification_institution","employement_status","aadhaar","dob_certificate","photo","signature","user_experience","resume","guardian_name","guardian_phone","guardian_email","guardian_dropdown","guardian_other_reason"]
         
 
     def validate(self, data):
@@ -1319,30 +1420,6 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
             datas.signature = validate_data.get('signature', datas.signature)
             datas.application_id = user_obj.application_id
             datas.fee_waiver_category = user_obj.fee_waiver_category
-            # Added
-            datas.identity_proof = validate_data.get('identity_proof',datas.identity_proof)
-            datas.tenth_marksheet = validate_data.get('tenth_marksheet',datas.tenth_marksheet)
-            datas.twelth_marksheet = validate_data.get('twelth_marksheet',datas.twelth_marksheet)
-            datas.graduation_first_marksheet = validate_data.get('graduation_first_marksheet',datas.graduation_first_marksheet)
-            datas.graduation_second_marksheet = validate_data.get('graduation_second_marksheet',datas.graduation_second_marksheet)
-            datas.graduation_third_marksheet = validate_data.get('graduation_third_marksheet',datas.graduation_third_marksheet)
-            datas.graduation_forth_marksheet = validate_data.get('graduation_forth_marksheet',datas.graduation_forth_marksheet)
-            datas.graduation_fifth_marksheet = validate_data.get('graduation_fifth_marksheet',datas.graduation_fifth_marksheet)
-            datas.graduation_sixth_marksheet = validate_data.get('graduation_sixth_marksheet',datas.graduation_sixth_marksheet)
-            datas.additional_qualification = validate_data.get('additional_qualification',datas.additional_qualification)
-            datas.additional_document = validate_data.get('additional_document',datas.additional_document)
-            datas.accounting_profession = validate_data.get('accounting_profession', datas.accounting_profession)
-            datas.co_applicant_pan_card = validate_data.get('co_applicant_pan_card',datas.co_applicant_pan_card)
-            datas.co_applicant_aadhaar = validate_data.get('co_applicant_aadhaar',datas.co_applicant_aadhaar)
-            datas.co_applicant_profession = validate_data.get('co_applicant_profession',datas.co_applicant_profession)
-            datas.co_applicant_sallary_slip = validate_data.get('co_applicant_sallary_slip',datas.co_applicant_sallary_slip)
-            datas.co_applicant_form16 = validate_data.get('co_applicant_form16',datas.co_applicant_form16)
-            datas.co_applicant_employee_id_card = validate_data.get('co_applicant_employee_id_card',datas.co_applicant_employee_id_card)
-            datas.co_applicant_passport_size = validate_data.get('co_applicant_passport_size',datas.co_applicant_passport_size)
-            datas.co_applicant_income_tax_return = validate_data.get('co_applicant_income_tax_return',datas.co_applicant_income_tax_return)
-            datas.co_applicant_compute_income = validate_data.get('co_applicant_compute_income',datas.co_applicant_compute_income)
-            datas.co_applicant_six_month_bank = validate_data.get('co_applicant_six_month_bank',datas.co_applicant_six_month_bank)
-            datas.co_applicant_agriculture_income = validate_data.get('co_applicant_agriculture_income',datas.co_applicant_agriculture_income)
             datas.resume = validate_data.get('resume',datas.resume)
             datas.guardian_name = validate_data.get('guardian_name',datas.guardian_name)
             datas.guardian_phone = validate_data.get('guardian_phone',datas.guardian_phone)
@@ -1380,7 +1457,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                     # value5 = exp.get('end_date').strftime("%d/%m/%Y") if experience.end_date else exp.get('start_date').strftime("%d/%m/%Y")
                     key6 = f"field_334047_{num}_6"
                     value6 = ""
-                    print("values5...",value5)
+                    # print("values5...",value5)
                     exp_payload[key1] = value1
                     exp_payload[key2] = value2
                     exp_payload[key3] = value3
@@ -1636,3 +1713,218 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
 
 
 
+class CompleteStudentDraftSerializer(serializers.ModelSerializer) :
+    user = serializers.IntegerField(required=True)
+    first_name = serializers.CharField(max_length = 255, required=True)
+    last_name = serializers.CharField(max_length = 255, required=True)
+    email = serializers.CharField(max_length = 255, required=True)
+    phone = serializers.CharField(max_length = 255, required=True)
+    state = serializers.CharField(required=False, allow_blank=True)
+    city = serializers.CharField(required=False, allow_blank=True)
+    contact_name = serializers.CharField(required=False, allow_blank=True)
+    contact_phone = serializers.CharField(required=False, allow_blank=True)
+    date_of_birth = serializers.DateField(required=False, allow_null = True)
+    gender = serializers.IntegerField(required=True)
+    nationality = serializers.CharField(required=False, allow_blank=True)
+    pincode = serializers.CharField(required=False, allow_blank=True)
+    address = serializers.CharField(required=False, allow_blank=True)
+    tenth_passing_year = serializers.IntegerField(required=False, allow_null = True)
+    tenth_passing_percentage = serializers.FloatField(required=False, allow_null = True)
+    tenth_score_type = serializers.CharField(required=False, allow_null = True)
+    tenth_medium = serializers.IntegerField(required=False, default=1)
+    twelveth_passing_year = serializers.IntegerField(required=False, allow_null = True)
+    twelveth_passing_percentage = serializers.FloatField(required=False, allow_null = True)
+    twelveth_score_type = serializers.CharField(required=False, allow_null = True)
+    twelveth_medium = serializers.IntegerField(required=False, default = 1)
+    medium_instruction = serializers.IntegerField(required=False, default=1)
+    other_instruction = serializers.CharField(required=False, allow_null=True)
+    pg_status = serializers.IntegerField(required=False, default=1)
+    pg_percentage = serializers.FloatField(required=False, allow_null = True)
+    ug_score_type = serializers.CharField(required=False, allow_null = True)
+    institution = serializers.CharField(required=False, allow_null=True)
+    higher_education_status = serializers.IntegerField(required=False, default=1)
+    higher_qualification = serializers.CharField(required=False, allow_null=True)
+    higher_qualification_institution = serializers.CharField(required=False, allow_null=True)
+    employement_status = serializers.IntegerField(required=False, default=1)
+    # higher_qualification_institution = serializers.CharField(required=False, allow_null=True)
+    aadhaar = serializers.FileField(required=False,allow_null=True)
+    dob_certificate = serializers.FileField(required=False,allow_null=True)
+    photo = serializers.FileField(required=False,allow_null=True)
+    signature = serializers.FileField(required=False,allow_null=True)
+    user_experience = serializers.JSONField(required=False,  allow_null=True)
+    #Added
+    resume = serializers.FileField(required=False,allow_null=True)
+    guardian_name = serializers.CharField(required=False, allow_null = True)
+    guardian_phone = serializers.CharField(required=False, allow_null = True)
+    guardian_email = serializers.CharField(required=False, allow_null = True)
+    guardian_dropdown = models.IntegerField(default=0, null=True)
+    guardian_other_reason = serializers.CharField(required=False, allow_null = True)
+    
+
+    class Meta:
+        model = StudentProfileDraft
+        fields = ["user",'first_name','last_name','email','phone',"state","city","contact_name","contact_phone","date_of_birth","gender","nationality","pincode","address","tenth_passing_year","tenth_passing_percentage","tenth_score_type","tenth_medium","twelveth_passing_year","twelveth_passing_percentage","twelveth_score_type","twelveth_medium","medium_instruction","other_instruction","pg_status","pg_percentage","ug_score_type","institution","higher_education_status","higher_qualification","higher_qualification_institution","employement_status","aadhaar","dob_certificate","photo","signature","user_experience","resume","guardian_name","guardian_phone","guardian_email","guardian_dropdown","guardian_other_reason"]
+        
+
+    def validate(self, data):
+        return data
+    
+    def validate_user_experience(self, value):
+        # 1. Convert string to Python list if necessary
+        
+        if isinstance(value, str):
+            try:
+                value = json.loads(value)
+            except json.JSONDecodeError:
+                raise serializers.ValidationError("Malformed JSON string.")
+
+        # 2. Run the data through a nested serializer for strict validation
+        serializer = ExperienceDraftSerializer(data=value, many=True)
+        if serializer.is_valid():
+            return serializer.validated_data
+        raise serializers.ValidationError(serializer.errors)
+
+
+    def create(self , validate_data):
+        print(validate_data)
+        user_obj = User.objects.filter(id = validate_data.get('user')).first()
+        datas = StudentProfileDraft.objects.filter(user_id = validate_data.get('user')).first()
+        exp_payload = {"have_work_ex":"Fresher"}
+        print(validate_data.get('user_experience'))
+        print(type(validate_data.get('user_experience')))
+        print("create update")
+        if datas is not None:
+            print("select update")
+            datas.first_name = validate_data.get('first_name', datas.first_name)
+            datas.last_name = validate_data.get('last_name', datas.last_name)
+            datas.email = validate_data.get('email', datas.email)
+            datas.phone = validate_data.get('phone', datas.phone)
+            datas.state = validate_data.get('state', datas.state)
+            datas.city = validate_data.get('city', datas.city)
+            datas.contact_name = validate_data.get('contact_name',datas.contact_name)
+            datas.contact_phone = validate_data.get('contact_phone', datas.contact_phone)
+            datas.date_of_birth = validate_data.get('date_of_birth', datas.date_of_birth)
+            datas.gender = validate_data.get('gender', datas.gender)
+            datas.nationality = validate_data.get('nationality', datas.nationality)
+            datas.pincode = validate_data.get('pincode', datas.pincode)
+            datas.address = validate_data.get('address', datas.address)
+            datas.tenth_passing_year = validate_data.get('tenth_passing_year', datas.tenth_passing_year)
+            datas.tenth_passing_percentage = validate_data.get('tenth_passing_percentage', datas.tenth_passing_percentage)
+            datas.tenth_score_type = validate_data.get('tenth_score_type', datas.tenth_score_type)
+            datas.tenth_medium = validate_data.get('tenth_medium', datas.tenth_medium)
+            datas.twelveth_passing_year = validate_data.get('twelveth_passing_year', datas.twelveth_passing_year)
+            datas.twelveth_passing_percentage = validate_data.get('twelveth_passing_percentage', datas.twelveth_passing_percentage)
+            datas.twelveth_score_type = validate_data.get('twelveth_score_type', datas.twelveth_score_type)
+            datas.twelveth_medium = validate_data.get('twelveth_medium', datas.twelveth_medium)
+            datas.medium_instruction = validate_data.get('medium_instruction', datas.medium_instruction)
+            datas.other_instruction = validate_data.get('other_instruction', datas.other_instruction)
+            datas.pg_status = validate_data.get('pg_status', datas.pg_status)
+            datas.pg_percentage = validate_data.get('pg_percentage', datas.pg_percentage)
+            datas.ug_score_type = validate_data.get('ug_score_type', datas.ug_score_type)
+            datas.institution = validate_data.get('institution', datas.institution)
+            datas.higher_education_status = validate_data.get('higher_education_status', datas.higher_education_status)
+            datas.higher_qualification = validate_data.get('higher_qualification', datas.higher_qualification)
+            datas.higher_qualification_institution = validate_data.get('higher_qualification_institution', datas.higher_qualification_institution)
+            datas.employement_status = validate_data.get('employement_status', datas.employement_status)
+            datas.aadhaar = validate_data.get('aadhaar', datas.aadhaar)
+            datas.dob_certificate = validate_data.get('dob_certificate', datas.dob_certificate)
+            datas.photo = validate_data.get('photo', datas.photo)
+            datas.signature = validate_data.get('signature', datas.signature)
+            datas.application_id = user_obj.application_id
+            datas.fee_waiver_category = user_obj.fee_waiver_category
+            datas.resume = validate_data.get('resume',datas.resume)
+            datas.guardian_name = validate_data.get('guardian_name',datas.guardian_name)
+            datas.guardian_phone = validate_data.get('guardian_phone',datas.guardian_phone)
+            datas.guardian_email = validate_data.get('guardian_email',datas.guardian_email)
+            datas.guardian_dropdown = validate_data.get('guardian_dropdown',datas.guardian_dropdown)
+            datas.guardian_other_reason = validate_data.get('guardian_other_reason',datas.guardian_other_reason)
+            datas.save()
+            query = datas
+            if validate_data.get('user_experience'):
+                if len(validate_data.get('user_experience')) > 0:
+                    num = 1
+                    exp_payload["have_work_ex"] = "Experienced"
+                    StudentExperienceDraft.objects.filter(student_profile = query).delete()
+                    for exp in validate_data.get('user_experience'):
+                        experience = StudentExperienceDraft(
+                            student_profile = query,
+                            position = exp.get('position'),
+                            company_name = exp.get('company_name'),
+                            area = exp.get('area'),
+                            start_date = exp.get('start_date'),
+                            end_date = exp.get('end_date'),
+
+                        )
+                        experience.save()
+
+                        num+=1
+
+        else:
+            print("select create")
+            query = StudentProfileDraft(
+                user = User.objects.filter(id = validate_data.get('user')).first(),
+                last_name = validate_data.get('last_name'),
+                first_name = validate_data.get('first_name'),
+                email = validate_data.get('email'),
+                phone = validate_data.get('phone'),
+                state = validate_data.get('state'),
+                city = validate_data.get('city'),
+                contact_name = validate_data.get('contact_name'),
+                contact_phone = validate_data.get('contact_phone'),
+                date_of_birth = validate_data.get('date_of_birth'),
+                gender = validate_data.get('gender'),
+                nationality = validate_data.get('nationality'),
+                pincode = validate_data.get('pincode'),
+                address = validate_data.get('address'),
+                tenth_passing_year = validate_data.get('tenth_passing_year'),
+                tenth_passing_percentage = validate_data.get('tenth_passing_percentage'),
+                tenth_score_type = validate_data.get('tenth_score_type'),
+                tenth_medium = validate_data.get('tenth_medium'),
+                twelveth_passing_year = validate_data.get('twelveth_passing_year'),
+                twelveth_passing_percentage = validate_data.get('twelveth_passing_percentage'),
+                twelveth_score_type = validate_data.get('twelveth_score_type'),
+                twelveth_medium = validate_data.get('twelveth_medium'),
+                medium_instruction = validate_data.get('medium_instruction'),
+                other_instruction = validate_data.get('other_instruction'),
+                pg_status = validate_data.get('pg_status'),
+                pg_percentage = validate_data.get('pg_percentage'),
+                ug_score_type = validate_data.get('ug_score_type'),
+                institution = validate_data.get('institution'),
+                higher_education_status = validate_data.get('higher_education_status'),
+                higher_qualification = validate_data.get('higher_qualification'),
+                higher_qualification_institution = validate_data.get('higher_qualification_institution'),
+                employement_status = validate_data.get('employement_status'),
+                aadhaar = validate_data.get('aadhaar'),
+                dob_certificate = validate_data.get('dob_certificate'),
+                photo = validate_data.get('photo'),
+                signature = validate_data.get('signature'),
+                application_id = user_obj.application_id,
+                fee_waiver_category = user_obj.fee_waiver_category,
+                resume = validate_data.get('resume'),
+                guardian_name = validate_data.get('guardian_name'),
+                guardian_phone = validate_data.get('guardian_phone'),
+                guardian_email = validate_data.get('guardian_email'),
+                guardian_dropdown = validate_data.get('guardian_dropdown'),
+                guardian_other_reason = validate_data.get('guardian_other_reason')
+            )
+            print("before saving")
+            query.save()
+            print(validate_data)
+            if validate_data.get('user_experience'):
+                if len(validate_data.get('user_experience')) > 0:
+                    num = 1
+                    exp_payload["have_work_ex"] = "Experienced"
+                    for exp in validate_data.get('user_experience'):
+                        experience = StudentExperienceDraft(
+                            student_profile = query,
+                            position = exp.get('position'),
+                            company_name = exp.get('company_name'),
+                            area = exp.get('area'),
+                            start_date = exp.get('start_date'),
+                            end_date = exp.get('end_date'),
+
+                        )
+                        experience.save()
+                    
+                        num+=1
+        return query

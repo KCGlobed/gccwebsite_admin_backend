@@ -1758,7 +1758,7 @@ class CompleteStudentDraftSerializer(serializers.ModelSerializer) :
     guardian_phone = serializers.CharField(required=False, allow_null = True)
     guardian_email = serializers.CharField(required=False, allow_null = True)
     guardian_dropdown = models.IntegerField(default=0, null=True)
-    guardian_other_reason = serializers.CharField(required=False, allow_null = True)
+    guardian_other_reason = serializers.CharField(required=False, allow_blank = True)
     
 
     class Meta:
@@ -1840,7 +1840,8 @@ class CompleteStudentDraftSerializer(serializers.ModelSerializer) :
             datas.guardian_other_reason = validate_data.get('guardian_other_reason',datas.guardian_other_reason)
             datas.save()
             query = datas
-            if validate_data.get('user_experience'):
+            exp_val = validate_data.get('user_experience')
+            if exp_val and exp_val!="":
                 if len(validate_data.get('user_experience')) > 0:
                     num = 1
                     exp_payload["have_work_ex"] = "Experienced"
@@ -1910,7 +1911,8 @@ class CompleteStudentDraftSerializer(serializers.ModelSerializer) :
             print("before saving")
             query.save()
             print(validate_data)
-            if validate_data.get('user_experience'):
+            exp_val = validate_data.get('user_experience')
+            if exp_val and exp_val!="":
                 if len(validate_data.get('user_experience')) > 0:
                     num = 1
                     exp_payload["have_work_ex"] = "Experienced"

@@ -1380,7 +1380,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                     # value5 = exp.get('end_date').strftime("%d/%m/%Y") if experience.end_date else exp.get('start_date').strftime("%d/%m/%Y")
                     key6 = f"field_334047_{num}_6"
                     value6 = ""
-                    print("values5...",value5)
+                    # print("values5...",value5)
                     exp_payload[key1] = value1
                     exp_payload[key2] = value2
                     exp_payload[key3] = value3

@@ -289,7 +289,7 @@ class UpdateStudentSerializer(serializers.ModelSerializer):
         lead = DossierData.objects.filter(id=validate_data.get('lid'))
         if lead:
             lead_obj = lead.first()
-            user = User.objects.filter(email=lead_obj.email)
+            user = User.objects.filter(email=str(lead_obj.email).lower())
             if user:
                 u_obj = user.first()
                 u_obj.email = validate_data.get('email').lower()

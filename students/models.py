@@ -254,6 +254,102 @@ class Guardian(models.IntegerChoices):
     OTHER  = 3, 'OTHER'
 
 
+###################
+
+
+
+class StudentProfileDraft(models.Model):
+    user = models.ForeignKey('users.User', null=True, blank=True, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=255, null=True, blank=True)
+    last_name = models.CharField(max_length=255, null=True, blank=True)
+    email = models.CharField(max_length=255, null=True, blank=True)
+    phone = models.CharField(max_length=255, null=True, blank=True)
+    contact_name = models.CharField(max_length=255, null=True, blank=True)
+    contact_phone = models.CharField(max_length=255, null=True, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    gender = models.IntegerField(choices=Gender.choices,default=Gender.MALE)
+    nationality = models.CharField(max_length=255, null=True, blank=True)
+    pincode = models.CharField(max_length=255, null=True, blank=True)
+    city = models.CharField(max_length=255, null=True, blank=True)
+    state = models.CharField(max_length=255, null=True, blank=True)
+    address = models.CharField(max_length=255, null=True, blank=True)
+    tenth_passing_year = models.CharField(max_length=255, null=True, blank=True)
+    tenth_passing_percentage = models.CharField(max_length=255, null=True, blank=True)
+    twelveth_passing_year = models.CharField(max_length=255, null=True, blank=True)
+    twelveth_passing_percentage = models.CharField(max_length=255, null=True, blank=True)
+    medium_instruction = models.IntegerField(choices=Medium.choices,default=Medium.ENGLISH)
+    other_instruction = models.CharField(max_length=255, null=True, blank=True)
+    pg_status = models.IntegerField(choices=PGStatus.choices,default=PGStatus.COMPLETED)
+    pg_percentage = models.CharField(max_length=255, null=True, blank=True)
+    institution = models.CharField(max_length=255, null=True, blank=True)
+    higher_education_status = models.IntegerField(choices=HigherEducation.choices,default=HigherEducation.YES)
+    higher_qualification = models.CharField(max_length=255, null=True, blank=True)
+    higher_qualification_institution = models.CharField(max_length=255, null=True, blank=True)
+    employement_status = models.IntegerField(choices=EmployementStatus.choices,default=EmployementStatus.FRESHER)
+    aadhaar = models.FileField(blank=False, null=False)
+    dob_certificate = models.FileField(blank=False, null=False)
+    photo = models.FileField(blank=False, null=False)
+    signature = models.FileField(blank=False, null=False)
+    profile_status = models.BooleanField(default=True)
+    status = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
+    #added
+    slot_date = models.DateField(null=True, blank=True)
+    slot_time = models.CharField(max_length=200, blank=True, null=True)
+    slot_update_count = models.IntegerField(default=0)
+    tenth_score_type = models.CharField(max_length=20, blank=True, null=True)
+    tenth_medium = models.IntegerField(choices=Medium.choices,default=Medium.ENGLISH)
+    twelveth_score_type = models.CharField(max_length=20, blank=True, null=True)
+    twelveth_medium = models.IntegerField(choices=Medium.choices,default=Medium.ENGLISH)
+    ug_score_type = models.CharField(max_length=20, blank=True, null=True)
+    mock_test_status = models.IntegerField(default=0, null=True)
+    re_attempt = models.IntegerField(default=0, null=True)
+    re_attempt_btn = models.IntegerField(default=0, null=True)
+    application_id = models.CharField(max_length=200, blank=True, null=True)
+    fee_waiver_category = models.CharField(max_length=200, default="No Waiver")
+    # Added
+    resume = models.FileField(blank=True, null=True)
+    resume_key_status = models.BooleanField(default=False)
+    guardian_name = models.CharField(max_length=100, blank=True, null=True)
+    guardian_phone = models.CharField(max_length=100, blank=True, null=True)
+    guardian_email = models.CharField(max_length=100, blank=True, null=True)
+    guardian_dropdown = models.IntegerField(choices=Guardian.choices, blank=True, null=True)
+    guardian_other_reason = models.CharField(max_length=100, blank=True, null=True)
+    guardian_key_status = models.BooleanField(default=False)
+
+
+    class Meta:
+        verbose_name = 'Student Profile Draft'
+        verbose_name_plural = 'Student Profile Draft'
+        
+    def __str__(self):
+        return '%s' % self.id
+    
+
+class StudentExperienceDraft(models.Model):
+    student_profile = models.ForeignKey('StudentProfileDraft', null=True, blank=True, on_delete=models.CASCADE)
+    position = models.CharField(max_length=255, null=True, blank=True)
+    company_name = models.CharField(max_length=255, null=True, blank=True)
+    area = models.CharField(max_length=255, null=True, blank=True)
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
+
+    class Meta:
+        verbose_name = 'User Experience Draft'
+        verbose_name_plural = 'User Experience Draft'
+
+    def __str__(self):
+        return '%s' % self.id
+
+
+
+
+
+###################
+
 class StudentProfile(models.Model):
     user = models.ForeignKey('users.User', null=True, blank=True, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=255, null=True, blank=True)
@@ -304,30 +400,6 @@ class StudentProfile(models.Model):
     re_attempt_btn = models.IntegerField(default=0, null=True)
     application_id = models.CharField(max_length=200, blank=True, null=True)
     fee_waiver_category = models.CharField(max_length=200, default="No Waiver")
-    ## Additional data
-    identity_proof = models.FileField(blank=True, null=True)
-    tenth_marksheet = models.FileField(blank=True, null=True)
-    accounting_profession = models.IntegerField(choices=AccountingProfession.choices, blank=True, null=True)
-    twelth_marksheet = models.FileField(blank=True, null=True)
-    graduation_first_marksheet = models.FileField(blank=True, null=True)
-    graduation_second_marksheet = models.FileField(blank=True, null=True)
-    graduation_third_marksheet = models.FileField(blank=True, null=True)
-    graduation_forth_marksheet = models.FileField(blank=True, null=True)
-    graduation_fifth_marksheet = models.FileField(blank=True, null=True)
-    graduation_sixth_marksheet = models.FileField(blank=True, null=True)
-    additional_qualification = models.CharField(max_length=100, blank=True, null=True)
-    additional_document = models.FileField(blank=True, null=True)
-    co_applicant_pan_card = models.FileField(blank=True, null=True)
-    co_applicant_aadhaar = models.FileField(blank=True, null=True)
-    co_applicant_profession = models.IntegerField(choices=Profession.choices, blank=True, null=True)
-    co_applicant_sallary_slip = models.FileField(blank=True, null=True)
-    co_applicant_form16 = models.FileField(blank=True, null=True)
-    co_applicant_employee_id_card = models.FileField(blank=True, null=True)
-    co_applicant_passport_size = models.FileField(blank=True, null=True)
-    co_applicant_income_tax_return = models.FileField(blank=True, null=True)
-    co_applicant_compute_income = models.FileField(blank=True, null=True)
-    co_applicant_six_month_bank = models.FileField(blank=True, null=True)
-    co_applicant_agriculture_income = models.FileField(blank=True, null=True)
     # Added
     resume = models.FileField(blank=True, null=True)
     resume_key_status = models.BooleanField(default=False)
@@ -380,9 +452,7 @@ class StudentSlotBooking(models.Model):
 
     def __str__(self):
         return '%s' % self.id
-    
 
-##################
 
 class StudentExamResult(models.Model):
     student_profile = models.ForeignKey('StudentProfile', null=True, blank=True, on_delete=models.CASCADE)

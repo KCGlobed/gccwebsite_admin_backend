@@ -40,10 +40,12 @@ urlpatterns = [
     path('get-contact-us-report-excel/', GetContactusReportExcelView.as_view(), name="get-contact-us-report-excel"),
 
     path('create-update-student-profile/', CreateStudentProfileView.as_view(), name="create-update-student-profile"),
+    path('create-update-student-profile-draft/', CreateStudentProfileDraftView.as_view(), name="create-update-student-profile-draft"),
     path('student-slot-upload/', StudentSlotBookView.as_view(), name="student-slot-upload"),
     path('student-admit-card-download/', GetStudentAdmitCardView.as_view(), name="student-admit-card-download"),
     path('student-admit-card-admin-download/<int:id>', GetStudentAdmitCardAdminView.as_view(), name="student-admit-card-admin-download"),
     path('get-student-profile/', GetStudentProfileView.as_view(), name="get-student-profile"),
+    path('get-student-profile-draft/', GetStudentProfileDraftView.as_view(), name="get-student-profile-draft"),
     path('exam-re-attempt-status/', GetStudentReAttemptView.as_view(), name="exam-re-attempt-status"),
     path('get-student-profile-listing/', GetStudentProfileListingView.as_view(), name="get-student-profile-listing"),
 

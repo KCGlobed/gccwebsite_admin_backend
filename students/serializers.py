@@ -8,6 +8,11 @@ import json
 from datetime import datetime, timedelta, date
 import requests
 from django.conf import settings
+from .utils import get_student_score_card_url
+from google.cloud import storage
+client = storage.Client(project=settings.GS_PROJECT_ID)
+
+
 
 
 class ListStudentQuerySerializer(serializers.ModelSerializer) :
@@ -109,6 +114,8 @@ class ListPaymentExcelReportSerializer(serializers.ModelSerializer) :
 
 
 
+
+
 class ListStudentProfileExcelReportSerializer(serializers.ModelSerializer) :
     created_at = serializers.SerializerMethodField('get_created_at')
     tenth_medium = serializers.SerializerMethodField('get_tenth_medium')
@@ -122,6 +129,7 @@ class ListStudentProfileExcelReportSerializer(serializers.ModelSerializer) :
     referred_code = serializers.SerializerMethodField("get_referred_code")
     student_result = serializers.SerializerMethodField("get_student_result")
     guardian_dropdown = serializers.SerializerMethodField("get_guardian_dropdown")
+    resume = serializers.SerializerMethodField("get_resume")
     
     class Meta:
         model = StudentProfile
@@ -191,7 +199,30 @@ class ListStudentProfileExcelReportSerializer(serializers.ModelSerializer) :
     def get_guardian_dropdown(self, obj):
         return obj.get_guardian_dropdown_display()
 
-
+    # def get_score_card_url(self, obj):
+    #     data = get_student_score_card_url(obj.id)
+    #     return data
+    
+    def get_resume(self, obj):
+        url = ""
+        if obj.resume:
+            bucket = client.bucket(
+                settings.GS_BUCKET_NAME
+            )
+            temp_url = f'media/{obj.resume.name}'
+            blob = bucket.blob(
+                temp_url
+            )
+            url = blob.public_url
+            # print(blob.public_url)
+            # url = blob.generate_signed_url(
+            #     version="v4",
+            #     expiration=timedelta(
+            #         days=180
+            #     ),
+            #     method="GET"
+            # )
+        return url    
 
 class ListCampusFacultySerializer(serializers.ModelSerializer) :
     created_at = serializers.DateTimeField(read_only=True, format="%Y-%m-%d")

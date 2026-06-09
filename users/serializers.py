@@ -271,9 +271,10 @@ class CreateStudentSerializer(serializers.ModelSerializer):
 class UpdateStudentSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length = 255, required=True)
     lid = serializers.CharField(max_length = 255, required=True)
+    phone = serializers.CharField(max_length = 255, required=False)
     class Meta:
         model = User
-        fields = ['email','lid']
+        fields = ['email','lid','phone']
         
 
     # def validate(self, data):
@@ -289,6 +290,8 @@ class UpdateStudentSerializer(serializers.ModelSerializer):
         lead = DossierData.objects.filter(id=validate_data.get('lid'))
         if lead:
             lead_obj = lead.first()
+            # user_profile = .objects.filter(email=str(lead_obj.email).lower())
+            # if user:
             user = User.objects.filter(email=str(lead_obj.email).lower())
             if user:
                 u_obj = user.first()
@@ -298,29 +301,29 @@ class UpdateStudentSerializer(serializers.ModelSerializer):
 
                 DossierData.objects.filter(id=validate_data.get('lid')).update(email=validate_data.get('email'))
 
-                # if settings.MERITO_STATUS == "True":
-            
-                #     # API URL
-                #     url = settings.MERITO_BASE_URL+"/lead/v1/createOrUpdate"
+                if settings.MERITO_STATUS == "True":
+                    if validate_data.get('phone') != "":
+                        # API URL
+                        url = settings.MERITO_BASE_URL+"/lead/v1/createOrUpdate"
 
-                #     headers = {
-                #         "Content-Type": "application/json",
-                #         "secret-key": settings.MERITO_SECRETE_KEY,
-                #         "access-key": settings.MERITO_ACCESS_KEY
-                #     }
+                        headers = {
+                            "Content-Type": "application/json",
+                            "secret-key": settings.MERITO_SECRETE_KEY,
+                            "access-key": settings.MERITO_ACCESS_KEY
+                        }
 
-                #     payload = {
-                #         "email": validate_data.get('email').lower(),
-                #         "search_criteria": "mobile",
-                #         "mobile":u_obj.phone
-                #     }
-                #     print("user create meritto payload...",payload)
-                #     try:
-                #         response = requests.post(url, headers=headers, json=payload)
-                #         print(response.status_code)
-                #         print(response.text)
-                #     except Exception as e:
-                #         print("API Error:", str(e))
+                        payload = {
+                            "email": validate_data.get('email').lower(),
+                            "search_criteria": "mobile",
+                            "mobile":validate_data.get('phone')
+                        }
+                        print("user create meritto payload...",payload)
+                        try:
+                            response = requests.post(url, headers=headers, json=payload)
+                            print(response.status_code)
+                            print(response.text)
+                        except Exception as e:
+                            print("API Error:", str(e))
 
                 subject = 'Welcome to GCC School. Here are your login details.'
 

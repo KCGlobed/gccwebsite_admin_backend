@@ -1988,6 +1988,9 @@ class GetAdminStudentScoreCardView(APIView):
 
 
 
+
+
+
 #########################################################################################
 
 
@@ -2096,34 +2099,24 @@ from datetime import datetime, timedelta, date
 class AddProfileToMerittoView(APIView):
     def post(self, request):
         datas = [
-            "RK5063196@GMAIL.COM",
-            "ST283899@GMAIL.COM",
-            "AJAYKUMARSHRIVAS0003@GMAIL.COM",
-            "SHEETALSHARMA88261007@GMAIL.COM",
-            "SHIVANIBASATIYA@GMAIL.COM",
-            "ADITYASRIVASTAV830@GMAIL.COM",
-            "TG83321@GMAIL.COM",
-            "MANYAKOLI684@GMAIL.COM",
-            "KHUSHBOOCHORA04@GMAIL.COM",
-            "BAISAKHIDASH20@GMAIL.COM",
-            "AMITKUMARAYA1980@GMAIL.COM",
-            "SHIVAMARORA131324@GMAIL.COM",
-            "PRADIPCHAND.913@REDIFFMAIL.COM",
-            "SAMYAKJ573@GMAIL.COM",
-            "MALLIREDDYMARUTHIKUMAR@GMAIL.COM",
-            "PANDEYVAISHNAWI0606@GMAIL.COM",
-            "PREMAMAYAPADHI2@GMAIL.COM",
-            "TANANIA003@GMAIL.COM",
-            "SATEESHPINNINTI3244@GMAIL.COM",
-            "JAIVESHPB13@GMAIL.COM",
-            "GANPATHYIYER2899@GMAIL.COM",
-            "AHMEDKHAN741999@GMAIL.COM",
-            "SHIVANISHING973@GMAIL.COM",
-            "NK2550027@GMAIL.COM",
-            "AYUSHSHRIVASTAVA436@GMAIL.COM",
-            "CHADHAGAUTAM132@GMAIL.COM",
-            "DR.HANZALAHABIB@GMAIL.COM"
-
+            "SANKT.SM@GMAIL.COM",
+            "SAKSHISAIN07062004@GMAIL.COM",
+            "BALAJILAXMI96@GMAIL.COM",
+            "RAVIPANDEY6438@GMAIL.COM",
+            "ANURAGSONI3032000@GMAIL.COM",
+            "KALRASIDHI06@GMAIL.COM",
+            "MAHEN3367@GMAIL.COM",
+            "ONKARASWALE1998@GMAIL.COM",
+            "AMANV95067@GMAIL.COM",
+            "AAVEJGAVANDI5@GMAIL.COM",
+            "CHARCHITBANSAL03@GMAIL.COM",
+            "SAGNIKRAHA39@GMAIL.COM",
+            "TAMANNAKHAN5405@GMAIL.COM",
+            "AESONI99@GMAIL.COM",
+            "AMANSOMANI00@GMAIL.COM",
+            "NEERAJKASHYAPSINGH3@GMAIL.COM",
+            "AYUSHCHANDEKAR8499@GMAIL.COM",
+            "BKPRINCE1309@GMAIL.COM"
         ]
         # datasp = []
         # for i in datas:
@@ -2293,10 +2286,10 @@ class AddProfileToMerittoView(APIView):
                         value2 = exp.position
                         key3 = f"field_334047_{num}_3"
                         value3 = exp.area
-                        # key4 = f"field_334047_{num}_4"
-                        # value4 = exp.start_date.strftime("%d/%m/%Y")
-                        # key5 = f"field_334047_{num}_5"
-                        # value5 = exp.end_date.strftime("%d/%m/%Y") if exp.end_date else exp.start_date.strftime("%d/%m/%Y")
+                        key4 = f"field_334047_{num}_4"
+                        value4 = exp.start_date.strftime("%d/%m/%Y")
+                        key5 = f"field_334047_{num}_5"
+                        value5 = exp.end_date.strftime("%d/%m/%Y") if exp.end_date else exp.start_date.strftime("%d/%m/%Y")
                         key6 = f"field_334047_{num}_6"
                         value6 = ""
 
@@ -2305,8 +2298,8 @@ class AddProfileToMerittoView(APIView):
                         exp_payload[key1] = value1
                         exp_payload[key2] = value2
                         exp_payload[key3] = value3
-                        # exp_payload[key4] = value4
-                        # exp_payload[key5] = value5
+                        exp_payload[key4] = value4
+                        exp_payload[key5] = value5
                         exp_payload[key6] = value6
 
                         print(exp_payload)

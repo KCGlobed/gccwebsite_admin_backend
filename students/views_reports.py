@@ -24,7 +24,6 @@ from django.db.models.functions import Cast
 from openpyxl import load_workbook
 
 
-
 class GetSessionReportPDFView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
@@ -838,7 +837,7 @@ class GetStudentProfileReportExcelView(APIView):
             ws = wb.active
 
             resume_column = None
-
+            
             # Find Resume column
             for col_num, cell in enumerate(ws[1], start=1):
                 if cell.value == "Resume":
@@ -859,6 +858,30 @@ class GetStudentProfileReportExcelView(APIView):
                             cell.style = "Hyperlink"
 
             wb.save(pdf_path)
+            
+            # result_column = None
+            
+            # # Find Resume column
+            # for col_num, cell in enumerate(ws[1], start=1):
+            #     if cell.value == "Score Card Result":
+            #         result_column = col_num
+            #         # print("result...", result_column)
+            #         break
+
+            # # Add hyperlink
+            # if result_column:
+            #     for row_num in range(2, ws.max_row + 1):
+            #         cell = ws.cell(row=row_num, column=result_column)
+
+            #         if cell.value:
+            #             result_url = str(cell.value).strip()
+
+            #             if result_url.startswith(("http://", "https://")):
+            #                 cell.hyperlink = result_url
+            #                 cell.value = "View Result"  # Optional
+            #                 cell.style = "Hyperlink"
+
+            # wb.save(pdf_path)
         
         # After the 'with' block, the file is closed but not deleted
         try:

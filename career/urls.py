@@ -28,6 +28,8 @@ urlpatterns = [
     path('get-dossier-report-pdf/', GetDossierReportPDFView.as_view(), name="get-dossier-report-pdf"),
     path('get-dossier-report-excel/', GetDossierReportExcelView.as_view(), name="get-dossier-report-excel"),
 
+    path('get-dossier-report-excel-six/', GetDossierAffliateSixReportExcelView.as_view(), name="get-dossier-report-excel-six"),
+
     path('get-dossier-source-report-pdf/', GetDossierSourceReportPDFView.as_view(), name="get-dossier-source-report-pdf"),
     path('get-dossier-source-report-excel/', GetDossierSourceReportExcelView.as_view(), name="get-dossier-source-report-excel"),
 

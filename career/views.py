@@ -27,6 +27,12 @@ import threading
 from django.conf import settings
 from django.db.models import OuterRef, Exists
 
+from openpyxl import load_workbook
+from openpyxl.styles import Font, Alignment
+
+
+
+
 class CareerApplication_list(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPageNumberPagination
@@ -2599,3 +2605,176 @@ class ImportEmailView(APIView):
             )
 
 
+### for affliate 6 data export ##############
+
+
+class GetDossierAffliateSixReportExcellView(APIView):
+    def get(self, request, sid=None):
+        # datas = DossierData.objects.filter(source=SourceType.Affiliate6).order_by('-id')
+        datas = (DossierData.objects.filter(source=SourceType.Affiliate6).order_by('phone', '-id').distinct('phone'))
+        # print(len(datas))
+        # return Response({})
+        data_list = ListDossierDataAffliateSixReportSerializer(datas, many=True).data
+        COLUMN_MAPPING = {
+            "full_name":'Full Name',
+            "email":'Email',
+            "phone":'Phone',
+            "city":'City',
+            "state":'State',
+            "fbc_id":'FBC ID',
+            "utm_source":'UTM SOURCE',
+            "utm_medium":'UTM MEDIUM',
+            "utm_content":'UTM CONTENT',
+            "utm_campaign":'UTM CAMPAIGN',
+            "campaign_id":'CAMPAIGN ID',
+            "utm_adname":'UTM ADNAME',
+            "adset_id":'ADSET ID',
+            "fbclid":'FBCLID',
+            "ad_source":'AD SOURCE',
+            "ad_id":'AD ID',
+            "fee_waiver_category":'FEE WAIVER CATEGORY',
+            "created_at":'CREATE TIMESTAMP'
+        }
+        with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as temp_file:
+            pdf_path = temp_file.name
+
+            df = pd.DataFrame(data_list)
+            # df = df.drop_duplicates(
+            #     subset=['phone'],
+            #     keep='first'
+            # )
+            df = df[list(COLUMN_MAPPING.keys())]
+
+            df.rename(columns=COLUMN_MAPPING, inplace=True)
+
+            df.to_excel(
+                pdf_path,
+                header=True,
+                index=False
+            )
+        try:
+            # GCS file naming logic
+            timestamp = datetime.now().strftime("%d_%m_%y_%H_%M")
+            report_name = "lead_report"
+            gcs_folder_name = "media/reports/dossier/excel/affliatesix"
+            gcs_file_name = f"{gcs_folder_name}/{report_name}.xlsx"
+
+            # Upload the temporary file to GCS
+            bucket = client.get_bucket(settings.GS_BUCKET_NAME)
+            blob = bucket.blob(gcs_file_name)
+            # overwrite existing file
+            # if blob.exists():
+            #     blob.delete(igno)
+                # blob.upload_from_filename(pdf_path)
+
+            # upload new excel
+            # blob.upload_from_filename(
+            #     pdf_path,
+            #     content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            # )
+            # blob.reload()
+            # print(blob.updated)
+            # print("updated:", blob.updated)
+            # print("generation:", blob.generation)
+            blob = bucket.blob(gcs_file_name)
+
+            blob.upload_from_filename(
+                pdf_path,
+                content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+
+            blob.cache_control = "no-cache"
+            blob.patch()
+
+            print(blob.updated)
+            return success_response(
+                message="Success",
+                data={"report_url": blob.public_url},
+                status_code=status.HTTP_200_OK
+            )
+        finally:
+            # Ensure the temporary file is deleted
+            os.remove(pdf_path)
+
+
+
+
+import pandas as pd
+from django.http import HttpResponse
+
+
+class GetDossierAffliateSixReportExcelView(APIView):
+
+    def get(self, request, sid=None):
+
+        datas = (
+            DossierData.objects
+            .filter(source=SourceType.Affiliate6)
+            .order_by('-id')
+        )
+
+        data_list = ListDossierDataAffliateSixReportSerializer(
+            datas,
+            many=True
+        ).data
+
+
+        COLUMN_MAPPING = {
+            "full_name": 'Full Name',
+            "email": 'Email',
+            "phone": 'Phone',
+            "city": 'City',
+            "state": 'State',
+            "fbc_id": 'FBC ID',
+            "utm_source": 'UTM SOURCE',
+            "utm_medium": 'UTM MEDIUM',
+            "utm_content": 'UTM CONTENT',
+            "utm_campaign": 'UTM CAMPAIGN',
+            "campaign_id": 'CAMPAIGN ID',
+            "utm_adname": 'UTM ADNAME',
+            "adset_id": 'ADSET ID',
+            "fbclid": 'FBCLID',
+            "ad_source": 'AD SOURCE',
+            "ad_id": 'AD ID',
+            "fee_waiver_category": 'FEE WAIVER CATEGORY',
+            "created_at": 'CREATE TIMESTAMP'
+        }
+
+
+        df = pd.DataFrame(data_list)
+
+
+        # remove duplicate phone
+        df = df.drop_duplicates(
+            subset=["phone"],
+            keep="first"
+        )
+
+
+        # reorder columns
+        df = df[list(COLUMN_MAPPING.keys())]
+
+
+        # rename excel headers
+        df.rename(
+            columns=COLUMN_MAPPING,
+            inplace=True
+        )
+
+
+        response = HttpResponse(
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+
+        response["Content-Disposition"] = (
+            'attachment; filename="lead_report.xlsx"'
+        )
+
+
+        df.to_excel(
+            response,
+            index=False
+        )
+
+
+        return response

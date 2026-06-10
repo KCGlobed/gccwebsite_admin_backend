@@ -2098,46 +2098,531 @@ from datetime import datetime, timedelta, date
 
 class AddProfileToMerittoView(APIView):
     def post(self, request):
+        # datas = [
+        #     "SANKT.SM@GMAIL.COM",
+        #     "SAKSHISAIN07062004@GMAIL.COM",
+        #     "BALAJILAXMI96@GMAIL.COM",
+        #     "RAVIPANDEY6438@GMAIL.COM",
+        #     "ANURAGSONI3032000@GMAIL.COM",
+        #     "KALRASIDHI06@GMAIL.COM",
+        #     "MAHEN3367@GMAIL.COM",
+        #     "ONKARASWALE1998@GMAIL.COM",
+        #     "AMANV95067@GMAIL.COM",
+        #     "AAVEJGAVANDI5@GMAIL.COM",
+        #     "CHARCHITBANSAL03@GMAIL.COM",
+        #     "SAGNIKRAHA39@GMAIL.COM",
+        #     "TAMANNAKHAN5405@GMAIL.COM",
+        #     "AESONI99@GMAIL.COM",
+        #     "AMANSOMANI00@GMAIL.COM",
+        #     "NEERAJKASHYAPSINGH3@GMAIL.COM",
+        #     "AYUSHCHANDEKAR8499@GMAIL.COM",
+        #     "BKPRINCE1309@GMAIL.COM"
+        # ]
+
         datas = [
-            "SANKT.SM@GMAIL.COM",
-            "SAKSHISAIN07062004@GMAIL.COM",
-            "BALAJILAXMI96@GMAIL.COM",
-            "RAVIPANDEY6438@GMAIL.COM",
-            "ANURAGSONI3032000@GMAIL.COM",
-            "KALRASIDHI06@GMAIL.COM",
-            "MAHEN3367@GMAIL.COM",
-            "ONKARASWALE1998@GMAIL.COM",
-            "AMANV95067@GMAIL.COM",
-            "AAVEJGAVANDI5@GMAIL.COM",
-            "CHARCHITBANSAL03@GMAIL.COM",
-            "SAGNIKRAHA39@GMAIL.COM",
-            "TAMANNAKHAN5405@GMAIL.COM",
-            "AESONI99@GMAIL.COM",
-            "AMANSOMANI00@GMAIL.COM",
-            "NEERAJKASHYAPSINGH3@GMAIL.COM",
-            "AYUSHCHANDEKAR8499@GMAIL.COM",
-            "BKPRINCE1309@GMAIL.COM"
+            "vivekpandey804@gmail.com",
+            "akshatsinha450@gmail.com",
+            "pranjalpandey427@gmail.com",
+            "kansalsaksham36@gmail.com",
+            "sunakshiakshit@gmail.com",
+            "aparnakumari12003@gmail.com",
+            "dkritesh0904@gmail.com",
+            "mehakkalsi2004@gmail.com",
+            "agarwalrimjhim245@gmail.com",
+            "goswamilokendra152@gmail.com",
+            "prajapatidharmik455@gmail.com",
+            "mdmahtabmalik8@gmail.com",
+            "charangurrala01@gmail.com",
+            "imohansingh967@gmail.com",
+            "gautamsurtani@gmail.com",
+            "krishnadwiv871@gmail.com",
+            "gauravsharmajune5@gmail.com",
+            "priyajindal1122@gmail.com",
+            "chiragchandani2001@gmail.com",
+            "pritykumari93346@gmail.com",
+            "dksa085@gmail.com",
+            "akilyacham97@gmail.com",
+            "angelmaryj07@gmail.com",
+            "ojus.ghosh3@gmail.com",
+            "mfu212001@gmail.com",
+            "hemanttm5@gmail.com",
+            "spaavan4661@gmail.com",
+            "radzshaw@gmail.com",
+            "farooqui.m.atta@gmail.com",
+            "faizalashfaquee@gmail.com",
+            "yashmangal4u@gmail.com",
+            "smarter05052002@gmail.com",
+            "oms63613@gmail.com",
+            "bcom.jitender@gmail.com",
+            "pj131034@gmail.com",
+            "singhikasak43@gmail.com",
+            "kmittal2205@gmail.com",
+            "iamasinghal.anish@gmail.com",
+            "manmohini890@gmail.com",
+            "navjotdran@gmail.com",
+            "satya.choudhary7777@gmail.com",
+            "khushpreetkaurmehe2904@gmail.com",
+            "harshitsharma0413@gmail.com",
+            "as8523055@gmail.com",
+            "krishan.darc@gmail.com",
+            "priyankababurao@protonmail.com",
+            "sray11108@gmail.com",
+            "sshaikhsimran26@gmail.com",
+            "vg5311907@gmail.com",
+            "khlnamdev@gmail.com",
+            "gkkashyap0804@gmail.com",
+            "vikashkumarmadheshiya612@gmail.com",
+            "ghoshkrishnav@gmail.com",
+            "sakshipalak2005@gmail.com",
+            "varjatiayukti@gmail.com",
+            "sainsenapati@gmail.com",
+            "nrainkwar@gmail.com",
+            "tanishka0416@gmail.com",
+            "prachinoonwal3@gmail.com",
+            "kanaksharma273@gmail.com",
+            "saniyahussain906@gmail.com",
+            "aryanjha333075@gmail.com",
+            "siddhimahto111@gmail.com",
+            "himanshubansalhb.13@gmail.com",
+            "daiwikshah18@gmail.com",
+            "gauravbarua570@gmail.com",
+            "yogeshmishra88598@gmail.com",
+            "mehuldonga745@gmail.com",
+            "sachinkr051@gmail.com",
+            "mehtaharshil207@gmail.com",
+            "devahuja700@gmail.com",
+            "ishikapawar4323@gmail.com",
+            "ranapariyaparas01@gmail.com",
+            "pramodin.yachuri@gmail.com",
+            "patrosahil97@gmail.com",
+            "upadhyaysomya210@gmail.com",
+            "kumudkhushipandey@gmail.com",
+            "chirag2005april@gmail.com",
+            "kaushaltrivedi805@gmail.com",
+            "pandeymayank1603@gmail.com",
+            "ishagarg9145@gmail.com",
+            "chadhadrishti643@gmail.com",
+            "ishugautam849@gmail.com",
+            "satish.singh010179@gmail.com",
+            "vanisaini97@gmail.com",
+            "shrutipoddar0808@gmail.com",
+            "imranmughal06666@gmail.com",
+            "samuelvincent104@gmail.com",
+            "rashituli2005@gmail.com",
+            "nishubishan21@gmail.com",
+            "vidushi.sonker1995@gmail.com",
+            "atulrajdnr@gmail.com",
+            "sheeluyada.mba2025mb@rdias.ac.in",
+            "amnplwl593@gmail.com",
+            "tomarsakshi0007@gmail.com",
+            "riyapundir33@gmail.com",
+            "abhishekpradhan0501@gmail.com",
+            "parulbagdi799@gmail.com",
+            "sharma95305@gmail.com",
+            "at6384582@gmail.com",
+            "kanishkabansal898@gmail.com",
+            "vanshbharti0001@gmail.com",
+            "happytomar2003@gmail.com",
+            "deepanshiy411@gmail.com",
+            "janshiadhana@gmail.com",
+            "singhrishika0717@gmail.com",
+            "prachislnk23@gmail.com",
+            "chestawadhwa729@gmail.com",
+            "vishalsharma22309@gmail.com",
+            "prateeksharma2401@gmail.com",
+            "cprachi067@gmail.com",
+            "sumantkunal4@gmail.com",
+            "annujangid760@gmail.com",
+            "sanjeetkr93112@gmail.com",
+            "aadijain1967@gmail.com",
+            "rashunarula18@gmail.com",
+            "ys931137@gmail.com",
+            "ctomar862@gmail.com",
+            "sumitdangi317@gmail.com",
+            "ajayshrivas0003@gmail.com",
+            "ankitkumar7081723858@gmail.com",
+            "raginiyadav96081@gmail.com",
+            "aayushisuryavanshi9@gmail.com",
+            "salonisjain1307@gmail.com",
+            "rakshitjain974@gmail.com",
+            "kauramanjot2723@gmail.com",
+            "sehgalgirija@gmail.com",
+            "amishadhiman946@gmail.com",
+            "vaibhavkumar9909@gmail.com",
+            "gurmannsingh1181@gmail.com",
+            "nitikagrover.271@gmail.com",
+            "ritikdhawan8@gmail.com",
+            "abolirohakale431@gmail.com",
+            "vermanaswag.999@gmail.com",
+            "ny5429377@gmail.com",
+            "k.r418765@gmail.com",
+            "vanshitajarwal07@gmail.com",
+            "ananthakrishnan.jayan.official@gmail.com",
+            "shgarg700@gmail.com",
+            "jyoti.shukla72165@gmail.com",
+            "choprapayal590@gmail.com",
+            "ss6305842@gmail.com",
+            "sumanpreet3006@gmail.com",
+            "shaikhadnan4460@gmail.com",
+            "ipshitabajaj631@gmail.com",
+            "singlanitish94@gmail.com",
+            "kashish22rawat@gmail.com",
+            "solankimaxx11@gmail.com",
+            "prabhprabhjotkaur8@gmail.com",
+            "richachaprana0@gmail.com",
+            "ompatil8668@gmail.com",
+            "anjaliraika2699@gmail.com",
+            "shivamtyagi4157@gmail.com",
+            "nagarsahil684@gmail.com",
+            "souvikjpr2006@gmail.com",
+            "anhalsuhani@gmail.com",
+            "arjunverma2003.ca@gmail.com",
+            "pallabdey2000@gmail.com",
+            "rritu.5579@gmail.com",
+            "me.vanshika.19@gmail.com",
+            "sumitmh9@gmail.com",
+            "nagardeep7017@gmail.com",
+            "rahultiwary.du@gmail.com",
+            "hsharma0679@gmail.com",
+            "ishjotsinghbhatia@gmail.com",
+            "anaspp489@gmail.com",
+            "sandeepsnair1511@gmail.com",
+            "kaursarbjit5437@gmail.com",
+            "bipashadey55222@gmail.com",
+            "aanchalmandloi104@gmail.com",
+            "tomardeepika928@gmail.com",
+            "ishitapanchal944@gmail.com",
+            "vijayphule3115@gmail.com",
+            "ajuusharma48@gmail.com",
+            "shikhapnp2005@gmail.com",
+            "priyanshitomar765@gmail.com",
+            "shrutisharma1072@gmail.com",
+            "khushikiran31@gmail.com",
+            "sourabhbisht498@gmail.com",
+            "charvimahajan2004@gmail.com",
+            "mukhija.payal1123@gmail.com",
+            "sumitsah2255@gmail.com",
+            "kaursandeepkaur842@gmail.com",
+            "satenderca@gmail.com",
+            "kavyaagar.1998@gmail.com",
+            "upendersharma87000@gmail.com",
+            "shreesa02@gmail.com",
+            "ahujadiya2675@gmail.com",
+            "govindlangariya@gmail.com",
+            "bhawandeepkaurg@gmail.com",
+            "amankumar06@hotmail.com",
+            "saveen1335@gmail.com",
+            "katarampooja96@gmail.com",
+            "ram024055@gmail.com",
+            "priyanshum7617@gmail.com",
+            "smit39813@gmail.com",
+            "aniquashah51@gmail.com",
+            "pranjalpariya10@gmail.com",
+            "kavyatanwar18@gmail.com",
+            "vedantb619@gmail.com",
+            "aachalprajapati61@gmail.com",
+            "revathisarai1214@gmail.com",
+            "kajalsolanki661@gmail.com",
+            "himanshichoudhary201@gmail.com",
+            "chandangupta2901@gmail.com",
+            "linileon30@gmail.com",
+            "bansuri.choudharyy@gmail.com",
+            "kajalrangeele@gmail.com",
+            "kamaljitsinghratol@gmail.com",
+            "shiva.mehta250@gmail.com",
+            "rakshitkrrana@gmail.com",
+            "vidushi8810@gmail.com",
+            "dhritiman494@gmail.com",
+            "kuwalamanvi@gmail.com",
+            "305samirsvjc@gmail.com",
+            "rafikali7035@gmail.com",
+            "anushkadhillon18@gmail.com",
+            "dsweety219@gmail.com",
+            "singhleena725@gmail.com",
+            "rajputsahil5521@gmail.com",
+            "tushargupta0110@gmail.com",
+            "infiniteshivam2004@gmail.com",
+            "reedafatimakhan@gmail.com",
+            "prachisharma1641@gmail.com",
+            "abhi1109m@gmail.com",
+            "dhruvguptaa2003@gmail.com",
+            "alok11052004@gmail.com",
+            "siddhiprasade09@gmail.com",
+            "krishgoyal1310@gmail.com",
+            "deepsimehta1234@gmail.com",
+            "amanprazapat900@gmail.com",
+            "tarmansharma2@gmail.com",
+            "hardik14d@gmail.com",
+            "raikriti632@gmail.com",
+            "sneha.dwivedi052005@gmail.com",
+            "anishbehera12@gmail.com",
+            "sushilkr1493@gmail.com",
+            "sidhaarthmr@gmail.com",
+            "anureetbhinder23@gmail.com",
+            "rajatbairolia1@gmail.com",
+            "abdullahansari7838@gmail.com",
+            "shreeguptatamanna@gmail.com",
+            "officialid7310@gmail.com",
+            "anchalg992@gmail.com",
+            "vishalshah7270@gmail.com",
+            "sanjanagill2001@gmail.com",
+            "aditirohilla30@gmail.com",
+            "nainagarg773@gmail.com",
+            "abhimanyumishra1010@gmail.com",
+            "preetix02004@gmail.com",
+            "dkajudk5@gmail.com",
+            "amansomani00@gmail.com",
+            "ritikabazaz1@gmail.com",
+            "rituu2899@gmail.com",
+            "parisuryavanshi24@gmail.com",
+            "arsh0306deep@gmail.com",
+            "shaguns1628@gmail.com",
+            "gharshita433@gmail.com",
+            "dewangikaushish1200@gmail.com",
+            "riddhimittal9136779415@gmail.com",
+            "garima3112003@gmail.com",
+            "kumkumsinngh@gmail.com",
+            "info.aliasif113@gmail.com",
+            "arjunborana321@gmail.com",
+            "ritika.workbox@gmail.com",
+            "roshaniverma482@gmail.com",
+            "ishaan8775@gmail.com",
+            "ashabhatt4959@gmail.com",
+            "kesshavbareja@gmail.com",
+            "pratishthagupta130@gmail.com",
+            "vishwajeetkumarram80@gmail.com",
+            "ibrahimansari9120@gmail.com",
+            "anjanikashyap148@gmail.com",
+            "lavishadixit@gmail.com",
+            "samarthmavaghade@gmail.com",
+            "devsharmasharma233@gmail.com",
+            "jaygaveshnimavat@gmail.com",
+            "atul.tevatia@kcglobed.com",
+            "jashanpre257@gmail.com",
+            "theayush2006@gmail.com",
+            "valenciabharali05@gmail.com",
+            "shraddhajais007@gmail.com",
+            "dtanvi1027@gmail.com",
+            "jaiveshpb13@gmail.com",
+            "dhruvmittal8847@gmail.com",
+            "ak3355438@gmail.com",
+            "abhishekghosh574@gmail.com",
+            "kumarkanhaiya977@gmail.com",
+            "shaurya.vm09@gmail.com",
+            "sushmajha0599@gmail.com",
+            "khishi.250403@gmail.com",
+            "lavanyachugh2005@gmail.com",
+            "prathamarora665@gmail.com",
+            "khateebr332@gmail.com",
+            "devanshbharadwaj05@gmail.com",
+            "rahulbhakat301@gmail.com",
+            "skhesabuddin58@gmail.com",
+            "aushmehta.lhf72@gmail.com",
+            "abhinavanil1702@gmail.com",
+            "kumarjhaabhishek2003@gmail.com",
+            "kumarsu2601@gmail.com",
+            "sakshibansal2103@gmail.com",
+            "tarun1495@gmail.com",
+            "nidhisingh92117@gmail.com",
+            "singlalavita9@gmail.com",
+            "adityarattan987@gmail.com",
+            "sharmapreeti3244@gmail.com",
+            "khadkeyadnesh29@gmail.com",
+            "rg2608760@gmail.com",
+            "riyatyagi.mba2025ea@rdias.ac.in",
+            "jaman0677@gmail.com",
+            "roushanshukla19@gmail.com",
+            "akanshabhati066@gmail.com",
+            "manikverma9840@gmail.com",
+            "saievchavan@gmail.com",
+            "sharathk.0801@gmail.com",
+            "kherasoumya30@gmail.com",
+            "shivanimandal191@gmail.com",
+            "mitkarivrushali.june14@gmail.com",
+            "shivanibasatiya@gmail.com",
+            "sarikayadav0715@gmail.com",
+            "prachigaur2215@gmail.com",
+            "vickyyadav9692@gmail.com",
+            "vinaysharma521411@gmail.com",
+            "harshgoyal427289@gmail.com",
+            "karimkhan3919@gmail.com",
+            "prerna52970@gmail.com",
+            "yshrajput1@gmail.com",
+            "deevanshisardana.2021@gmail.com",
+            "sakshiigupta006@gmail.com",
+            "rk6609296@gmail.com",
+            "shihabgazdhar@gmail.com",
+            "samanpreetk245@gmail.com",
+            "chadhagautam132@gmail.com",
+            "tanishkpatil10b55@gmail.com",
+            "yuvaveen@gmail.com",
+            "yuviyuvarajyj@gmail.com",
+            "padhiyarchirag1091@gmail.com",
+            "raghavkuss2005@gmail.com",
+            "rk5063196@gmail.com",
+            "ajaykumarshrivas0003@gmail.com",
+            "vivekjaiswal13032003@gmail.com",
+            "adityasrivastav830@gmail.com",
+            "sheetalsharma88261007@gmail.com",
+            "nsingh84055@gmail.com",
+            "adarshi2702@gmail.com",
+            "tg83321@gmail.com",
+            "rinkipal0102@gmail.com",
+            "ks78656462@gmail.com",
+            "varni.t.iwari0506@gmail.com",
+            "sanjana885193@gmail.com",
+            "manishnarayanamurthy@gmail.com",
+            "iamkumkumrani@gmail.com",
+            "zaheen8506@gmail.com",
+            "thejas.v0204@gmail.com",
+            "riyayadav0360@gmail.com",
+            "baisakhidash20@gmail.com",
+            "sumitpandey7415@gmail.com",
+            "simrankaur302005@gmail.com",
+            "anirudhbhardwaj2005@gmail.com",
+            "shivamarora131324@gmail.com",
+            "hemshikhathapa007@gmail.com",
+            "sourabhvedi786@gmail.com",
+            "premamayapadhi2@gmail.com",
+            "pandeyvaishnawi0606@gmail.com",
+            "samyakj573@gmail.com",
+            "vidhigarg1411@gmail.com",
+            "ar1176182@gmail.com",
+            "sateeshpinninti3244@gmail.com",
+            "tanania003@gmail.com",
+            "anubhavsingh0664@gmail.com",
+            "desaianushka28@gmail.com",
+            "ganpathyiyer2899@gmail.com",
+            "katariasimran406@gmail.com",
+            "kmangalinaveen@gmail.com",
+            "khanaatir868@gmail.com",
+            "rathodnisha772@gmail.com",
+            "pragyadalal4@gmail.com",
+            "gulshanmehta1802@gmail.com",
+            "talganrahul@gmail.com",
+            "ayushshrivastava436@gmail.com",
+            "deepdn1992@gmail.com",
+            "lakhanbindal122@gmail.com",
+            "samikshadu06@gmail.com",
+            "sakshisain07062004@gmail.com",
+            "aagarwal24680@gmail.com",
+            "adityachandra71@gmail.com",
+            "kalrasidhi06@gmail.com",
+            "panchalchintu41@gmail.com",
+            "khushishetty412@gmail.com",
+            "ravipandey6438@gmail.com",
+            "shabuddinmondal7667@gmail.com",
+            "lovejeetkaur9881@gmail.com",
+            "mashalsonia23@gmail.com",
+            "ridhikalra346@gmail.com",
+            "mahen3367@gmail.com",
+            "connectasmit@gmail.com",
+            "avniindoria2001@gmail.com",
+            "devkaushik191@gmail.com",
+            "aesoni99@gmail.com",
+            "onkaraswale1998@gmail.com",
+            "kizaz3625@gmail.com",
+            "aavejgavandi5@gmail.com",
+            "amanv95067@gmail.com",
+            "charchitbansal03@gmail.com",
+            "meghakardam@6gmail.com",
+            "dhruvsingh9931@gmail.com",
+            "simarpreetkaur0695@gmail.com",
+            "prachi0564850@gmail.com",
+            "dhruvbusiness006@gmail.com",
+            "mallireddymaruthikumar@gmail.com",
+            "verma.mansi9466@gmail.com",
+            "apagrahari123@gmail.com",
+            "piyushpopli2002@gmail.com",
+            "tsingh9787@gmail.com",
+            "essjayhora30@gmail.com",
+            "bkprince1309@gmail.com",
+            "ayushchandekar8499@gmail.com",
+            "saniasol192@gmail.com",
+            "angelroysms@gmail.com",
+            "ky698625@gmail.com",
+            "amishabhardwaj567@gmail.com",
+            "souravsuper22@gmail.com",
+            "sumitkumarjha3233@gmail.com",
+            "nishkr29@gmail.com",
+            "shivanishing973@gmail.com",
+            "deepaksharma01205@gmail.com",
+            "hanshika9696@gmail.com",
+            "seemaguptaaug13@gmail.com"
         ]
+
         # datasp = []
         # for i in datas:
         #     datasp.append(i.lower())
         # print(datasp)
-        datasp = [emaill.lower() for emaill in datas]
-        app_all = StudentProfile.objects.filter(email__in=datasp)
-        print("app data...",len(app_all))
+        # datasp = [emaill.lower() for emaill in datas]
+
+
+        # datas = list(StudentRealExamResult.objects.all().values_list('student_profile__email', flat=True))
+
+        # aapp_all = StudentProfile.objects.all().count()
+        app_all = StudentProfile.objects.exclude(email__in=datas)
+        # print("length....",len(app_all), "count",aapp_all, "alll result",len(datas))
+        # for obj in app_all:
+        #     if obj.slot_date:
+        #         if obj.slot_date > datetime.now().date():
+        #             status = "blank"
+        #         if obj.slot_date == datetime.now().date():
+        #             start_str, end_str = obj.slot_time.split(" - ")
+        #             current_time = datetime.now().time().replace(microsecond=0)
+        #             target_time = datetime.strptime(start_str, "%I:%M %p").time()
+        #             dt1 = datetime.combine(date.today(), current_time)
+        #             dt2 = datetime.combine(date.today(), target_time)
+
+        #             print(dt1, dt2)
+        #             if dt1>dt2:
+        #                 current_time = datetime.now().time().replace(microsecond=0)
+        #                 target_time = datetime.strptime(end_str, "%I:%M %p").time()
+        #                 dt1 = datetime.combine(date.today(), current_time)
+        #                 dt2 = datetime.combine(date.today(), target_time)
+        #                 if dt1<dt2:
+        #                     print(dt1, dt2)
+        #                     status = "blank"
+        #                 else:
+        #                     std_exam  = ManageMasterKey.objects.filter(profile=obj.id)
+        #                     if std_exam:
+        #                         status = "Appeared"
+        #                     else:
+        #                         status = "Not Appeared"
+        #             else:
+        #                 std_exam  = ManageMasterKey.objects.filter(profile=obj.id)
+        #                 if std_exam:
+        #                     status = "Appeared"
+        #                 else:
+        #                     status = "blank"
+        #         if obj.slot_date < datetime.now().date():
+        #             std_exam  = ManageMasterKey.objects.filter(profile=obj.id)
+        #             if std_exam:
+        #                 status = "Appeared"
+        #             else:
+        #                 status = "Not Appeared"
+
+        # return Response({"datas":""})
+    
+
+        # print("app data...",len(app_all))
         # for i in app_all:
         #     print(i.slot_date,'---', i.application_id, '----', i.email)
         # return Response({"start":"data"})
+        print("total application", len(app_all))
+        numm = 0
+        success_datas = []
+        failed_datas = []
         for query in app_all:
         #     print(query.slot_date)
 
         #     meritto_payload = {
         #             "form_id": 22144,
         #             # "email": "atul.tevatia@kcglobed.com",
-        #             "email": query.email,
+        #             "email": query.user.email,
         #             "search_criteria": "email",
         #             "data": {
-        #                 "field_343097": "Incomplete"
+        #                 "field_351644" : "Appeared"
         #             }
         #         }
                 
@@ -2156,7 +2641,7 @@ class AddProfileToMerittoView(APIView):
         #         print(response.text)
         #     except Exception as e:
         #         print("API Error:", str(e))
-
+        # return Response({"datasss":""})
     
             if settings.MERITO_STATUS == "True":
                 if int(query.gender) == 1:
@@ -2324,12 +2809,53 @@ class AddProfileToMerittoView(APIView):
                     }
                     meritto_payload["data"].update(payment_payload)
 
-                std_profile = StudentRealExamResult.objects.filter(student_profile=query)
-                if std_profile:
-                    meritto_payload["data"]["field_351644"] = "Appeared"
+                if query.slot_date:
+                    if query.slot_date > datetime.now().date():
+                        ap_status = "blank"
+                    if query.slot_date == datetime.now().date():
+                        start_str, end_str = query.slot_time.split(" - ")
+                        current_time = datetime.now().time().replace(microsecond=0)
+                        target_time = datetime.strptime(start_str, "%I:%M %p").time()
+                        dt1 = datetime.combine(date.today(), current_time)
+                        dt2 = datetime.combine(date.today(), target_time)
+
+                        print(dt1, dt2)
+                        if dt1>dt2:
+                            current_time = datetime.now().time().replace(microsecond=0)
+                            target_time = datetime.strptime(end_str, "%I:%M %p").time()
+                            dt1 = datetime.combine(date.today(), current_time)
+                            dt2 = datetime.combine(date.today(), target_time)
+                            if dt1<dt2:
+                                print(dt1, dt2)
+                                ap_status = "blank"
+                            else:
+                                std_exam  = ManageMasterKey.objects.filter(profile=query.id)
+                                if std_exam:
+                                    ap_status = "Appeared"
+                                else:
+                                    ap_status = "Not Appeared"
+                        else:
+                            std_exam  = ManageMasterKey.objects.filter(profile=query.id)
+                            if std_exam:
+                                ap_status = "Appeared"
+                            else:
+                                ap_status = "blank"
+                    if query.slot_date < datetime.now().date():
+                        std_exam  = ManageMasterKey.objects.filter(profile=query.id)
+                        if std_exam:
+                            ap_status = "Appeared"
+                        else:
+                            ap_status = "Not Appeared"
                 else:
-                    meritto_payload["data"]["field_351644"] = "Not Appeared"
+                    ap_status = "blank"    
+                # std_profile = StudentRealExamResult.objects.filter(student_profile=query)
+                if ap_status == "blank":
+                    meritto_payload["data"]["field_351644"] = ""
+                else:
+                    meritto_payload["data"]["field_351644"] = ap_status
+
                 print("meritto_payload...",meritto_payload)
+                
                 url = settings.MERITO_BASE_URL+"/application/v1/createOrUpdate"
 
                 headers = {
@@ -2342,11 +2868,17 @@ class AddProfileToMerittoView(APIView):
                     response = requests.post(url, headers=headers, json=meritto_payload)
                     print(response.status_code)
                     print(response.text)
+                    if int(response.status_code)==200:
+                        success_datas.append(query.email)
+                    else:
+                        failed_datas.append(query.email)
                 except Exception as e:
                     print("API Error:", str(e))
+                    failed_datas.append(query.email)
 
-
-        return Response({'message':'success',"status":200,'data':{}})
+                numm += 1
+                print(numm)
+        return Response({'message':'success',"status":200,'data':{"total":numm,"success_count":len(success_datas),"failed_count":len(failed_datas), "sucess":success_datas, "failed":failed_datas}})
     
 
 

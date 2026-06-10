@@ -1496,19 +1496,19 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                     value2 = exp.get('position')
                     key3 = f"field_334047_{num}_3"
                     value3 = exp.get('area')
-                    # key4 = f"field_334047_{num}_4"
-                    # value4 = exp.get('start_date').strftime("%d/%m/%Y")
-                    # key5 = f"field_334047_{num}_5"
-                    # print("experience.end_date....",experience.end_date)
-                    # value5 = exp.get('end_date').strftime("%d/%m/%Y") if experience.end_date else exp.get('start_date').strftime("%d/%m/%Y")
+                    key4 = f"field_334047_{num}_4"
+                    value4 = exp.get('start_date').strftime("%d/%m/%Y")
+                    key5 = f"field_334047_{num}_5"
+                    print("experience.end_date....",experience.end_date)
+                    value5 = exp.get('end_date').strftime("%d/%m/%Y") if experience.end_date else exp.get('start_date').strftime("%d/%m/%Y")
                     key6 = f"field_334047_{num}_6"
                     value6 = ""
                     # print("values5...",value5)
                     exp_payload[key1] = value1
                     exp_payload[key2] = value2
                     exp_payload[key3] = value3
-                    # exp_payload[key4] = value4
-                    # exp_payload[key5] = value5
+                    exp_payload[key4] = value4
+                    exp_payload[key5] = value5
                     exp_payload[key6] = value6
                     print(exp_payload)
                     num+=1
@@ -1583,11 +1583,11 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                     value2 = exp.get('position')
                     key3 = f"field_334047_{num}_3"
                     value3 = exp.get('area')
-                    # key4 = f"field_334047_{num}_4"
-                    # value4 = exp.get('start_date').strftime("%d/%m/%Y")
-                    # key5 = f"field_334047_{num}_5"
-                    # print("experience.end_date....",experience.end_date)
-                    # value5 = exp.get('end_date').strftime("%d/%m/%Y") if experience.end_date else exp.get('start_date').strftime("%d/%m/%Y")
+                    key4 = f"field_334047_{num}_4"
+                    value4 = exp.get('start_date').strftime("%d/%m/%Y")
+                    key5 = f"field_334047_{num}_5"
+                    print("experience.end_date....",experience.end_date)
+                    value5 = exp.get('end_date').strftime("%d/%m/%Y") if experience.end_date else exp.get('start_date').strftime("%d/%m/%Y")
                     key6 = f"field_334047_{num}_6"
                     value6 = ""
 
@@ -1596,8 +1596,8 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                     exp_payload[key1] = value1
                     exp_payload[key2] = value2
                     exp_payload[key3] = value3
-                    # exp_payload[key4] = value4
-                    # exp_payload[key5] = value5
+                    exp_payload[key4] = value4
+                    exp_payload[key5] = value5
                     exp_payload[key6] = value6
 
                     print(exp_payload)
@@ -1734,8 +1734,8 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
             std_result = StudentRealExamResult.objects.filter(student_profile=query)
             if std_result:
                 meritto_payload["data"]["field_351644"] = "Appeared"
-            else:
-                meritto_payload["data"]["field_351644"] = "Not Appeared"
+            # else:
+            #     meritto_payload["data"]["field_351644"] = "Not Appeared"
             
             print("meritto_payload...",meritto_payload)
             url = settings.MERITO_BASE_URL+"/application/v1/createOrUpdate"

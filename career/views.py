@@ -2608,7 +2608,7 @@ class ImportEmailView(APIView):
 ### for affliate 6 data export ##############
 
 
-class GetDossierAffliateSixReportExcellView(APIView):
+class GetDossierAffliateSixReportExcelView(APIView):
     def get(self, request, sid=None):
         # datas = DossierData.objects.filter(source=SourceType.Affiliate6).order_by('-id')
         datas = (DossierData.objects.filter(source=SourceType.Affiliate6).order_by('phone', '-id').distinct('phone'))

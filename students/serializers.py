@@ -941,12 +941,27 @@ class StudentProfileSerializer(serializers.ModelSerializer):
         return total_score
     
     def get_exam_url(self, obj):
-
         exam_url = ""
-        std_exam  = ManageMasterKey.objects.filter(profile=obj.id, status=False)
-        if std_exam:
-            result   = std_exam.first()
-            exam_url = result.exam_url
+        if obj.slot_date:
+            if obj.slot_date == datetime.now().date():
+                start_str, end_str = obj.slot_time.split(" - ")
+                current_time = datetime.now().time().replace(microsecond=0)
+                target_time = datetime.strptime(start_str, "%I:%M %p").time()
+                dt1 = datetime.combine(date.today(), current_time)
+                dt2 = datetime.combine(date.today(), target_time)
+
+                print(dt1, dt2)
+                if dt1>dt2:
+                    current_time = datetime.now().time().replace(microsecond=0)
+                    target_time = datetime.strptime(end_str, "%I:%M %p").time()
+                    dt1 = datetime.combine(date.today(), current_time)
+                    dt2 = datetime.combine(date.today(), target_time)
+                    if dt1<dt2:
+                        print(dt1, dt2)
+                        std_exam  = ManageMasterKey.objects.filter(profile=obj.id, status=False, created_at__date=datetime.now().date())
+                        if std_exam:
+                            result   = std_exam.last()
+                            exam_url = result.exam_url
 
         return exam_url
     

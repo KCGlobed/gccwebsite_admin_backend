@@ -151,7 +151,12 @@ CSRF_TRUSTED_ORIGINS = [
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.join(
     BASE_DIR, os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 )
+GOOGLE_SHEET_NAME = "AffliateSix Report"
+GOOGLE_WORKSHEET_NAME = "Sheet1"
 
+GOOGLE_CREDENTIAL_FILE = os.path.join(
+    BASE_DIR, os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+)
 
 STORAGES = {
     "default": {
@@ -228,9 +233,4 @@ MERITO_ACCESS_KEY = os.getenv("MERITO_ACCESS_KEY")
 
 
 
-GOOGLE_SHEET_NAME = "AffliateSix Report"
-GOOGLE_WORKSHEET_NAME = "Sheet1"
 
-GOOGLE_CREDENTIAL_FILE = (
-    BASE_DIR / "secrets/credentail_bucket.json"
-)

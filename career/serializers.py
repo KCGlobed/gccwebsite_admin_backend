@@ -108,9 +108,12 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
 
             ### for sheet
             if src_type == 14:
-                if not DossierData.objects.filter(phone=instance.phone, source=src_type).exists():
+                print("sheet enter")
+                if not DossierData.objects.filter(phone=instance.phone, source=src_type).exclude(id=instance.id).exists():
+                    print("valida data")
                     try:
                         sheet = get_google_sheet()
+                        print("open sheet...",sheet)
                         local_time = timezone.localtime(instance.created_at)
                         create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
                         row = [
@@ -133,7 +136,9 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                             instance.fee_waiver_category,
                             create_times
                         ]
+                        print("data inster",row)
                         sheet.append_row(row)
+                        print("completed")
                     except Exception as e:
                         print("google sheet error", str(e))
 

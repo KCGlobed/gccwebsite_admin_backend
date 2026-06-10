@@ -2710,7 +2710,6 @@ class GetDossierAffliateSixReportExcelView(APIView):
         datas = (
             DossierData.objects
             .filter(source=SourceType.Affiliate6)
-            .order_by('-id')
         )
 
         data_list = ListDossierDataAffliateSixReportSerializer(
@@ -2778,3 +2777,77 @@ class GetDossierAffliateSixReportExcelView(APIView):
 
 
         return response
+
+
+
+
+##########################
+
+from utils.google_sheet import get_google_sheet
+
+
+class GetAffliateSixExcelView(APIView):
+    def post(self, request, sid=None):
+
+        sheet = get_google_sheet()
+
+        # row = [
+        #     dossier.get("full_name"),
+        #     dossier.get("email"),
+        #     dossier.get("phone"),
+        #     dossier.get("city"),
+        #     dossier.get("state"),
+        #     dossier.get("created_at"),
+        # ]
+        {
+            "full_name": 'Full Name',
+            "email": 'Email',
+            "phone": 'Phone',
+            "city": 'City',
+            "state": 'State',
+            "fbc_id": 'FBC ID',
+            "utm_source": 'UTM SOURCE',
+            "utm_medium": 'UTM MEDIUM',
+            "utm_content": 'UTM CONTENT',
+            "utm_campaign": 'UTM CAMPAIGN',
+            "campaign_id": 'CAMPAIGN ID',
+            "utm_adname": 'UTM ADNAME',
+            "adset_id": 'ADSET ID',
+            "fbclid": 'FBCLID',
+            "ad_source": 'AD SOURCE',
+            "ad_id": 'AD ID',
+            "fee_waiver_category": 'FEE WAIVER CATEGORY',
+            "created_at": 'CREATE TIMESTAMP'
+        }
+        # row = [
+        #     obj.full_name,
+        #     obj.email,
+        #     obj.phone,
+        #     obj.city,
+        #     obj.state,
+        #     obj.fbc_id,
+        #     obj.utm_source,
+        #     obj.utm_medium,
+        #     obj.utm_content,
+        #     obj.utm_campaign,
+        #     obj.campaign_id,
+        #     obj.utm_adname,
+        #     obj.adset_id,
+        #     obj.fbclid,
+        #     obj.ad_source,
+        #     obj.ad_id,
+        #     obj.fee_waiver_category,
+        #     obj.created_at
+        # ]
+        
+        
+
+        # sheet.append_row(row)
+
+
+        return success_response(
+                message="Success",
+                data={"report_url": ""},
+                status_code=status.HTTP_200_OK
+            )
+

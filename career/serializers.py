@@ -5,7 +5,7 @@ from users.models import User
 from users.serializers import StudentProfileDetailSerializer
 import requests
 from django.utils import timezone
-
+from utils.google_sheet import get_google_sheet
 
 class ListCareerApplicationSerializer(serializers.ModelSerializer):
     resume_path = serializers.SerializerMethodField('get_resume_path')
@@ -104,7 +104,39 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 DossierLog.objects.create(dossier=instance, message=response.text, status=int(response.status_code), activity="creating", datas=validated_data)
             except Exception as e:
                 print("API Error:", str(e))
-        
+
+
+            ### for sheet
+            if src_type == 14:
+                if not DossierData.objects.filter(phone=instance.phone, source=src_type).exists():
+                    try:
+                        sheet = get_google_sheet()
+                        local_time = timezone.localtime(instance.created_at)
+                        create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
+                        row = [
+                            instance.full_name,
+                            instance.email,
+                            instance.phone,
+                            instance.city,
+                            instance.state,
+                            instance.fbc_id,
+                            instance.utm_source,
+                            instance.utm_medium,
+                            instance.utm_content,
+                            instance.utm_campaign,
+                            instance.campaign_id,
+                            instance.utm_adname,
+                            instance.adset_id,
+                            instance.fbclid,
+                            instance.ad_source,
+                            instance.ad_id,
+                            instance.fee_waiver_category,
+                            create_times
+                        ]
+                        sheet.append_row(row)
+                    except Exception as e:
+                        print("google sheet error", str(e))
+
         return instance
 
 

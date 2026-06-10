@@ -226,3 +226,11 @@ MERITO_BASE_URL = os.getenv("MERITO_BASE_URL")
 MERITO_SECRETE_KEY = os.getenv("MERITO_SECRETE_KEY")
 MERITO_ACCESS_KEY = os.getenv("MERITO_ACCESS_KEY")
 
+
+
+GOOGLE_SHEET_NAME = "AffliateSix Report"
+GOOGLE_WORKSHEET_NAME = "Sheet1"
+
+GOOGLE_CREDENTIAL_FILE = (
+    BASE_DIR / "secrets/credentail_bucket.json"
+)

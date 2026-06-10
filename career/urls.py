@@ -52,6 +52,7 @@ urlpatterns = [
 
     ### test ###
     path("excel_import", ImportEmailView.as_view()),
+    path("add_lead", GetAffliateSixExcelView.as_view()),
     
 
 ]

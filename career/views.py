@@ -2703,6 +2703,13 @@ import pandas as pd
 from django.http import HttpResponse
 
 
+import pandas as pd
+from django.http import HttpResponse
+from io import BytesIO
+from openpyxl import load_workbook
+from openpyxl.styles import Font, Alignment
+
+
 class GetDossierAffliateSixReportExcelView(APIView):
 
     def get(self, request, sid=None):
@@ -2710,10 +2717,21 @@ class GetDossierAffliateSixReportExcelView(APIView):
         datas = (
             DossierData.objects
             .filter(source=SourceType.Affiliate6)
+            .order_by('id')
         )
 
+        # remove duplicate phone
+        seen = set()
+        unique_data = []
+
+        for item in datas:
+            if item.phone not in seen:
+                seen.add(item.phone)
+                unique_data.append(item)
+
+
         data_list = ListDossierDataAffliateSixReportSerializer(
-            datas,
+            unique_data,
             many=True
         ).data
 
@@ -2743,26 +2761,58 @@ class GetDossierAffliateSixReportExcelView(APIView):
         df = pd.DataFrame(data_list)
 
 
-        # remove duplicate phone
-        df = df.drop_duplicates(
-            subset=["phone"],
-            keep="first"
-        )
-
-
-        # reorder columns
         df = df[list(COLUMN_MAPPING.keys())]
 
 
-        # rename excel headers
         df.rename(
             columns=COLUMN_MAPPING,
             inplace=True
         )
 
 
+        # create excel in memory
+        excel_file = BytesIO()
+
+        df.to_excel(
+            excel_file,
+            index=False
+        )
+
+        excel_file.seek(0)
+
+
+        # format excel
+        wb = load_workbook(excel_file)
+        ws = wb.active
+
+
+        # header style
+        for cell in ws[1]:
+            cell.font = Font(bold=True)
+            cell.alignment = Alignment(
+                horizontal="center"
+            )
+
+
+        # auto width
+        for column in ws.columns:
+
+            max_length = 0
+            column_letter = column[0].column_letter
+
+            for cell in column:
+                if cell.value:
+                    max_length = max(
+                        max_length,
+                        len(str(cell.value))
+                    )
+
+            ws.column_dimensions[column_letter].width = max_length + 5
+
+
         response = HttpResponse(
-            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            content_type=
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
         response["Content-Disposition"] = (
@@ -2770,13 +2820,107 @@ class GetDossierAffliateSixReportExcelView(APIView):
         )
 
 
-        df.to_excel(
-            response,
-            index=False
-        )
+        wb.save(response)
 
 
         return response
+
+
+
+# class GetDossierAffliateSixReportExcelView(APIView):
+
+#     def get(self, request, sid=None):
+#         datas = (
+#             DossierData.objects
+#             .filter(source=SourceType.Affiliate6)
+#             .order_by('id')
+#         )
+
+#         seen = set()
+#         unique_data = []
+
+#         for item in datas:
+#             if item.phone not in seen:
+#                 seen.add(item.phone)
+#                 unique_data.append(item)
+
+
+#         data_list = ListDossierDataAffliateSixReportSerializer(
+#             unique_data,
+#             many=True
+#         ).data        
+#         # datas = (
+#         #     DossierData.objects
+#         #     .filter(source=SourceType.Affiliate6)
+#         #     .order_by('phone','id')
+#         #     .distinct('phone')
+#         # )
+
+#         # data_list = ListDossierDataAffliateSixReportSerializer(
+#         #     datas,
+#         #     many=True
+#         # ).data
+
+
+#         COLUMN_MAPPING = {
+#             "full_name": 'Full Name',
+#             "email": 'Email',
+#             "phone": 'Phone',
+#             "city": 'City',
+#             "state": 'State',
+#             "fbc_id": 'FBC ID',
+#             "utm_source": 'UTM SOURCE',
+#             "utm_medium": 'UTM MEDIUM',
+#             "utm_content": 'UTM CONTENT',
+#             "utm_campaign": 'UTM CAMPAIGN',
+#             "campaign_id": 'CAMPAIGN ID',
+#             "utm_adname": 'UTM ADNAME',
+#             "adset_id": 'ADSET ID',
+#             "fbclid": 'FBCLID',
+#             "ad_source": 'AD SOURCE',
+#             "ad_id": 'AD ID',
+#             "fee_waiver_category": 'FEE WAIVER CATEGORY',
+#             "created_at": 'CREATE TIMESTAMP'
+#         }
+
+
+#         df = pd.DataFrame(data_list)
+
+
+#         # # remove duplicate phone
+#         # df = df.drop_duplicates(
+#         #     subset=["phone"],
+#         #     keep="first"
+#         # )
+
+
+#         # reorder columns
+#         df = df[list(COLUMN_MAPPING.keys())]
+
+
+#         # rename excel headers
+#         df.rename(
+#             columns=COLUMN_MAPPING,
+#             inplace=True
+#         )
+
+
+#         response = HttpResponse(
+#             content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+#         )
+
+#         response["Content-Disposition"] = (
+#             'attachment; filename="lead_report.xlsx"'
+#         )
+
+
+#         df.to_excel(
+#             response,
+#             index=False
+#         )
+
+
+#         return response
 
 
 

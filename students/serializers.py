@@ -915,7 +915,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
                 current_time = datetime.now().time().replace(microsecond=0)
                 target_time = datetime.strptime(start_str, "%I:%M %p").time()
                 dt1 = datetime.combine(date.today(), current_time)
-                dt2 = datetime.combine(date.today(), target_time)
+                dt2 = datetime.combine(obj.slot_date, target_time)
                 diff = abs((dt1 - dt2).total_seconds())
                 if dt1>dt2:
                     if diff >=5400:

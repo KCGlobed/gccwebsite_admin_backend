@@ -72,6 +72,7 @@ urlpatterns = [
 
     path("company_dropdown_list/", DropDownInterviewCompanyView.as_view(), name="company_dropdown_list"),
     path("create_update_interview/", ManageStudentInterviewView.as_view(), name="create_update_interview"),
+    path("interview_page_list/", InterviewSchedule_list.as_view(), name="interview_listing"),
 
     path('test_waiver_update/', AddWaiverValueProfileView.as_view(), name="test_waiver_update"),
     path('test_upload_profile_meritto/', AddProfileToMerittoView.as_view(), name="test_upload_profile_meritto"),

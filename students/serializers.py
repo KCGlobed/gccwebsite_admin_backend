@@ -971,6 +971,148 @@ class StudentProfileSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+
+class StudentprofileCustomFieldInterviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ManageStudentInterview
+        fields = ["interview_date","company"]
+
+
+
+class StudentProfileListSerializer(serializers.ModelSerializer):
+    student_experience = serializers.SerializerMethodField()
+    exam_status = serializers.SerializerMethodField()
+    created_at = serializers.DateTimeField(read_only=True, format="%Y-%m-%d %H:%M:%S")
+    application_id = serializers.SerializerMethodField("get_application_id")
+    student_result = serializers.SerializerMethodField("get_student_result")
+    result_status = serializers.SerializerMethodField("get_result_status")
+    referral_code = serializers.SerializerMethodField("get_referral_code")
+    referred_code = serializers.SerializerMethodField("get_referred_code")
+    exam_url = serializers.SerializerMethodField("get_exam_url")
+    guardian_dropdown = serializers.SerializerMethodField("get_guardian_dropdown")
+    interview_detail = serializers.SerializerMethodField("get_interview_detail")
+
+    def get_guardian_dropdown(self, obj):
+        return obj.get_guardian_dropdown_display()
+
+    def get_referral_code(self, obj):
+        name = obj.user.referral_code if obj.user else ""
+        return name
+
+    def get_referred_code(self, obj):
+        name = obj.user.referred_code if obj.user else ""
+        return name
+
+    def get_student_experience(self, obj):
+        answe = StudentExperience.objects.filter(student_profile_id =obj.id).order_by("id")
+        return StudentExperienceRelationSerializer(answe, many=True).data
+    
+    def get_result_status(self, obj):
+        status = False
+        std_result = StudentRealExamResult.objects.filter(student_profile=obj.id)
+        if std_result:
+            status = True
+        return status
+    
+    def get_exam_status(self, obj):
+        status=False
+        if obj.slot_date:
+            # print(datetime.now().date())
+            if obj.slot_date == datetime.now().date():
+                start_str, end_str = obj.slot_time.split(" - ")
+                current_time = datetime.now().time().replace(microsecond=0)
+                target_time = datetime.strptime(start_str, "%I:%M %p").time()
+                dt1 = datetime.combine(date.today(), current_time)
+                dt2 = datetime.combine(date.today(), target_time)
+
+                diff = abs((dt1 - dt2).total_seconds())
+                # print("diff time...",diff)
+                # if diff <= 3600:   # 3600 seconds = 1 hour
+                # if diff <= 120:   # 120 seconds = 2 min
+                    # status=True
+                # status=True
+                # if obj.re_attempt == 1:
+                #     status =  False
+
+                status = True
+                # if dt1>dt2:
+                #     status = False
+                if dt1<dt2:
+                    status = False
+                if dt1>dt2:
+                    if diff >=5400:
+                        obj.re_attempt = 1
+                        obj.re_attempt_btn = 1
+                        obj.save()
+                        status = False
+            elif obj.slot_date <= datetime.now().date():
+                # print("datetime elif")
+                start_str, end_str = obj.slot_time.split(" - ")
+                current_time = datetime.now().time().replace(microsecond=0)
+                target_time = datetime.strptime(start_str, "%I:%M %p").time()
+                dt1 = datetime.combine(date.today(), current_time)
+                dt2 = datetime.combine(date.today(), target_time)
+                diff = abs((dt1 - dt2).total_seconds())
+                if dt1>dt2:
+                    if diff >=5400:
+                        obj.re_attempt = 1
+                        obj.re_attempt_btn = 1
+                        obj.save()
+        return status
+    
+    def get_application_id(self, obj):
+        app_id = "--"
+        if obj.user:
+            app_id = obj.user.application_id
+        return app_id
+    
+    def get_student_result(self, obj):
+
+        total_score = ""
+        std_result  = StudentRealExamResult.objects.filter(student_profile=obj.id)
+        if std_result:
+            result      = std_result.last()
+            total_score = str(round((float(result.totalscore) / float(result.totalquestions)) * 100, 2))
+
+        return total_score
+    
+    def get_interview_detail(self, obj):
+        interview_objs  = ManageStudentInterview.objects.filter(profile=obj.id)
+        interview_data  = StudentprofileCustomFieldInterviewSerializer(interview_objs, many=True).data
+
+        return interview_data
+    
+    def get_exam_url(self, obj):
+        exam_url = ""
+        if obj.slot_date:
+            if obj.slot_date == datetime.now().date():
+                start_str, end_str = obj.slot_time.split(" - ")
+                current_time = datetime.now().time().replace(microsecond=0)
+                target_time = datetime.strptime(start_str, "%I:%M %p").time()
+                dt1 = datetime.combine(date.today(), current_time)
+                dt2 = datetime.combine(date.today(), target_time)
+
+                print(dt1, dt2)
+                if dt1>dt2:
+                    current_time = datetime.now().time().replace(microsecond=0)
+                    target_time = datetime.strptime(end_str, "%I:%M %p").time()
+                    dt1 = datetime.combine(date.today(), current_time)
+                    dt2 = datetime.combine(date.today(), target_time)
+                    if dt1<dt2:
+                        print(dt1, dt2)
+                        std_exam  = ManageMasterKey.objects.filter(profile=obj.id, status=False, created_at__date=datetime.now().date())
+                        if std_exam:
+                            result   = std_exam.last()
+                            exam_url = result.exam_url
+
+        return exam_url
+    
+    
+    class Meta:
+        model = StudentProfile
+        fields = "__all__"
+
+
 class StudentProfileDraftSerializer(serializers.ModelSerializer):
     student_experience = serializers.SerializerMethodField()
     exam_status = serializers.SerializerMethodField()
@@ -2038,9 +2180,45 @@ class StudentInterviewCreateOrUpdateSerializer(serializers.ModelSerializer):
 
 
 
+class StudentProfileInterviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentProfile
+        fields = ["first_name","last_name","email"]
 
 
+class StudentInterviewSerializer(serializers.ModelSerializer):
+    attempt_status = serializers.SerializerMethodField('get_attempt_status')
+    result = serializers.SerializerMethodField('get_result')
+    class Meta:
+        model = ManageStudentInterview
+        fields = ["attempt_status","interview_date","absent_reason","result","created_at"]
 
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        # Fetch related form
+        std_obj = StudentProfile.objects.filter(id=instance.profile.id).first()
+
+        if std_obj:
+            form_data = StudentProfileInterviewSerializer(std_obj).data
+            # Merge form fields into main response
+            data.update(form_data)
+            
+        # Fetch related form
+        cmp_obj = CompanyMaster.objects.filter(id=instance.company.id).first()
+
+        if std_obj:
+            cmpy_data = CompanyInterviewSerializer(cmp_obj).data
+            # Merge form fields into main response
+            data.update(cmpy_data)
+
+        return data
+
+    def get_attempt_status(self, value):
+        return value.get_attempt_status_display()
+    def get_result(self, value):
+        return value.get_result_display()
 
 
 

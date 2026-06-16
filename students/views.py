@@ -1798,7 +1798,7 @@ class GetStudentProfileListingView(APIView):
 
         paginator = self.pagination_class()
         page = paginator.paginate_queryset(datas, request, view=self)
-        serializers = StudentProfileSerializer(page, many=True)
+        serializers = StudentProfileListSerializer(page, many=True)
         
         return paginator.get_paginated_response(serializers.data)
     

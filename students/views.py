@@ -1535,7 +1535,7 @@ class GetStudentAdmitCardView(APIView):
 
 
 class GetStudentAdmitCardAdminView(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     def get(self, request, id):
         user_obj = User.objects.filter(id=id).first()
         std_data = StudentProfile.objects.filter(user = user_obj).first()

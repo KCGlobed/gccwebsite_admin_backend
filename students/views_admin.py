@@ -118,6 +118,21 @@ class MerittoExamResultUpdateView(APIView):
     
 
 
+class DropDownInterviewCompanyView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, format=None):
+        datas = CompanyMaster.objects.all().order_by('name')
+        serializer = CompanyInterviewSerializer(datas, many=True).data
+        return success_response(message="Success", data=serializer, status_code=status.HTTP_200_OK)
 
 
 
+class ManageStudentInterviewView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request, format=None):
+        serializer = StudentInterviewCreateOrUpdateSerializer(data = request.data)
+        if serializer.is_valid(raise_exception = True):
+            serializer.save()
+            return success_response(message="Success", data={}, status_code=status.HTTP_200_OK)
+        return error_response(message="failed", data = serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
+    

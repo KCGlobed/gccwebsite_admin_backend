@@ -533,7 +533,48 @@ class ManageMasterKey(models.Model):
 
     def __str__(self):
         return '%s' % self.id
+
+
+
+class ResultStatusType(models.IntegerChoices):
+    Selected = 1, 'Selected'
+    NotSelected = 2, 'Not Selected'
     
+class AttendanceStatusType(models.IntegerChoices):
+    Present = 1, 'Present'
+    Absent = 2, 'Absent'
+
+
+class CompanyMaster(models.Model):
+    name       = models.TextField(blank=True, null=True)
+    status     = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
+
+    class Meta:
+        verbose_name = 'Company Master'
+        verbose_name_plural = 'Company Master'
+
+    def __str__(self):
+        return '%s' % self.id
+
+class ManageStudentInterview(models.Model):
+    profile = models.ForeignKey('StudentProfile', null=True, blank=True, on_delete=models.CASCADE)
+    company   = models.ForeignKey('CompanyMaster', null=True, blank=True, on_delete=models.CASCADE)
+    attempt_status = models.IntegerField(choices=AttendanceStatusType.choices, null=True, blank=True)
+    absent_reason = models.TextField(null=True, blank=True)
+    result = models.IntegerField(choices=ResultStatusType.choices, null=True, blank=True)
+    interview_date = models.DateField(null=True, blank=True)
+    interview_time = models.CharField(max_length=200, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
+
+    class Meta:
+        verbose_name = 'Manage Student Interview'
+        verbose_name_plural = 'Manage Student Interview'
+
+    def __str__(self):
+        return '%s' % self.id
 
 
 

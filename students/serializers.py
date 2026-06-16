@@ -1976,3 +1976,73 @@ class CompleteStudentDraftSerializer(serializers.ModelSerializer) :
                     
                         num+=1
         return query
+
+########################## INETRVIEW ############################
+
+
+
+
+
+
+class CompanyInterviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CompanyMaster
+        fields = ["name"]
+
+
+
+class StudentInterviewCreateOrUpdateSerializer(serializers.ModelSerializer):
+    student_id = serializers.IntegerField(required=True)
+    company = serializers.CharField(max_length = 255, required=False)
+    attempt_status = serializers.IntegerField(required=False)
+    absent_reason = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    result = serializers.IntegerField(required=False)
+    interview_date = serializers.DateField(required=False, allow_null = True)
+
+    class Meta:
+        model = ManageStudentInterview
+        fields = ["student_id","company","attempt_status","absent_reason","result","interview_date"]
+
+    def validate(self, validate_data):
+        print("calidatio")
+        datas = StudentProfile.objects.filter(id = validate_data.get('student_id'))
+        if not datas:
+            # raise serializers.ValidationError("Invalid Student ID")
+            raise serializers.ValidationError({
+                "status": 400,
+                "message": "Invalid Student ID",
+                "data": {}
+            })
+        return validate_data
+    
+    def create(self , validate_data):
+        print(validate_data)
+        objs = ManageStudentInterview.objects.filter(profile=validate_data.get('student_id'))
+        if objs:
+            instance = objs.first()    
+            instance.company_id = validate_data.get('company', instance.company)    
+            instance.interview_date = validate_data.get('interview_date', instance.interview_date)    
+            instance.attempt_status = validate_data.get('attempt_status', instance.attempt_status)    
+            instance.absent_reason = validate_data.get('absent_reason', instance.absent_reason)    
+            instance.result = validate_data.get('result', instance.result)    
+            instance.save()
+        else:
+            instance = ManageStudentInterview(
+               profile_id = validate_data.get('student_id'),  
+               company_id = validate_data.get('company'),
+               interview_date = validate_data.get('interview_date')
+            )
+            instance.save()
+        return instance
+        
+
+
+
+
+
+
+
+
+
+
+

@@ -2193,7 +2193,7 @@ class StudentInterviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ManageStudentInterview
-        fields = ["attempt_status","interview_date","absent_reason","result","created_at"]
+        fields = ["attempt_status","interview_date","absent_reason","result","created_at", "company_detail"]
 
 
     def to_representation(self, instance):

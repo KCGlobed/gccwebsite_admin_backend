@@ -2183,12 +2183,14 @@ class StudentInterviewCreateOrUpdateSerializer(serializers.ModelSerializer):
 class StudentProfileInterviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentProfile
-        fields = ["first_name","last_name","email"]
+        fields = ["id","first_name","last_name","email"]
 
 
 class StudentInterviewSerializer(serializers.ModelSerializer):
     attempt_status = serializers.SerializerMethodField('get_attempt_status')
     result = serializers.SerializerMethodField('get_result')
+    company_detail = serializers.SerializerMethodField('get_company_detail')
+
     class Meta:
         model = ManageStudentInterview
         fields = ["attempt_status","interview_date","absent_reason","result","created_at"]
@@ -2205,14 +2207,6 @@ class StudentInterviewSerializer(serializers.ModelSerializer):
             # Merge form fields into main response
             data.update(form_data)
             
-        # Fetch related form
-        cmp_obj = CompanyMaster.objects.filter(id=instance.company.id).first()
-
-        if std_obj:
-            cmpy_data = CompanyInterviewSerializer(cmp_obj).data
-            # Merge form fields into main response
-            data.update(cmpy_data)
-
         return data
 
     def get_attempt_status(self, value):
@@ -2220,7 +2214,10 @@ class StudentInterviewSerializer(serializers.ModelSerializer):
     def get_result(self, value):
         return value.get_result_display()
 
-
+    def get_company_detail(self, value):
+        cmp_obj = CompanyMaster.objects.filter(id=value.company.id)
+        cmpy_data = CompanyInterviewSerializer(cmp_obj, many=True).data
+        return cmpy_data
 
 
 

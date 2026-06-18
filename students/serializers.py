@@ -2129,7 +2129,7 @@ class CompleteStudentDraftSerializer(serializers.ModelSerializer) :
 class CompanyInterviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyMaster
-        fields = ["name"]
+        fields = ["id","name"]
 
 
 

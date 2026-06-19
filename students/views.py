@@ -1535,7 +1535,7 @@ class GetStudentAdmitCardView(APIView):
 
 
 class GetStudentAdmitCardAdminView(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     def get(self, request, id):
         user_obj = User.objects.filter(id=id).first()
         std_data = StudentProfile.objects.filter(user = user_obj).first()
@@ -1798,7 +1798,7 @@ class GetStudentProfileListingView(APIView):
 
         paginator = self.pagination_class()
         page = paginator.paginate_queryset(datas, request, view=self)
-        serializers = StudentProfileSerializer(page, many=True)
+        serializers = StudentProfileListSerializer(page, many=True)
         
         return paginator.get_paginated_response(serializers.data)
     

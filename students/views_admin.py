@@ -118,6 +118,65 @@ class MerittoExamResultUpdateView(APIView):
     
 
 
+class DropDownInterviewCompanyView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, format=None):
+        datas = CompanyMaster.objects.all().order_by('name')
+        serializer = CompanyInterviewSerializer(datas, many=True).data
+        return success_response(message="Success", data=serializer, status_code=status.HTTP_200_OK)
 
 
 
+class ManageStudentInterviewView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request, format=None):
+        serializer = StudentInterviewCreateOrUpdateSerializer(data = request.data)
+        if serializer.is_valid(raise_exception = True):
+            serializer.save()
+            return success_response(message="Success", data={}, status_code=status.HTTP_200_OK)
+        return error_response(message="failed", data = serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
+    
+
+class InterviewSchedule_list(APIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = CustomPageNumberPagination
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ["company__name","profile__first_name","profile__last_name","profile__email"]
+    ordering_fields = ["id"]
+    def get(self, request):
+        datas = ManageStudentInterview.objects.all().order_by('-id')
+
+        full_name = request.GET.get('full_name')
+        if full_name:
+            datas = datas.filter(profile_user_first_name__icontains=full_name)
+
+        email = request.GET.get('email')
+        if email:
+            datas = datas.filter(profile_email__icontains=email)
+
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+
+        search_filter = filters.SearchFilter()
+        datas = search_filter.filter_queryset(request, datas, self)
+
+        ordering_filter = filters.OrderingFilter()
+        datas = ordering_filter.filter_queryset(request, datas, self)
+
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(datas, request, view=self)
+        serializers = StudentInterviewSerializer(page, many=True)
+        
+        return paginator.get_paginated_response(serializers.data)

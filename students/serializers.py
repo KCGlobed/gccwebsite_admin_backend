@@ -854,6 +854,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     referral_code = serializers.SerializerMethodField("get_referral_code")
     referred_code = serializers.SerializerMethodField("get_referred_code")
     exam_url = serializers.SerializerMethodField("get_exam_url")
+    interview_detail = serializers.SerializerMethodField("get_interview_detail")
     # guardian_dropdown = serializers.SerializerMethodField("get_guardian_dropdown")
 
     # def get_guardian_dropdown(self, obj):
@@ -965,6 +966,10 @@ class StudentProfileSerializer(serializers.ModelSerializer):
 
         return exam_url
     
+    def get_interview_detail(self, obj):
+        interview_objs  = ManageStudentInterview.objects.filter(profile=obj.id)
+        interview_data  = StudentprofileCustomFieldInterviewSerializer(interview_objs, many=True).data
+        return interview_data
     
     class Meta:
         model = StudentProfile
@@ -975,7 +980,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
 class StudentprofileCustomFieldInterviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = ManageStudentInterview
-        fields = ["interview_date","company"]
+        fields = ["interview_date","company","package_status"]
 
 
 
@@ -1374,6 +1379,23 @@ class StudentCreatePaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payments
         # fields = ["razorpay_order_id", "razorpay_payment_id","razorpay_signature","amount","currency","status","response","created_at","updated_at","form_type","form_id","dossier_form","source"]
+        fields = "__all__"
+
+    def create(self, validated_data):
+        print("serializer payment request data..")
+        print(validated_data)
+        
+        validated_data["response"] = json.loads(validated_data["response"])         
+        validated_data["amount"] = float(validated_data["amount"])         
+        validated_data["created_at"] = timezone.now()           
+        validated_data["updated_at"] = timezone.now()   
+        instance = super().create(validated_data)
+        return instance
+
+
+class StudentProfileCreatePaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentPayment
         fields = "__all__"
 
     def create(self, validated_data):

@@ -63,6 +63,7 @@ urlpatterns = [
     path('admin-student-score-card-download/<int:stid>', GetAdminStudentScoreCardView.as_view(), name="admin-student-score-card-download"),
     
     path('create_student_payment/', StudentCreatePaymentView.as_view(), name="create_student_payment"),
+    path('create_student_profile_payment/', StudentProfileCreatePaymentView.as_view(), name="create_student_profile_payment"),
     path('post_exam_result/', PostExamResultView.as_view(), name="post_exam_result"),
     path('post_real_exam_result/', PostRealExamResultView.as_view(), name="post_real_exam_result"),
 

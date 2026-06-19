@@ -2011,6 +2011,17 @@ class StudentCreatePaymentView(APIView):
             return Response({'message':'failed',"status":400,'data':serializers.errors})
     
 
+class StudentProfileCreatePaymentView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        serializers = StudentProfileCreatePaymentSerializer(data=request.data)
+        if serializers.is_valid():
+            obj = serializers.save()
+            return Response({'message':'success',"status":200,'data':{}})
+        else:
+            return Response({'message':'failed',"status":400,'data':serializers.errors})
+    
+
 
 class PostExamResultView(APIView):
     # permission_classes = [IsAuthenticated]

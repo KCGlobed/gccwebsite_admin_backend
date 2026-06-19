@@ -1408,6 +1408,12 @@ class StudentProfileCreatePaymentSerializer(serializers.ModelSerializer):
         validated_data["created_at"] = timezone.now()           
         validated_data["updated_at"] = timezone.now()   
         instance = super().create(validated_data)
+        print("instance...", instance)
+
+        interview_obj = ManageStudentInterview.objects.filter(student=validated_data.get('student_id')).first()
+        interview_obj.payment_amount = float(validated_data["amount"])
+        interview_obj.payment_status = True
+        interview_obj.save()
         return instance
 
 class PostExamResultSerializer(serializers.ModelSerializer):
@@ -2247,7 +2253,7 @@ class StudentInterviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ManageStudentInterview
-        fields = ["attempt_status","interview_date","absent_reason","result","created_at", "company_detail"]
+        fields = ["attempt_status","interview_date","absent_reason","result","created_at", "company_detail", "payment_status"]
 
 
     def to_representation(self, instance):

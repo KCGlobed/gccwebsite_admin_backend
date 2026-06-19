@@ -141,7 +141,7 @@ class InterviewSchedule_list(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPageNumberPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ["company__name","profile__first_name","profile__last_name","profile__email"]
+    search_fields = ["company__name","profile__first_name","profile__last_name","profile__email", "profile__phone", "profile__application_id"]
     ordering_fields = ["id"]
     def get(self, request):
         datas = ManageStudentInterview.objects.all().order_by('-id')

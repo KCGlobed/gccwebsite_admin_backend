@@ -2207,7 +2207,7 @@ class StudentInterviewCreateOrUpdateSerializer(serializers.ModelSerializer):
 class StudentProfileInterviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentProfile
-        fields = ["id","first_name","last_name","email"]
+        fields = ["id","first_name","last_name","email","phone","application_id"]
 
 
 class StudentInterviewSerializer(serializers.ModelSerializer):

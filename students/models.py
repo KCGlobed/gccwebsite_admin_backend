@@ -567,6 +567,8 @@ class ManageStudentInterview(models.Model):
     interview_date = models.DateField(null=True, blank=True)
     interview_time = models.CharField(max_length=200, null=True, blank=True)
     package_status = models.BooleanField(default=False)
+    payment_status = models.BooleanField(default=False)
+    payment_amount = models.CharField(max_length=200, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
 

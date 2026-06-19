@@ -1394,6 +1394,7 @@ class StudentCreatePaymentSerializer(serializers.ModelSerializer):
 
 
 class StudentProfileCreatePaymentSerializer(serializers.ModelSerializer):
+    student_id = serializers.IntegerField(required=True)
     class Meta:
         model = StudentPayment
         fields = "__all__"

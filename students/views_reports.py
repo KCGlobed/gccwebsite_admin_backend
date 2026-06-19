@@ -915,10 +915,10 @@ class GetStudentProfileReportExcelView(APIView):
 
 
 
-class GetStudentProfileReportPDFView(APIView): 
+class GetStudentProfileInterviewReportPDFView(APIView): 
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        datas = StudentProfile.objects.all().order_by("-id")
+        datas = ManageStudentInterview.objects.all().order_by("-id")
 
         # Date range filter
         start_date = request.GET.get('start_date')
@@ -933,42 +933,19 @@ class GetStudentProfileReportPDFView(APIView):
             if end_date:
                 datas = datas.filter(created_at__date__lte=end_date)
 
-
-        # slot_date range filter
-        start_slot_date = request.GET.get('start_slot_date')
-        end_slot_date = request.GET.get('end_slot_date')
-        if start_slot_date:
-            datas = datas.filter(slot_date__gte=start_slot_date)
-
-        if end_slot_date:
-            datas = datas.filter(slot_date__lte=end_slot_date)
-
-        
-        fee_waiver_category = request.GET.get('fee_waiver_category')
-        if fee_waiver_category:
-            datas = datas.filter(fee_waiver_category=fee_waiver_category)
-
         first_name = request.GET.get('first_name')
         if first_name:
-            datas = datas.filter(first_name__icontains=first_name)
+            datas = datas.filter(profile_first_name__icontains=first_name)
         last_name = request.GET.get('last_name')
         if last_name:
-            datas = datas.filter(last_name__icontains=last_name)
+            datas = datas.filter(profile_last_name__icontains=last_name)
 
         email = request.GET.get('email')
         if email:
-            datas = datas.filter(email__icontains=email)
+            datas = datas.filter(profile_email__icontains=email)
         phone = request.GET.get('phone')
         if phone:
-            datas = datas.filter(phone__icontains=phone)
-        state = request.GET.get('state')
-        if state:
-            datas = datas.filter(state__icontains=state)
-        city = request.GET.get('city')
-        if city:
-            datas = datas.filter(city__icontains=city)
-
-
+            datas = datas.filter(profile_phone__icontains=phone)
 
         data_list = ListStudentProfileExcelReportSerializer(datas, many=True).data
         selected_bucket = settings.GS_BUCKET_NAME

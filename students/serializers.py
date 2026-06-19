@@ -1410,10 +1410,11 @@ class StudentProfileCreatePaymentSerializer(serializers.ModelSerializer):
         instance = super().create(validated_data)
         print("instance...", instance)
 
-        interview_obj = ManageStudentInterview.objects.filter(student=validated_data.get('student_id')).first()
-        interview_obj.payment_amount = float(validated_data["amount"])
-        interview_obj.payment_status = True
-        interview_obj.save()
+        if str(validated_data.get("amount")).lower() == "success":
+            interview_obj = ManageStudentInterview.objects.filter(student_id=validated_data.get('student_id')).first()
+            interview_obj.payment_amount = float(validated_data["amount"])
+            interview_obj.payment_status = True
+            interview_obj.save()
         return instance
 
 class PostExamResultSerializer(serializers.ModelSerializer):

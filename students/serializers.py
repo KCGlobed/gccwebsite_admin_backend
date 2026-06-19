@@ -1411,7 +1411,7 @@ class StudentProfileCreatePaymentSerializer(serializers.ModelSerializer):
         return instance
 
 class PostExamResultSerializer(serializers.ModelSerializer):
-    class Meta:
+    class Meta: 
         model = StudentExamResult
         fields = "__all__"
 
@@ -2200,6 +2200,35 @@ class StudentInterviewCreateOrUpdateSerializer(serializers.ModelSerializer):
                interview_date = validate_data.get('interview_date')
             )
             instance.save()
+        
+
+        if settings.MERITO_STATUS == "True":
+            meritto_payload = {
+                "form_id": 22144,
+                "email": instance.profile.email,
+                "search_criteria":"email",
+                "data": {
+                        "field_352367":instance.company.name,
+                        "field_352366":instance.company.interview_date.strftime("%d/%m/%Y %I:%M:%S %p")
+                    }
+            }
+            url = settings.MERITO_BASE_URL+"/application/v1/createOrUpdate"
+
+            headers = {
+                    "Content-Type": "application/json",
+                    "secret-key": settings.MERITO_SECRETE_KEY,
+                    "access-key": settings.MERITO_ACCESS_KEY
+                }
+
+            try:
+                response = requests.post(url, headers=headers, json=meritto_payload)
+                print(response.status_code)
+                print(response.text)
+                ApplicationLog.objects.create(application_id=validate_data.get('student_id'), message=response.text, status=int(response.status_code), activity="Schedule Interview", datas=validate_data, payload_request=meritto_payload)
+            except Exception as e:
+                print("API Error:", str(e))
+
+
         return instance
         
 

@@ -915,10 +915,10 @@ class GetStudentProfileReportExcelView(APIView):
 
 
 
-class GetStudentProfileInterviewReportPDFView(APIView): 
+class GetStudentProfileReportPDFView(APIView): 
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        datas = ManageStudentInterview.objects.all().order_by("-id")
+        datas = StudentProfile.objects.all().order_by("-id")
 
         # Date range filter
         start_date = request.GET.get('start_date')
@@ -933,19 +933,42 @@ class GetStudentProfileInterviewReportPDFView(APIView):
             if end_date:
                 datas = datas.filter(created_at__date__lte=end_date)
 
+
+        # slot_date range filter
+        start_slot_date = request.GET.get('start_slot_date')
+        end_slot_date = request.GET.get('end_slot_date')
+        if start_slot_date:
+            datas = datas.filter(slot_date__gte=start_slot_date)
+
+        if end_slot_date:
+            datas = datas.filter(slot_date__lte=end_slot_date)
+
+        
+        fee_waiver_category = request.GET.get('fee_waiver_category')
+        if fee_waiver_category:
+            datas = datas.filter(fee_waiver_category=fee_waiver_category)
+
         first_name = request.GET.get('first_name')
         if first_name:
-            datas = datas.filter(profile_first_name__icontains=first_name)
+            datas = datas.filter(first_name__icontains=first_name)
         last_name = request.GET.get('last_name')
         if last_name:
-            datas = datas.filter(profile_last_name__icontains=last_name)
+            datas = datas.filter(last_name__icontains=last_name)
 
         email = request.GET.get('email')
         if email:
-            datas = datas.filter(profile_email__icontains=email)
+            datas = datas.filter(email__icontains=email)
         phone = request.GET.get('phone')
         if phone:
-            datas = datas.filter(profile_phone__icontains=phone)
+            datas = datas.filter(phone__icontains=phone)
+        state = request.GET.get('state')
+        if state:
+            datas = datas.filter(state__icontains=state)
+        city = request.GET.get('city')
+        if city:
+            datas = datas.filter(city__icontains=city)
+
+
 
         data_list = ListStudentProfileExcelReportSerializer(datas, many=True).data
         selected_bucket = settings.GS_BUCKET_NAME
@@ -996,4 +1019,155 @@ class GetStudentProfileInterviewReportPDFView(APIView):
         finally:
             os.remove(pdf_path)
 
+
+######################## Interview ################
+
+
+### for student profile Interview data
+class GetStudentProfileInterviewReportExcelView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        datas = ManageStudentInterview.objects.all().order_by("-id")
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+        first_name = request.GET.get('first_name')
+        if first_name:
+            datas = datas.filter(first_name__icontains=first_name)
+
+        last_name = request.GET.get('last_name')
+        if last_name:
+            datas = datas.filter(last_name__icontains=last_name)
+
+        email = request.GET.get('email')
+        if email:
+            datas = datas.filter(email__icontains=email)
+
+        phone = request.GET.get('phone')
+        if phone:
+            datas = datas.filter(phone__icontains=phone)
+            
+        data_list = ListStudentProfileExcelReportSerializer(datas, many=True).data
+        # print("datas...",data_list)
+        COLUMN_MAPPING = {
+            "first_name":"First Name",
+            "last_name":"Last Name",
+            "email":"Email",
+            "phone":"Phone Number",
+            "contact_name":"Contact Name",
+            "contact_phone": "Contact Phone Number",
+            "date_of_birth": "Date Of Birth",
+            "gender": "Gender"
+            }
+        # print(data_list)
+        # return Response({"message":"success", "data":data_list})
+        # # Create temp file
+        with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as temp_file:
+            pdf_path = temp_file.name
+            
+            #### Create DataFrame and save to the temporary file
+            # df = pd.DataFrame.from_dict(data_list)
+            # df.rename(columns=COLUMN_MAPPING, inplace=True)
+
+            df = pd.DataFrame(data_list)
+
+            # Reorder columns as per COLUMN_MAPPING keys
+            df = df[list(COLUMN_MAPPING.keys())]
+
+            # Rename columns for Excel headers
+            df.rename(columns=COLUMN_MAPPING, inplace=True)
+
+            # df.to_excel(pdf_path, header=True, index=False)
+            df.to_excel(pdf_path, header=True, index=False)
+
+            # Make Resume column clickable
+            wb = load_workbook(pdf_path)
+            ws = wb.active
+
+            resume_column = None
+            
+            # Find Resume column
+            for col_num, cell in enumerate(ws[1], start=1):
+                if cell.value == "Resume":
+                    resume_column = col_num
+                    break
+
+            # Add hyperlink
+            if resume_column:
+                for row_num in range(2, ws.max_row + 1):
+                    cell = ws.cell(row=row_num, column=resume_column)
+
+                    if cell.value:
+                        resume_url = str(cell.value).strip()
+
+                        if resume_url.startswith(("http://", "https://")):
+                            cell.hyperlink = resume_url
+                            cell.value = "View Resume"  # Optional
+                            cell.style = "Hyperlink"
+
+            wb.save(pdf_path)
+            
+            # result_column = None
+            
+            # # Find Resume column
+            # for col_num, cell in enumerate(ws[1], start=1):
+            #     if cell.value == "Score Card Result":
+            #         result_column = col_num
+            #         # print("result...", result_column)
+            #         break
+
+            # # Add hyperlink
+            # if result_column:
+            #     for row_num in range(2, ws.max_row + 1):
+            #         cell = ws.cell(row=row_num, column=result_column)
+
+            #         if cell.value:
+            #             result_url = str(cell.value).strip()
+
+            #             if result_url.startswith(("http://", "https://")):
+            #                 cell.hyperlink = result_url
+            #                 cell.value = "View Result"  # Optional
+            #                 cell.style = "Hyperlink"
+
+            # wb.save(pdf_path)
+        
+        # After the 'with' block, the file is closed but not deleted
+        try:
+            # GCS file naming logic
+            timestamp = datetime.now().strftime("%d_%m_%y_%H_%M")
+            report_name = "student_profile_report"
+            username = re.sub(r'\s+', '_', f"{request.user.first_name} {request.user.last_name}")
+            gcs_folder_name = "media/excel_report"
+            gcs_file_name = f"{gcs_folder_name}/{username}_{report_name}.xlsx"
+
+            # Upload the temporary file to GCS
+            bucket = client.get_bucket(settings.GS_BUCKET_NAME_2)
+            blob = bucket.blob(gcs_file_name)
+            blob.upload_from_filename(pdf_path)
+            # ---------- Generate signed URL ----------
+            url = blob.generate_signed_url(
+                version="v4",
+                expiration=timedelta(minutes=settings.SIGNED_URL_EXPIRY),
+                method="GET"
+            )
+            return Response({
+                "message": "Success",
+                "data": {
+                    "report_url": url
+                }
+            })
+
+        finally:
+            os.remove(pdf_path)
 

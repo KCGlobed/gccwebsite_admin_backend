@@ -121,7 +121,7 @@ class MerittoExamResultUpdateView(APIView):
 class DropDownInterviewCompanyView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request, format=None):
-        datas = CompanyMaster.objects.all().order_by('name')
+        datas = CompanyMaster.objects.filter(status=True).order_by('name')
         serializer = CompanyInterviewSerializer(datas, many=True).data
         return success_response(message="Success", data=serializer, status_code=status.HTTP_200_OK)
 

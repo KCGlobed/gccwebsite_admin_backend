@@ -2140,10 +2140,11 @@ class StudentInterviewCreateOrUpdateSerializer(serializers.ModelSerializer):
     absent_reason = serializers.CharField(required=False, allow_null=True, allow_blank=True)
     result = serializers.IntegerField(required=False)
     interview_date = serializers.DateField(required=False, allow_null = True)
+    package_status = serializers.BooleanField(required=False, allow_null = True)
 
     class Meta:
         model = ManageStudentInterview
-        fields = ["student_id","company","attempt_status","absent_reason","result","interview_date"]
+        fields = ["student_id","company","attempt_status","absent_reason","result","interview_date","package_status"]
 
     def validate(self, validate_data):
         print("calidatio")
@@ -2165,8 +2166,9 @@ class StudentInterviewCreateOrUpdateSerializer(serializers.ModelSerializer):
             instance.company_id = validate_data.get('company', instance.company)    
             instance.interview_date = validate_data.get('interview_date', instance.interview_date)    
             instance.attempt_status = validate_data.get('attempt_status', instance.attempt_status)    
-            instance.absent_reason = validate_data.get('absent_reason', instance.absent_reason)    
+            instance.absent_reason = validate_data.get('absent_reason', instance.absent_reason) if validate_data.get('attempt_status') == 2 else ""   
             instance.result = validate_data.get('result', instance.result)    
+            instance.package_status = validate_data.get('package_status', instance.package_status)    
             instance.save()
         else:
             instance = ManageStudentInterview(

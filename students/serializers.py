@@ -1942,7 +1942,7 @@ class CompleteStudentDraftSerializer(serializers.ModelSerializer) :
     contact_name = serializers.CharField(required=False, allow_blank=True)
     contact_phone = serializers.CharField(required=False, allow_blank=True)
     date_of_birth = serializers.DateField(required=False, allow_null = True)
-    gender = serializers.IntegerField(required=True)
+    gender = serializers.IntegerField(required=False, allow_null=True)
     nationality = serializers.CharField(required=False, allow_blank=True)
     pincode = serializers.CharField(required=False, allow_blank=True)
     address = serializers.CharField(required=False, allow_blank=True)

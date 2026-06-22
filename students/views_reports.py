@@ -1020,7 +1020,7 @@ class GetStudentProfileReportPDFView(APIView):
             os.remove(pdf_path)
 
 
-######################## Interview ################
+######################## Interview #####################
 
 
 ### for student profile Interview data
@@ -1065,10 +1065,10 @@ class GetStudentProfileInterviewReportExcelView(APIView):
             "last_name":"Last Name",
             "email":"Email",
             "phone":"Phone Number",
-            "contact_name":"Contact Name",
-            "contact_phone": "Contact Phone Number",
-            "date_of_birth": "Date Of Birth",
-            "gender": "Gender"
+            "application_id":"Student ID",
+            "interview_date": "Interview Schedule Date",
+            "attempt_status": "Attendence",
+            "company_detail": "Company Name"
             }
         # print(data_list)
         # return Response({"message":"success", "data":data_list})
@@ -1099,7 +1099,7 @@ class GetStudentProfileInterviewReportExcelView(APIView):
             
             # Find Resume column
             for col_num, cell in enumerate(ws[1], start=1):
-                if cell.value == "Resume":
+                if cell.value == "Company Name":
                     resume_column = col_num
                     break
 
@@ -1109,44 +1109,21 @@ class GetStudentProfileInterviewReportExcelView(APIView):
                     cell = ws.cell(row=row_num, column=resume_column)
 
                     if cell.value:
-                        resume_url = str(cell.value).strip()
-
-                        if resume_url.startswith(("http://", "https://")):
-                            cell.hyperlink = resume_url
-                            cell.value = "View Resume"  # Optional
-                            cell.style = "Hyperlink"
+                        resume_url = cell.value
+                        cell.value = cell.value["name"]
+                        # if resume_url.startswith(("http://", "https://")):
+                        #     cell.hyperlink = resume_url
+                        #     # cell.value = "View Resume"  # Optional
+                        #     cell.value = "View Resume"
+                        #     # cell.style = "Hyperlink"
 
             wb.save(pdf_path)
-            
-            # result_column = None
-            
-            # # Find Resume column
-            # for col_num, cell in enumerate(ws[1], start=1):
-            #     if cell.value == "Score Card Result":
-            #         result_column = col_num
-            #         # print("result...", result_column)
-            #         break
-
-            # # Add hyperlink
-            # if result_column:
-            #     for row_num in range(2, ws.max_row + 1):
-            #         cell = ws.cell(row=row_num, column=result_column)
-
-            #         if cell.value:
-            #             result_url = str(cell.value).strip()
-
-            #             if result_url.startswith(("http://", "https://")):
-            #                 cell.hyperlink = result_url
-            #                 cell.value = "View Result"  # Optional
-            #                 cell.style = "Hyperlink"
-
-            # wb.save(pdf_path)
         
         # After the 'with' block, the file is closed but not deleted
         try:
             # GCS file naming logic
             timestamp = datetime.now().strftime("%d_%m_%y_%H_%M")
-            report_name = "student_profile_report"
+            report_name = "student_interview_report"
             username = re.sub(r'\s+', '_', f"{request.user.first_name} {request.user.last_name}")
             gcs_folder_name = "media/excel_report"
             gcs_file_name = f"{gcs_folder_name}/{username}_{report_name}.xlsx"

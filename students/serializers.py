@@ -1933,10 +1933,10 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
 
 class CompleteStudentDraftSerializer(serializers.ModelSerializer) :
     user = serializers.IntegerField(required=True)
-    first_name = serializers.CharField(max_length = 255, required=True)
-    last_name = serializers.CharField(max_length = 255, required=True)
-    email = serializers.CharField(max_length = 255, required=True)
-    phone = serializers.CharField(max_length = 255, required=True)
+    first_name = serializers.CharField(max_length = 255, required=False)
+    last_name = serializers.CharField(max_length = 255, required=False)
+    email = serializers.CharField(max_length = 255, required=False)
+    phone = serializers.CharField(max_length = 255, required=False)
     state = serializers.CharField(required=False, allow_blank=True)
     city = serializers.CharField(required=False, allow_blank=True)
     contact_name = serializers.CharField(required=False, allow_blank=True)

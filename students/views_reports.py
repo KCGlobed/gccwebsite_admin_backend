@@ -1058,7 +1058,7 @@ class GetStudentProfileInterviewReportExcelView(APIView):
         if phone:
             datas = datas.filter(phone__icontains=phone)
             
-        data_list = ListStudentProfileExcelReportSerializer(datas, many=True).data
+        data_list = StudentInterviewReportSerializer(datas, many=True).data
         # print("datas...",data_list)
         COLUMN_MAPPING = {
             "first_name":"First Name",
@@ -1068,7 +1068,7 @@ class GetStudentProfileInterviewReportExcelView(APIView):
             "application_id":"Student ID",
             "interview_date": "Interview Schedule Date",
             "attempt_status": "Attendence",
-            "company_detail": "Company Name"
+            "company_name": "Company Name"
             }
         # print(data_list)
         # return Response({"message":"success", "data":data_list})
@@ -1093,31 +1093,31 @@ class GetStudentProfileInterviewReportExcelView(APIView):
 
             # Make Resume column clickable
             wb = load_workbook(pdf_path)
-            ws = wb.active
+            # ws = wb.active
 
-            resume_column = None
+            # resume_column = None
             
-            # Find Resume column
-            for col_num, cell in enumerate(ws[1], start=1):
-                if cell.value == "Company Name":
-                    resume_column = col_num
-                    break
+            # # Find Resume column
+            # for col_num, cell in enumerate(ws[1], start=1):
+            #     if cell.value == "Company Name":
+            #         resume_column = col_num
+            #         break
 
-            # Add hyperlink
-            if resume_column:
-                for row_num in range(2, ws.max_row + 1):
-                    cell = ws.cell(row=row_num, column=resume_column)
+            # # Add hyperlink
+            # if resume_column:
+            #     for row_num in range(2, ws.max_row + 1):
+            #         cell = ws.cell(row=row_num, column=resume_column)
 
-                    if cell.value:
-                        resume_url = cell.value
-                        cell.value = cell.value["name"]
-                        # if resume_url.startswith(("http://", "https://")):
-                        #     cell.hyperlink = resume_url
-                        #     # cell.value = "View Resume"  # Optional
-                        #     cell.value = "View Resume"
-                        #     # cell.style = "Hyperlink"
+            #         if cell.value:
+            #             resume_url = cell.value
+            #             cell.value = cell.value["name"]
+            #             # if resume_url.startswith(("http://", "https://")):
+            #             #     cell.hyperlink = resume_url
+            #             #     # cell.value = "View Resume"  # Optional
+            #             #     cell.value = "View Resume"
+            #             #     # cell.style = "Hyperlink"
 
-            wb.save(pdf_path)
+            # wb.save(pdf_path)
         
         # After the 'with' block, the file is closed but not deleted
         try:

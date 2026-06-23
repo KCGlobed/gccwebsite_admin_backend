@@ -2281,4 +2281,37 @@ class StudentInterviewSerializer(serializers.ModelSerializer):
         return cmpy_data
 
 
+class StudentInterviewReportSerializer(serializers.ModelSerializer):
+    attempt_status = serializers.SerializerMethodField('get_attempt_status')
+    result = serializers.SerializerMethodField('get_result')
+    company_name = serializers.SerializerMethodField('get_company_name')
+
+    class Meta:
+        model = ManageStudentInterview
+        fields = ["attempt_status","interview_date","absent_reason","result","created_at", "company_name", "payment_status"]
+
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        # Fetch related form
+        std_obj = StudentProfile.objects.filter(id=instance.profile.id).first()
+
+        if std_obj:
+            form_data = StudentProfileInterviewSerializer(std_obj).data
+            # Merge form fields into main response
+            data.update(form_data)
+            
+        return data
+
+    def get_attempt_status(self, value):
+        return value.get_attempt_status_display()
+    def get_result(self, value):
+        return value.get_result_display()
+
+    def get_company_name(self, value):
+        print(value)
+        return value.company.name
+
+
 

@@ -40,7 +40,7 @@ urlpatterns = [
     path('get-contact-us-report-excel/', GetContactusReportExcelView.as_view(), name="get-contact-us-report-excel"),
 
     path('create-update-student-profile/', CreateStudentProfileView.as_view(), name="create-update-student-profile"),
-    path('create-update-student-profile-bot/', CreateStudentProfileByBotView.as_view(), name="create-update-student-profile-bot"),
+    path('create-student-profile-bot/', CreateStudentProfileByBotView.as_view(), name="create-update-student-profile-bot"),
     path('create-update-student-profile-draft/', CreateStudentProfileDraftView.as_view(), name="create-update-student-profile-draft"),
     path('student-slot-upload/', StudentSlotBookView.as_view(), name="student-slot-upload"),
     path('student-admit-card-download/', GetStudentAdmitCardView.as_view(), name="student-admit-card-download"),

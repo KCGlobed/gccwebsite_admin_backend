@@ -1398,6 +1398,18 @@ class GetContactusReportExcelView(APIView):
             os.remove(pdf_path)
 
 
+class CreateStudentProfileByBotView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request, format=None):
+        request.data["user_id"] = request.user.id
+        print(request.data)
+        serializer = CompleteStudentProfileByBotSerializer(data = request.data)
+        if serializer.is_valid(raise_exception = True):
+            user_obj  = serializer.save()
+            print("created data", user_obj)
+            return Response({'message':'Message sent Successfully','data':[]})
+        return Response(serializer.errors)
+
 
 class CreateStudentProfileView(APIView):
     # permission_classes = [IsAuthenticated]

@@ -377,10 +377,11 @@ class CompleteStudentProfileByBotSerializer(serializers.ModelSerializer) :
             print(type(validate_data))
             # json_data = json.dumps(data_convert)
             # print(json_data)
-            exp_payload = {"have_work_ex":"Fresher (Currently Studying or Recently Graduated)"}
+            exp_payload = {"have_work_ex":"Fresher"}
             print(validate_data.get('user_experience'))
             print(type(validate_data.get('user_experience')))
-            if not StudentProfile.objects.filter(user_id=validate_data.get('user_id')).exists():
+            query = StudentProfile.objects.filter(user_id=validate_data.get('user_id'))
+            if not query:
                 query = StudentProfile(
                     user = User.objects.filter(id = validate_data.get('user')).first(),
                     last_name = validate_data.get('last_name'),
@@ -438,7 +439,7 @@ class CompleteStudentProfileByBotSerializer(serializers.ModelSerializer) :
                     print("expeee converted...", validate_data.get("user_experience"))
                     if len(validate_data.get('user_experience')) > 0:
                         num = 1
-                        exp_payload["have_work_ex"] = "Experienced (Currently Working or Have Past Experience)"
+                        exp_payload["have_work_ex"] = "Experienced"
                         for exp in validate_data.get('user_experience'):
                             experience = StudentExperience(
                                 student_profile = query,
@@ -517,7 +518,15 @@ class CompleteStudentProfileByBotSerializer(serializers.ModelSerializer) :
                     else:
                         pg_status = "Pursuing"
 
-
+                    if query.guardian_dropdown:
+                        if int(query.guardian_dropdown) == 1:
+                            gname = "Mother"
+                        elif int(query.guardian_dropdown) == 2:
+                            gname = "Father"
+                        else:
+                            gname = "Other"
+                    else:
+                        gname = ""
                     tenth_score_type = query.tenth_score_type if query.tenth_score_type == "Percentage" else "CGPA out of 10"
                     twelveth_score_type = query.twelveth_score_type if query.twelveth_score_type == "Percentage" else "CGPA out of 10"
 
@@ -559,9 +568,27 @@ class CompleteStudentProfileByBotSerializer(serializers.ModelSerializer) :
                                 # "field_340078":query.higher_qualification,
                                 "field_342113":query.user.application_id,
                                 # "field_343097":"Complete",
-                                "field_343098":"Complete"
+                                "field_343098":"Complete",
+                                "field_349945":query.referral_code,
+                                "field_349946":query.referred_code,
+
+                                # "field_351358":query.guardian_name,
+                                # "field_351359":query.guardian_phone,
+                                # "field_351368":query.guardian_email,
+                                "field_351358":query.guardian_name if query.guardian_name else "",
+                                "field_351359":query.guardian_phone if query.guardian_phone else "",
+                                "field_351368":query.guardian_email if query.guardian_email else "",
+                                "field_351361":gname
+                                # "field_351381":query.guardian_other_reason
                         }
                     }
+
+                    if str(gname).lower() == "other":
+                        other_guardian = {
+                            "field_351381":query.guardian_other_reason
+                        }
+                        meritto_payload["data"].update(other_guardian)
+
                     print(exp_payload)
                     meritto_payload["data"].update(exp_payload) 
                     leads = list(DossierData.objects.filter(email=query.email).values_list('id'))

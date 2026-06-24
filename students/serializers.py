@@ -380,221 +380,222 @@ class CompleteStudentProfileByBotSerializer(serializers.ModelSerializer) :
             exp_payload = {"have_work_ex":"Fresher (Currently Studying or Recently Graduated)"}
             print(validate_data.get('user_experience'))
             print(type(validate_data.get('user_experience')))
-            query = StudentProfile(
-                user = User.objects.filter(id = validate_data.get('user')).first(),
-                last_name = validate_data.get('last_name'),
-                first_name = validate_data.get('first_name'),
-                email = validate_data.get('email'),
-                phone = validate_data.get('phone'),
-                state = validate_data.get('state'),
-                city = validate_data.get('city'),
-                contact_name = validate_data.get('contact_name'),
-                contact_phone = validate_data.get('contact_phone'),
-                date_of_birth = validate_data.get('date_of_birth'),
-                gender = validate_data.get('gender'),
-                nationality = validate_data.get('nationality'),
-                pincode = validate_data.get('pincode'),
-                address = validate_data.get('address'),
-                tenth_passing_year = validate_data.get('tenth_passing_year'),
-                tenth_passing_percentage = validate_data.get('tenth_passing_percentage'),
-                tenth_score_type = validate_data.get('tenth_score_type'),
-                tenth_medium = validate_data.get('tenth_medium'),
-                twelveth_passing_year = validate_data.get('twelveth_passing_year'),
-                twelveth_passing_percentage = validate_data.get('twelveth_passing_percentage'),
-                twelveth_score_type = validate_data.get('twelveth_score_type'),
-                twelveth_medium = validate_data.get('twelveth_medium'),
-                medium_instruction = validate_data.get('medium_instruction'),
-                other_instruction = validate_data.get('other_instruction'),
-                pg_status = validate_data.get('pg_status'),
-                pg_percentage = validate_data.get('pg_percentage'),
-                ug_score_type = validate_data.get('ug_score_type'),
-                institution = validate_data.get('institution'),
-                higher_education_status = validate_data.get('higher_education_status'),
-                higher_qualification = validate_data.get('higher_qualification'),
-                higher_qualification_institution = validate_data.get('higher_qualification_institution'),
-                employement_status = validate_data.get('employement_status'),
-                aadhaar = validate_data.get('aadhaar'),
-                dob_certificate = validate_data.get('dob_certificate'),
-                photo = validate_data.get('photo'),
-                signature = validate_data.get('signature'),
-                application_id = objs.user.application_id,
-                fee_waiver_category = objs.user.fee_waiver_category,
-                resume = validate_data.get('resume'),
-                resume_key_status = validate_data.get('resume_key_status'),
-                guardian_name = validate_data.get('guardian_name'),
-                guardian_phone = validate_data.get('guardian_phone'),
-                guardian_email = validate_data.get('guardian_email'),
-                guardian_dropdown = validate_data.get('guardian_dropdown'),
-                guardian_other_reason = validate_data.get('guardian_other_reason'),
-                guardian_key_status = validate_data.get('guardian_key_status')
-            )
-            query.save()
-            print(validate_data)
-            exp_datas = StudentExperienceDraft.objects.filter(student_profile_id=objs.id)
-            if exp_datas.exists():
-                exp_data_list = [model_to_dict(i) for i in exp_datas]
-                validate_data['user_experience'] = exp_data_list
-                print("expeee converted...", validate_data.get("user_experience"))
-                if len(validate_data.get('user_experience')) > 0:
-                    num = 1
-                    exp_payload["have_work_ex"] = "Experienced (Currently Working or Have Past Experience)"
-                    for exp in validate_data.get('user_experience'):
-                        experience = StudentExperience(
-                            student_profile = query,
-                            position = exp.get('position'),
-                            company_name = exp.get('company_name'),
-                            area = exp.get('area'),
-                            start_date = exp.get('start_date'),
-                            end_date = exp.get('end_date'),
+            if not StudentProfile.objects.filter(user_id=validate_data.get('user_id')).exists():
+                query = StudentProfile(
+                    user = User.objects.filter(id = validate_data.get('user')).first(),
+                    last_name = validate_data.get('last_name'),
+                    first_name = validate_data.get('first_name'),
+                    email = validate_data.get('email'),
+                    phone = validate_data.get('phone'),
+                    state = validate_data.get('state'),
+                    city = validate_data.get('city'),
+                    contact_name = validate_data.get('contact_name'),
+                    contact_phone = validate_data.get('contact_phone'),
+                    date_of_birth = validate_data.get('date_of_birth'),
+                    gender = validate_data.get('gender'),
+                    nationality = validate_data.get('nationality'),
+                    pincode = validate_data.get('pincode'),
+                    address = validate_data.get('address'),
+                    tenth_passing_year = validate_data.get('tenth_passing_year'),
+                    tenth_passing_percentage = validate_data.get('tenth_passing_percentage'),
+                    tenth_score_type = validate_data.get('tenth_score_type'),
+                    tenth_medium = validate_data.get('tenth_medium'),
+                    twelveth_passing_year = validate_data.get('twelveth_passing_year'),
+                    twelveth_passing_percentage = validate_data.get('twelveth_passing_percentage'),
+                    twelveth_score_type = validate_data.get('twelveth_score_type'),
+                    twelveth_medium = validate_data.get('twelveth_medium'),
+                    medium_instruction = validate_data.get('medium_instruction'),
+                    other_instruction = validate_data.get('other_instruction'),
+                    pg_status = validate_data.get('pg_status'),
+                    pg_percentage = validate_data.get('pg_percentage'),
+                    ug_score_type = validate_data.get('ug_score_type'),
+                    institution = validate_data.get('institution'),
+                    higher_education_status = validate_data.get('higher_education_status'),
+                    higher_qualification = validate_data.get('higher_qualification'),
+                    higher_qualification_institution = validate_data.get('higher_qualification_institution'),
+                    employement_status = validate_data.get('employement_status'),
+                    aadhaar = validate_data.get('aadhaar'),
+                    dob_certificate = validate_data.get('dob_certificate'),
+                    photo = validate_data.get('photo'),
+                    signature = validate_data.get('signature'),
+                    application_id = objs.user.application_id,
+                    fee_waiver_category = objs.user.fee_waiver_category,
+                    resume = validate_data.get('resume'),
+                    resume_key_status = validate_data.get('resume_key_status'),
+                    guardian_name = validate_data.get('guardian_name'),
+                    guardian_phone = validate_data.get('guardian_phone'),
+                    guardian_email = validate_data.get('guardian_email'),
+                    guardian_dropdown = validate_data.get('guardian_dropdown'),
+                    guardian_other_reason = validate_data.get('guardian_other_reason'),
+                    guardian_key_status = validate_data.get('guardian_key_status')
+                )
+                query.save()
+                print(validate_data)
+                exp_datas = StudentExperienceDraft.objects.filter(student_profile_id=objs.id)
+                if exp_datas.exists():
+                    exp_data_list = [model_to_dict(i) for i in exp_datas]
+                    validate_data['user_experience'] = exp_data_list
+                    print("expeee converted...", validate_data.get("user_experience"))
+                    if len(validate_data.get('user_experience')) > 0:
+                        num = 1
+                        exp_payload["have_work_ex"] = "Experienced (Currently Working or Have Past Experience)"
+                        for exp in validate_data.get('user_experience'):
+                            experience = StudentExperience(
+                                student_profile = query,
+                                position = exp.get('position'),
+                                company_name = exp.get('company_name'),
+                                area = exp.get('area'),
+                                start_date = exp.get('start_date'),
+                                end_date = exp.get('end_date'),
 
-                        )
-                        experience.save()
+                            )
+                            experience.save()
 
-                        key1 = f"field_334047_{num}_1"
-                        value1 = exp.get('company_name')
-                        key2 = f"field_334047_{num}_2"
-                        value2 = exp.get('position')
-                        key3 = f"field_334047_{num}_3"
-                        value3 = exp.get('area')
-                        key4 = f"field_334047_{num}_4"
-                        value4 = exp.get('start_date').strftime("%d/%m/%Y")
-                        key5 = f"field_334047_{num}_5"
-                        print("experience.end_date....",experience.end_date)
-                        value5 = exp.get('end_date').strftime("%d/%m/%Y") if experience.end_date else exp.get('start_date').strftime("%d/%m/%Y")
-                        key6 = f"field_334047_{num}_6"
-                        value6 = ""
+                            key1 = f"field_334047_{num}_1"
+                            value1 = exp.get('company_name')
+                            key2 = f"field_334047_{num}_2"
+                            value2 = exp.get('position')
+                            key3 = f"field_334047_{num}_3"
+                            value3 = exp.get('area')
+                            key4 = f"field_334047_{num}_4"
+                            value4 = exp.get('start_date').strftime("%d/%m/%Y")
+                            key5 = f"field_334047_{num}_5"
+                            print("experience.end_date....",experience.end_date)
+                            value5 = exp.get('end_date').strftime("%d/%m/%Y") if experience.end_date else exp.get('start_date').strftime("%d/%m/%Y")
+                            key6 = f"field_334047_{num}_6"
+                            value6 = ""
 
-                        print("values5...",value5)
+                            print("values5...",value5)
 
-                        exp_payload[key1] = value1
-                        exp_payload[key2] = value2
-                        exp_payload[key3] = value3
-                        exp_payload[key4] = value4
-                        exp_payload[key5] = value5
-                        exp_payload[key6] = value6
+                            exp_payload[key1] = value1
+                            exp_payload[key2] = value2
+                            exp_payload[key3] = value3
+                            exp_payload[key4] = value4
+                            exp_payload[key5] = value5
+                            exp_payload[key6] = value6
 
-                        print(exp_payload)
-                        
-                        num+=1
+                            print(exp_payload)
+                            
+                            num+=1
 
-        if settings.MERITO_STATUS == "True":
-            if int(query.gender) == 1:
-                mgender = "Male"
-            elif int(query.gender) == 2:
-                mgender = "Female"
-            else:
-                mgender = "Other"
+                if settings.MERITO_STATUS == "True":
+                    if int(query.gender) == 1:
+                        mgender = "Male"
+                    elif int(query.gender) == 2:
+                        mgender = "Female"
+                    else:
+                        mgender = "Other"
 
-            if int(query.tenth_medium) == 1:
-                mtmedium = "English"
-            elif int(query.tenth_medium) == 2:
-                mtmedium = "Hindi"
-            else:
-                mtmedium = "Other"
+                    if int(query.tenth_medium) == 1:
+                        mtmedium = "English"
+                    elif int(query.tenth_medium) == 2:
+                        mtmedium = "Hindi"
+                    else:
+                        mtmedium = "Other"
 
-            if int(query.twelveth_medium) == 1:
-                mthmedium = "English"
-            elif int(query.twelveth_medium) == 2:
-                mthmedium = "Hindi"
-            else:
-                mthmedium = "Other"
+                    if int(query.twelveth_medium) == 1:
+                        mthmedium = "English"
+                    elif int(query.twelveth_medium) == 2:
+                        mthmedium = "Hindi"
+                    else:
+                        mthmedium = "Other"
 
-            if int(query.medium_instruction) == 1:
-                minstrmedium = "English"
-            elif int(query.medium_instruction) == 2:
-                minstrmedium = "Hindi"
-            else:
-                minstrmedium = "Other"
+                    if int(query.medium_instruction) == 1:
+                        minstrmedium = "English"
+                    elif int(query.medium_instruction) == 2:
+                        minstrmedium = "Hindi"
+                    else:
+                        minstrmedium = "Other"
 
-            if query.higher_education_status == 1:
-                higher_status = "Yes"
-            else:
-                higher_status = "No"
+                    if query.higher_education_status == 1:
+                        higher_status = "Yes"
+                    else:
+                        higher_status = "No"
 
-            if query.pg_status == 1:
-                pg_status = "Completed"
-            else:
-                pg_status = "Pursuing"
+                    if query.pg_status == 1:
+                        pg_status = "Completed"
+                    else:
+                        pg_status = "Pursuing"
 
 
-            tenth_score_type = query.tenth_score_type if query.tenth_score_type == "Percentage" else "CGPA out of 10"
-            twelveth_score_type = query.twelveth_score_type if query.twelveth_score_type == "Percentage" else "CGPA out of 10"
+                    tenth_score_type = query.tenth_score_type if query.tenth_score_type == "Percentage" else "CGPA out of 10"
+                    twelveth_score_type = query.twelveth_score_type if query.twelveth_score_type == "Percentage" else "CGPA out of 10"
 
-            meritto_payload = {
-                "form_id": 22144,
-                "email": query.email,
-                "search_criteria":"email",
-                "data": {
-                        "first_name":query.first_name,
-                        "last_name":query.last_name,
-                        "email":query.email,
-                        "mobile_no":f"+91-{query.phone}",
-                        "father_first_name":"",
-                        "father_mobile_no":"",
-                        "date_of_birth":query.date_of_birth.strftime("%d/%m/%Y"),
-                        "gender":mgender,
-                        "nationality":"Indian",
-                        "field_339552":query.state,
-                        "field_339553":query.city,
-                        "field_337926":query.pincode,
-                        "field_340085":query.address,
-                        # "field_340065":query.contact_name,
-                        "field_340066":f"+91-{query.contact_phone}",
-                        "field_333993_1_1":query.tenth_passing_year,
-                        "field_333993_1_2":tenth_score_type,
-                        "field_333993_1_3":query.tenth_passing_percentage,
-                        "field_333993_1_4":mtmedium,
-                        "field_333994_1_1":query.twelveth_passing_year,
-                        "field_333994_1_2":twelveth_score_type,
-                        "field_333994_1_3":query.twelveth_passing_percentage,
-                        "field_333994_1_4":mthmedium,
-                        "field_340097_1_1":query.institution,
-                        "field_340097_1_2":query.ug_score_type,
-                        "field_340097_1_3":query.pg_percentage,
-                        "field_340097_1_4":query.pg_percentage,
-                        "field_340069":pg_status,
-                        "field_340077":higher_status,
-                        "field_340079":query.higher_qualification_institution,
-                        # "field_340078":query.higher_qualification,
-                        "field_342113":query.user.application_id,
-                        # "field_343097":"Complete",
-                        "field_343098":"Complete"
-                }
-            }
-            print(exp_payload)
-            meritto_payload["data"].update(exp_payload) 
-            leads = list(DossierData.objects.filter(email=query.email).values_list('id'))
-            payment_obj = Payments.objects.filter(dossier_form__in=leads, status="success")
-            if payment_obj:
-                pay = payment_obj.first()
-                payment_payload = {
-                    "field_342107":pay.razorpay_signature,
-                    "field_342105":pay.razorpay_order_id,
-                    "field_342106":pay.razorpay_payment_id,
-                    "field_342108":int(pay.amount),
-                    "field_342111":"INR",
-                    "field_342110":pay.created_at.strftime("%d/%m/%Y %I:%M:%S %p"),
-                    "field_342109":"success"
-                }
-                meritto_payload["data"].update(payment_payload)
+                    meritto_payload = {
+                        "form_id": 22144,
+                        "email": query.email,
+                        "search_criteria":"email",
+                        "data": {
+                                "first_name":query.first_name,
+                                "last_name":query.last_name,
+                                "email":query.email,
+                                "mobile_no":f"+91-{query.phone}",
+                                "father_first_name":"",
+                                "father_mobile_no":"",
+                                "date_of_birth":query.date_of_birth.strftime("%d/%m/%Y"),
+                                "gender":mgender,
+                                "nationality":"Indian",
+                                "field_339552":query.state,
+                                "field_339553":query.city,
+                                "field_337926":query.pincode,
+                                "field_340085":query.address,
+                                # "field_340065":query.contact_name,
+                                "field_340066":f"+91-{query.contact_phone}",
+                                "field_333993_1_1":query.tenth_passing_year,
+                                "field_333993_1_2":tenth_score_type,
+                                "field_333993_1_3":query.tenth_passing_percentage,
+                                "field_333993_1_4":mtmedium,
+                                "field_333994_1_1":query.twelveth_passing_year,
+                                "field_333994_1_2":twelveth_score_type,
+                                "field_333994_1_3":query.twelveth_passing_percentage,
+                                "field_333994_1_4":mthmedium,
+                                "field_340097_1_1":query.institution,
+                                "field_340097_1_2":query.ug_score_type,
+                                "field_340097_1_3":query.pg_percentage,
+                                "field_340097_1_4":query.pg_percentage,
+                                "field_340069":pg_status,
+                                "field_340077":higher_status,
+                                "field_340079":query.higher_qualification_institution,
+                                # "field_340078":query.higher_qualification,
+                                "field_342113":query.user.application_id,
+                                # "field_343097":"Complete",
+                                "field_343098":"Complete"
+                        }
+                    }
+                    print(exp_payload)
+                    meritto_payload["data"].update(exp_payload) 
+                    leads = list(DossierData.objects.filter(email=query.email).values_list('id'))
+                    payment_obj = Payments.objects.filter(dossier_form__in=leads, status="success")
+                    if payment_obj:
+                        pay = payment_obj.first()
+                        payment_payload = {
+                            "field_342107":pay.razorpay_signature,
+                            "field_342105":pay.razorpay_order_id,
+                            "field_342106":pay.razorpay_payment_id,
+                            "field_342108":int(pay.amount),
+                            "field_342111":"INR",
+                            "field_342110":pay.created_at.strftime("%d/%m/%Y %I:%M:%S %p"),
+                            "field_342109":"success"
+                        }
+                        meritto_payload["data"].update(payment_payload)
 
-            
-            print("meritto_payload...",meritto_payload)
-            url = settings.MERITO_BASE_URL+"/application/v1/createOrUpdate"
+                    
+                    print("meritto_payload...",meritto_payload)
+                    url = settings.MERITO_BASE_URL+"/application/v1/createOrUpdate"
 
-            headers = {
-                    "Content-Type": "application/json",
-                    "secret-key": settings.MERITO_SECRETE_KEY,
-                    "access-key": settings.MERITO_ACCESS_KEY
-                }
+                    headers = {
+                            "Content-Type": "application/json",
+                            "secret-key": settings.MERITO_SECRETE_KEY,
+                            "access-key": settings.MERITO_ACCESS_KEY
+                        }
 
-            try:
-                response = requests.post(url, headers=headers, json=meritto_payload)
-                print(response.status_code)
-                print(response.text)
-            except Exception as e:
-                print("API Error:", str(e))
-
+                    try:
+                        response = requests.post(url, headers=headers, json=meritto_payload)
+                        print(response.status_code)
+                        print(response.text)
+                    except Exception as e:
+                        print("API Error:", str(e))
+                
         return query
         
 

@@ -1422,13 +1422,18 @@ class CreateStudentProfileView(APIView):
 
 
 class CreateStudentProfileDraftView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     def post(self, request, format=None):
         print("calling....")
         print(request.data)
         serializer = CompleteStudentDraftSerializer(data = request.data)
         if serializer.is_valid(raise_exception = True):
             user  = serializer.save()
+            name = str(request.user.first_name).split(" ")
+            if len(name)<2:
+                lname = request.data.get("last_name")
+                if lname:
+                    StudentProfileDraft.objects.filter(id=user.id).update(last_name=lname)
             return Response({'message':'Message sent Successfully','data':[]})
         return Response(serializer.errors)
 

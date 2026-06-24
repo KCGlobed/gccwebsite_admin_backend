@@ -267,7 +267,7 @@ class StudentProfileDraft(models.Model):
     contact_name = models.CharField(max_length=255, null=True, blank=True)
     contact_phone = models.CharField(max_length=255, null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
-    gender = models.IntegerField(choices=Gender.choices,default=Gender.MALE)
+    gender = models.IntegerField(choices=Gender.choices,default=Gender.MALE, null=True)
     nationality = models.CharField(max_length=255, null=True, blank=True)
     pincode = models.CharField(max_length=255, null=True, blank=True)
     city = models.CharField(max_length=255, null=True, blank=True)

@@ -1429,15 +1429,17 @@ class CreateStudentProfileDraftView(APIView):
         serializer = CompleteStudentDraftSerializer(data = request.data)
         if serializer.is_valid(raise_exception = True):
             user  = serializer.save()
-            name = str(request.user.first_name).split(" ")
-            fname = name[0]
-            if len(name)<2:
-                lname = request.data.get("last_name")
-                if lname:
-                    StudentProfileDraft.objects.filter(id=user.id).update(first_name=fname, last_name=lname)
-            else:
-                lname = " ".join(name[1:])
-                StudentProfileDraft.objects.filter(id=user.id).update(first_name = fname,last_name=lname)
+            std_obj = StudentProfileDraft.objects.filter(id=user.id).first()
+            if not std_obj.last_name:
+                name = str(request.user.first_name).split(" ")
+                fname = name[0]
+                if len(name)<2:
+                    lname = request.data.get("last_name")
+                    if lname:
+                        StudentProfileDraft.objects.filter(id=user.id).update(first_name=fname, last_name=lname)
+                else:
+                    lname = " ".join(name[1:])
+                    StudentProfileDraft.objects.filter(id=user.id).update(first_name = fname,last_name=lname)
             return Response({'message':'Message sent Successfully','data':[]})
         return Response(serializer.errors)
 

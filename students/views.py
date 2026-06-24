@@ -1434,6 +1434,9 @@ class CreateStudentProfileDraftView(APIView):
                 lname = request.data.get("last_name")
                 if lname:
                     StudentProfileDraft.objects.filter(id=user.id).update(last_name=lname)
+            else:
+                lname = " ".join(name[1:])
+                StudentProfileDraft.objects.filter(id=user.id).update(last_name=lname)
             return Response({'message':'Message sent Successfully','data':[]})
         return Response(serializer.errors)
 

@@ -364,23 +364,14 @@ class CompleteStudentProfileByBotSerializer(serializers.ModelSerializer) :
         fields = ["user_id"]
 
     def create(self , validate_data):
-        print("datass",validate_data.get("user_id"))
         draft_obj = StudentProfileDraft.objects.filter(user_id=validate_data.get('user_id'))
         if draft_obj:
-            print("obj", draft_obj)
             objs = draft_obj.last()
+            print("profile draft detail...",objs)
             data_convert = model_to_dict(objs)
-            # data_convert["user_id"] = data_convert["user"]
-            # resp = requests.post
             validate_data = data_convert
-            print(validate_data)
-            print(type(validate_data))
-            # json_data = json.dumps(data_convert)
-            # print(json_data)
             exp_payload = {"have_work_ex":"Fresher"}
-            print(validate_data.get('user_experience'))
-            print(type(validate_data.get('user_experience')))
-            query = StudentProfile.objects.filter(user_id=validate_data.get('user_id'))
+            query = StudentProfile.objects.filter(user_id=validate_data.get('user'))
             if not query:
                 query = StudentProfile(
                     user = User.objects.filter(id = validate_data.get('user')).first(),
@@ -623,7 +614,8 @@ class CompleteStudentProfileByBotSerializer(serializers.ModelSerializer) :
                     except Exception as e:
                         print("API Error:", str(e))
                 
-        return query
+                return query
+        return serializers.ValidationError("Invalid request")
         
 
 

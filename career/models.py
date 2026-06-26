@@ -76,6 +76,7 @@ class SourceType(models.IntegerChoices):
     VslOptin = 12, 'VslOptin'
     VslFinal = 13, 'VslFinal'
     Affiliate6 = 14, 'Affiliate6'
+    Affiliate7 = 15, 'Affiliate7'  ##akshay landing 2
 
 class SourceFormType(models.IntegerChoices):
     ApplyNow = 1, 'ApplyNow'

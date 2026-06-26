@@ -58,6 +58,8 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 m_source = "gcckuk"
             elif src_type == 14:
                 m_source = "gccaffiliateSix"
+            elif src_type == 15:
+                m_source = "gccaffiliateSeven"
             else:
                 m_source = "gcc"
             # API URL
@@ -608,4 +610,47 @@ class CreateOrUpdateDossierDataMerittoSerializer(serializers.ModelSerializer):
 
 
 
+class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DossierData
+        fields = ["full_name","email","phone","source","degree"]
+        
+    def create(self, validated_data):
+        instance = super().create(validated_data)
+        if settings.MERITO_STATUS == "True":
+            src_type = instance.source
+            if src_type == 15:
+                m_source = "gccaffiliateSeven"
+            else:
+                m_source = "gcc"
+            # API URL
+            url = settings.MERITO_BASE_URL+"/lead/v1/createOrUpdate"
+
+            headers = {
+                "Content-Type": "application/json",
+                "secret-key": settings.MERITO_SECRETE_KEY,
+                "access-key": settings.MERITO_ACCESS_KEY
+            }
+
+            payload = {
+                "name": instance.full_name,
+                "email": instance.email,
+                "mobile": instance.phone,
+                "search_criteria": "email",
+                "source":m_source,
+                "cf_source":m_source,
+                "cf_payment_status":"Complete",
+                "cf_fee_waiver_category":"Free of cost (FOC)",
+                "cf_graduation_qualification":instance.degree
+            }
+            try:
+                print("mer..",payload)
+                response = requests.post(url, headers=headers, json=payload)
+                print(response.status_code)
+                print(response.text)
+                DossierLog.objects.create(dossier=instance, message=response.text, status=int(response.status_code), activity="creating", datas=validated_data)
+            except Exception as e:
+                print("API Error:", str(e))
+
+        return instance
 

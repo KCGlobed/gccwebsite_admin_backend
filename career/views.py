@@ -30,7 +30,10 @@ from django.db.models import OuterRef, Exists
 from openpyxl import load_workbook
 from openpyxl.styles import Font, Alignment
 
-
+from students.models import *
+from datetime import date, timedelta
+from django.db.models import Count
+from django.db.models.functions import TruncDate
 
 
 class CareerApplication_list(APIView):
@@ -114,6 +117,41 @@ class DossierDataForm_Create(APIView):
             return success_response(message="success", data={"url":pdf_url, "id":obj.id, "data":ListDossierDataSerializer(obj).data}, status_code=status.HTTP_200_OK)
         else:
             return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
+
+
+class DossierDataFormCustom_Create(APIView):
+    def post(self, request, format=None):
+        serializer = CreateDossierDataCustomAffliateSerializer(data = request.data)
+        if serializer.is_valid(raise_exception = True):
+            obj = serializer.save()
+            start_date = date(2026, 6, 22)
+            end_date = date(2026, 7, 13)
+            # Count records grouped by interview_date
+            booked_slots = (
+                ManageStudentInterview.objects
+                .filter(interview_date__range=(start_date, end_date))
+                .annotate(day=TruncDate("interview_date"))
+                .values("day")
+                .annotate(count=Count("id"))
+                .order_by("day")
+            )
+            # Convert queryset to dictionary
+            count_map = {item["day"]: item["count"] for item in booked_slots}  
+
+            # Fill missing dates with 0
+            result = []
+            current = start_date
+
+            while current <= end_date:
+                result.append({
+                    "date": current.strftime("%d-%m-%Y"),
+                    "count": count_map.get(current, 0)
+                })
+                current += timedelta(days=1)
+
+            return success_response(message="success", data={"id":obj.id, "slot_data":result}, status_code=status.HTTP_200_OK)
+        else:
+            return error_response(message="failed", data = [], status_code=status.HTTP_400_BAD_REQUEST)
 
 
 from .serializers import push_to_meritto

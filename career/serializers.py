@@ -616,6 +616,7 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
         fields = ["full_name","email","phone","source","degree"]
         
     def create(self, validated_data):
+        validated_data["fee_waiver_category"] = "Free of cost (FOC)"
         instance = super().create(validated_data)
         if settings.MERITO_STATUS == "True":
             src_type = instance.source
@@ -651,6 +652,24 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
                 DossierLog.objects.create(dossier=instance, message=response.text, status=int(response.status_code), activity="creating", datas=validated_data)
             except Exception as e:
                 print("API Error:", str(e))
+
+
+        url = settings.CSRF_TRUSTED_ORIGINS[0]+"/api/users/create_student/"
+
+        payload = {
+            "full_name": instance.full_name,
+            "email": instance.email,
+            "phone1": instance.phone
+        }
+        try:
+            print("user....",payload)
+            response = requests.post(url, json=payload)
+            print(response.status_code)
+            print(response.text)
+            User.objects.filter(email=instance.email).update(fee_waiver_category="Free of cost (FOC)")
+            # DossierLog.objects.create(dossier=instance, message=response.text, status=int(response.status_code), activity="creating", datas=validated_data)
+        except Exception as e:
+            print("API Error:", str(e))    
 
         return instance
 

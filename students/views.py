@@ -2088,6 +2088,21 @@ class PostRealExamResultView(APIView):
             return Response({'message':'failed',"status":400,'data':serializers.errors})
     
 
+class StudentScheduleInterviewView(APIView):
+    # permission_classes = [IsAuthenticated]
+    def post(self, request):
+        lobj = DossierData.objects.filter(id=request.data.get('lid')).first()
+        datas = StudentProfileDraft.objects.filter(email=lobj.email)
+        if len(datas)==0:
+            serializers = StudentInterviewCreateSerializer(data=request.data)
+            if serializers.is_valid():
+                serializers.save()
+                return Response({'message':'success',"status":200,'data':[]})
+            return Response({'message':'failed',"status":400,'data':serializers.errors})
+
+        return Response({'message':'failed',"status":400,'data':[]})
+    
+
 
 ### testing purpose
 

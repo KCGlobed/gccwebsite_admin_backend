@@ -2581,3 +2581,79 @@ class StudentInterviewReportSerializer(serializers.ModelSerializer):
 
 
 
+
+class StudentInterviewCreateSerializer(serializers.ModelSerializer):
+    lid = serializers.IntegerField(required=True)
+    interview_date = serializers.DateField(required=True)
+
+    class Meta:
+        model = ManageStudentInterview
+        fields = ["lid","interview_date"]
+
+    def validate(self, validate_data):
+        print("calidatio")
+        lobj = DossierData.objects.filter(id=validate_data.get('lid')).first()
+        datas = StudentProfile.objects.filter(email = lobj.email)
+        if datas:
+            # raise serializers.ValidationError("Invalid Student ID")
+            raise serializers.ValidationError({
+                "status": 400,
+                "message": "Already Scheduled Interview",
+                "data": {}
+            })
+        return validate_data
+    
+    def create(self , validate_data):
+        print(validate_data)
+        lobj = DossierData.objects.filter(id=validate_data.get('lid')).first()
+        if lobj:
+            user_obj = User.objects.filter(email=lobj.email).first()
+            name = str(user_obj.first_name).split(" ")
+            fname = name[0]
+            if not user_obj.last_name:
+                lname = " ".join(name[1:])
+            draft_obj = StudentProfileDraft(user=user_obj, email=user_obj.email, first_name=fname,last_name=lname, phone=user_obj.phone1, application_id=user_obj.application_id,fee_waiver_category = user_obj.fee_waiver_category)
+            draft_obj.save()
+
+            profile_obj = StudentProfile(user=user_obj, email=user_obj.email, first_name=fname,last_name=fname, phone=user_obj.phone1, application_id=user_obj.application_id,fee_waiver_category = user_obj.fee_waiver_category)
+            profile_obj.save()
+
+            instance = ManageStudentInterview(
+               profile_id = profile_obj.id,  
+               company_id = 1,
+               interview_date = validate_data.get('interview_date')
+            )
+            instance.save()
+        
+            if settings.MERITO_STATUS == "True":
+                meritto_payload = {
+                    "form_id": 22144,
+                    "email": instance.profile.email,
+                    "search_criteria":"email",
+                    "data": {
+                            "first_name":profile_obj.first_name,
+                            "last_name":profile_obj.last_name,
+                            "email":profile_obj.email,
+                            "mobile_no":f"+91-{profile_obj.phone}",
+                            "field_352367":instance.company.name,
+                            "field_352366":instance.company.interview_date.strftime("%d/%m/%Y %I:%M:%S %p")
+                        }
+                }
+                url = settings.MERITO_BASE_URL+"/application/v1/createOrUpdate"
+
+                headers = {
+                        "Content-Type": "application/json",
+                        "secret-key": settings.MERITO_SECRETE_KEY,
+                        "access-key": settings.MERITO_ACCESS_KEY
+                    }
+
+                try:
+                    response = requests.post(url, headers=headers, json=meritto_payload)
+                    print(response.status_code)
+                    print(response.text)
+                    ApplicationLog.objects.create(application_id=profile_obj.id, message=response.text, status=int(response.status_code), activity="Schedule Interview Directly", datas=validate_data, payload_request=meritto_payload)
+                except Exception as e:
+                    print("API Error:", str(e))
+            return instance
+        raise serializers.ValidationError("Invalid Request")
+        

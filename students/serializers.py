@@ -2636,7 +2636,7 @@ class StudentInterviewCreateSerializer(serializers.ModelSerializer):
                             "email":profile_obj.email,
                             "mobile_no":f"+91-{profile_obj.phone}",
                             "field_352367":instance.company.name,
-                            "field_352366":instance.company.interview_date.strftime("%d/%m/%Y %I:%M:%S %p")
+                            "field_352366":instance.interview_date.strftime("%d/%m/%Y %I:%M:%S %p")
                         }
                 }
                 url = settings.MERITO_BASE_URL+"/application/v1/createOrUpdate"

@@ -1057,6 +1057,11 @@ class GetStudentProfileInterviewReportExcelView(APIView):
         phone = request.GET.get('phone')
         if phone:
             datas = datas.filter(phone__icontains=phone)
+
+        source = request.GET.get('source')
+        if source:
+            dossier_datas = list(DossierData.objects.filter(source=source).values_list('email', flat=True))
+            datas = datas.filter(profile_email__in=dossier_datas)
             
         data_list = StudentInterviewReportSerializer(datas, many=True).data
         # print("datas...",data_list)

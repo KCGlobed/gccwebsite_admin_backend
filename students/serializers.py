@@ -2612,10 +2612,10 @@ class StudentInterviewCreateSerializer(serializers.ModelSerializer):
             fname = name[0]
             if not user_obj.last_name:
                 lname = " ".join(name[1:])
-            draft_obj = StudentProfileDraft(user=user_obj, email=user_obj.email, first_name=fname,last_name=lname, phone=user_obj.phone1, application_id=user_obj.application_id,fee_waiver_category = user_obj.fee_waiver_category)
+            draft_obj = StudentProfileDraft(user=user_obj, email=user_obj.email, first_name=fname,last_name=lname, phone=user_obj.phone1,city=user_obj.city,state=user_obj.state, application_id=user_obj.application_id,fee_waiver_category = user_obj.fee_waiver_category)
             draft_obj.save()
 
-            profile_obj = StudentProfile(user=user_obj, email=user_obj.email, first_name=fname,last_name=fname, phone=user_obj.phone1, application_id=user_obj.application_id,fee_waiver_category = user_obj.fee_waiver_category)
+            profile_obj = StudentProfile(user=user_obj, email=user_obj.email, first_name=fname,last_name=fname, phone=user_obj.phone1,city=user_obj.city,state=user_obj.state, application_id=user_obj.application_id,fee_waiver_category = user_obj.fee_waiver_category)
             profile_obj.save()
 
             instance = ManageStudentInterview(
@@ -2635,6 +2635,8 @@ class StudentInterviewCreateSerializer(serializers.ModelSerializer):
                             "last_name":profile_obj.last_name,
                             "email":profile_obj.email,
                             "mobile_no":f"+91-{profile_obj.phone}",
+                            "field_339552":profile_obj.state,
+                            "field_339553":profile_obj.city,
                             "field_352367":instance.company.name,
                             "field_352366":instance.interview_date.strftime("%d/%m/%Y %I:%M:%S %p")
                         }

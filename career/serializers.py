@@ -613,7 +613,7 @@ class CreateOrUpdateDossierDataMerittoSerializer(serializers.ModelSerializer):
 class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
     class Meta:
         model = DossierData
-        fields = ["full_name","email","phone","source","degree"]
+        fields = ["full_name","email","phone","city","state","source"]
         
     def create(self, validated_data):
         validated_data["fee_waiver_category"] = "Free of cost (FOC)"
@@ -637,12 +637,13 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
                 "name": instance.full_name,
                 "email": instance.email,
                 "mobile": instance.phone,
+                "city": instance.city,
+                "state": instance.state,
                 "search_criteria": "email",
                 "source":m_source,
                 "cf_source":m_source,
                 "cf_payment_status":"Complete",
-                "cf_fee_waiver_category":"Free of cost (FOC)",
-                "cf_graduation_qualification":instance.degree
+                "cf_fee_waiver_category":"Free of cost (FOC)"
             }
             try:
                 print("mer..",payload)
@@ -666,7 +667,7 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
             response = requests.post(url, json=payload)
             print(response.status_code)
             print(response.text)
-            User.objects.filter(email=instance.email).update(fee_waiver_category="Free of cost (FOC)")
+            User.objects.filter(email=instance.email).update(city=instance.city, state=instance.state, fee_waiver_category="Free of cost (FOC)")
             # DossierLog.objects.create(dossier=instance, message=response.text, status=int(response.status_code), activity="creating", datas=validated_data)
         except Exception as e:
             print("API Error:", str(e))    

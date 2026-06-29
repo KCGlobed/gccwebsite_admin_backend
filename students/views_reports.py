@@ -1020,7 +1020,7 @@ class GetStudentProfileReportPDFView(APIView):
             os.remove(pdf_path)
 
 
-######################## Interview #####################
+######################## Interview ######################
 
 
 ### for student profile Interview data
@@ -1044,24 +1044,24 @@ class GetStudentProfileInterviewReportExcelView(APIView):
 
         first_name = request.GET.get('first_name')
         if first_name:
-            datas = datas.filter(first_name__icontains=first_name)
+            datas = datas.filter(profile__first_name__icontains=first_name)
 
         last_name = request.GET.get('last_name')
         if last_name:
-            datas = datas.filter(last_name__icontains=last_name)
+            datas = datas.filter(profile__last_name__icontains=last_name)
 
         email = request.GET.get('email')
         if email:
-            datas = datas.filter(email__icontains=email)
+            datas = datas.filter(profile__email__icontains=email)
 
         phone = request.GET.get('phone')
         if phone:
-            datas = datas.filter(phone__icontains=phone)
+            datas = datas.filter(profile__phone__icontains=phone)
 
         source = request.GET.get('source')
         if source:
             dossier_datas = list(DossierData.objects.filter(source=source).values_list('email', flat=True))
-            datas = datas.filter(profile_email__in=dossier_datas)
+            datas = datas.filter(profile__email__in=dossier_datas)
             
         data_list = StudentInterviewReportSerializer(datas, many=True).data
         # print("datas...",data_list)

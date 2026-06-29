@@ -148,11 +148,11 @@ class InterviewSchedule_list(APIView):
 
         full_name = request.GET.get('full_name')
         if full_name:
-            datas = datas.filter(profile_user_first_name__icontains=full_name)
+            datas = datas.filter(profile_user__first_name__icontains=full_name)
 
         email = request.GET.get('email')
         if email:
-            datas = datas.filter(profile_email__icontains=email)
+            datas = datas.filter(profile__email__icontains=email)
 
 
         # Date range filter
@@ -171,7 +171,7 @@ class InterviewSchedule_list(APIView):
         source = request.GET.get('source')
         if source:
             dossier_datas = list(DossierData.objects.filter(source=source).values_list('email', flat=True))
-            datas = datas.filter(profile_email__in=dossier_datas)
+            datas = datas.filter(profile__email__in=dossier_datas)
 
 
         search_filter = filters.SearchFilter()

@@ -168,6 +168,11 @@ class InterviewSchedule_list(APIView):
             if end_date:
                 datas = datas.filter(created_at__date__lte=end_date)
 
+        source = request.GET.get('source')
+        if source:
+            dossier_datas = list(DossierData.objects.filter(source=source).values_list('email', flat=True))
+            datas = datas.filter(profile_email__in=dossier_datas)
+
 
         search_filter = filters.SearchFilter()
         datas = search_filter.filter_queryset(request, datas, self)

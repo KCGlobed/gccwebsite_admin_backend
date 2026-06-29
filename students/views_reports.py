@@ -1042,13 +1042,16 @@ class GetStudentProfileInterviewReportExcelView(APIView):
             if end_date:
                 datas = datas.filter(created_at__date__lte=end_date)
 
-        first_name = request.GET.get('first_name')
-        if first_name:
-            datas = datas.filter(profile__first_name__icontains=first_name)
+        # first_name = request.GET.get('first_name')
+        # if first_name:
+        #     datas = datas.filter(profile__first_name__icontains=first_name)
 
-        last_name = request.GET.get('last_name')
-        if last_name:
-            datas = datas.filter(profile__last_name__icontains=last_name)
+        # last_name = request.GET.get('last_name')
+        # if last_name:
+        #     datas = datas.filter(profile__last_name__icontains=last_name)
+        full_name = request.GET.get('full_name')
+        if full_name:
+            datas = datas.filter(profile__user__first_name__icontains=full_name)
 
         email = request.GET.get('email')
         if email:

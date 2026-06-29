@@ -148,7 +148,7 @@ class InterviewSchedule_list(APIView):
 
         full_name = request.GET.get('full_name')
         if full_name:
-            datas = datas.filter(profile_user__first_name__icontains=full_name)
+            datas = datas.filter(profile__user__first_name__icontains=full_name)
 
         email = request.GET.get('email')
         if email:

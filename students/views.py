@@ -2103,6 +2103,31 @@ class StudentScheduleInterviewView(APIView):
         return Response({'message':'failed',"status":400,'data':[]})
     
 
+class ManageStudentAccountInterviewView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request, format=None):
+        data = request.data
+        profile_data = StudentProfile.objects.filter(user=request.user)
+        if profile_data:
+            student = profile_data.first()
+            student_id = student.id
+        else:
+            user_obj = User.objects.filter(id=request.user.id)
+            # std = StudentProfile(student_id)
+            student_id = 1
+
+        # data["student_id"] = StudentProfile.objects.filter(user=request.user)
+
+        payload = {
+            "student_id":student_id,
+            "interview_date":request.data.get("interview_date")
+        }
+        serializer = StudentInterviewCreateOrUpdateSerializer(data = payload)
+        if serializer.is_valid(raise_exception = True):
+            serializer.save()
+            return success_response(message="Success", data={}, status_code=status.HTTP_200_OK)
+        return error_response(message="failed", data = serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
+    
 
 ### testing purpose
 

@@ -12,6 +12,8 @@ from .utils import get_student_score_card_url
 from google.cloud import storage
 client = storage.Client(project=settings.GS_PROJECT_ID)
 
+from django.db.models import Count
+from django.db.models.functions import TruncDate
 
 
 
@@ -1121,6 +1123,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     referred_code = serializers.SerializerMethodField("get_referred_code")
     exam_url = serializers.SerializerMethodField("get_exam_url")
     interview_detail = serializers.SerializerMethodField("get_interview_detail")
+    interview_slots_detail = serializers.SerializerMethodField("get_interview_slots_detail")
     # guardian_dropdown = serializers.SerializerMethodField("get_guardian_dropdown")
 
     # def get_guardian_dropdown(self, obj):
@@ -1232,10 +1235,39 @@ class StudentProfileSerializer(serializers.ModelSerializer):
 
         return exam_url
     
+
     def get_interview_detail(self, obj):
         interview_objs  = ManageStudentInterview.objects.filter(profile=obj.id)
         interview_data  = StudentprofileCustomFieldInterviewSerializer(interview_objs, many=True).data
         return interview_data
+    
+
+    def get_interview_slots_detail(self, obj):
+        start_date = date(2026, 6, 22)
+        end_date = date(2026, 7, 13)
+        # Count records grouped by interview_date
+        booked_slots = (
+            ManageStudentInterview.objects
+            .filter(interview_date__range=(start_date, end_date))
+            .annotate(day=TruncDate("interview_date"))
+            .values("day")
+            .annotate(count=Count("id"))
+            .order_by("day")
+        )
+        # Convert queryset to dictionary
+        count_map = {item["day"]: item["count"] for item in booked_slots}  
+
+        # Fill missing dates with 0
+        result = []
+        current = start_date
+
+        while current <= end_date:
+            result.append({
+                "date": current.strftime("%d-%m-%Y"),
+                "count": count_map.get(current, 0)
+            })
+            current += timedelta(days=1)
+        return result
     
     class Meta:
         model = StudentProfile
@@ -2469,7 +2501,7 @@ class StudentInterviewCreateOrUpdateSerializer(serializers.ModelSerializer):
         else:
             instance = ManageStudentInterview(
                profile_id = validate_data.get('student_id'),  
-               company_id = validate_data.get('company'),
+               company_id = validate_data.get('company') if validate_data.get('company') else 6,
                interview_date = validate_data.get('interview_date')
             )
             instance.save()
@@ -2620,7 +2652,7 @@ class StudentInterviewCreateSerializer(serializers.ModelSerializer):
 
             instance = ManageStudentInterview(
                profile_id = profile_obj.id,  
-               company_id = 1,
+               company_id = 6,
                interview_date = validate_data.get('interview_date')
             )
             instance.save()

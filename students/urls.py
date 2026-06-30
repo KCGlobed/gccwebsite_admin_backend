@@ -43,6 +43,7 @@ urlpatterns = [
     path('create-student-profile-bot/', CreateStudentProfileByBotView.as_view(), name="create-update-student-profile-bot"),
     path('create-update-student-profile-draft/', CreateStudentProfileDraftView.as_view(), name="create-update-student-profile-draft"),
     path('create-student-interview-slot/', StudentScheduleInterviewView.as_view(), name="create-student-interview-slot"),
+    path('create-student-account-interview-slot/', ManageStudentAccountInterviewView.as_view(), name="create-student-account-interview-slot"),
     path('student-slot-upload/', StudentSlotBookView.as_view(), name="student-slot-upload"),
     path('student-admit-card-download/', GetStudentAdmitCardView.as_view(), name="student-admit-card-download"),
     path('student-admit-card-admin-download/<int:id>', GetStudentAdmitCardAdminView.as_view(), name="student-admit-card-admin-download"),

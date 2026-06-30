@@ -13,9 +13,10 @@ from datetime import datetime, date
 import requests
 from django.utils import timezone
 from career.models import DossierData
-
-
-
+from django.db.models import Count
+from django.db.models.functions import TruncDate
+from students.models import *
+from datetime import datetime, timedelta, date
 
 class WebsiteUserLoginSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length = 255,required=True)
@@ -606,10 +607,37 @@ class UserResetPasswordSerializer(serializers.ModelSerializer):
 
 
 class StudentProfileDetailSerializer(serializers.ModelSerializer):
+    interview_slots_detail = serializers.SerializerMethodField("get_interview_slots_detail")
     class Meta:
         model = User
-        fields = ['id','first_name','last_name', 'email','phone1','phone2','address','city','state','country','image','banner_image','pincode',"dob","application_id"]
+        fields = ['id','first_name','last_name', 'email','phone1','phone2','address','city','state','country','image','banner_image','pincode',"dob","application_id","interview_slots_detail"]
+    
+    def get_interview_slots_detail(self, obj):
+        start_date = date(2026, 6, 22)
+        end_date = date(2026, 7, 13)
+        # Count records grouped by interview_date
+        booked_slots = (
+            ManageStudentInterview.objects
+            .filter(interview_date__range=(start_date, end_date))
+            .annotate(day=TruncDate("interview_date"))
+            .values("day")
+            .annotate(count=Count("id"))
+            .order_by("day")
+        )
+        # Convert queryset to dictionary
+        count_map = {item["day"]: item["count"] for item in booked_slots}  
 
+        # Fill missing dates with 0
+        result = []
+        current = start_date
+
+        while current <= end_date:
+            result.append({
+                "date": current.strftime("%d-%m-%Y"),
+                "count": count_map.get(current, 0)
+            })
+            current += timedelta(days=1)
+        return result
 class AdminProfileDetailSerializer(serializers.ModelSerializer):
     role = serializers.SerializerMethodField('get_role')
     class Meta:

@@ -284,3 +284,13 @@ class ManageFreeReferal(models.Model):
         return self.free_referral_code
 
     
+
+##############################################################################
+
+
+class ManageLogin(models.Model):
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+

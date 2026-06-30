@@ -257,7 +257,6 @@ class Guardian(models.IntegerChoices):
 ###################
 
 
-
 class StudentProfileDraft(models.Model):
     user = models.ForeignKey('users.User', null=True, blank=True, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=255, null=True, blank=True)

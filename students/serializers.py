@@ -2622,7 +2622,7 @@ class StudentInterviewCreateSerializer(serializers.ModelSerializer):
 
             std_profile = StudentProfile.objects.filter(user=user_obj)
             if not std_profile:
-                profile_obj = StudentProfile(user=user_obj, email=user_obj.email, first_name=fname,last_name=fname, phone=user_obj.phone1,city=user_obj.city,state=user_obj.state, application_id=user_obj.application_id,fee_waiver_category = user_obj.fee_waiver_category)
+                profile_obj = StudentProfile(user=user_obj, email=user_obj.email, first_name=fname,last_name=lname, phone=user_obj.phone1,city=user_obj.city,state=user_obj.state, application_id=user_obj.application_id,fee_waiver_category = user_obj.fee_waiver_category)
                 profile_obj.save()
             else:
                 profile_obj = std_profile.first()

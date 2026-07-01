@@ -2491,7 +2491,7 @@ class StudentInterviewCreateOrUpdateSerializer(serializers.ModelSerializer):
         objs = ManageStudentInterview.objects.filter(profile=validate_data.get('student_id'))
         if objs:
             instance = objs.first()    
-            instance.company_id = validate_data.get('company', instance.company)    
+            instance.company_id = validate_data.get('company', instance.company.id)    
             instance.interview_date = validate_data.get('interview_date', instance.interview_date)    
             instance.attempt_status = validate_data.get('attempt_status', instance.attempt_status)    
             instance.absent_reason = validate_data.get('absent_reason', instance.absent_reason) if validate_data.get('attempt_status') == 2 else ""   

@@ -2107,6 +2107,7 @@ class ManageStudentAccountInterviewView(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request, format=None):
         data = request.data
+        print("payload",data)
         profile_data = StudentProfile.objects.filter(user=request.user)
         if profile_data:
             student = profile_data.first()
@@ -2134,6 +2135,7 @@ class ManageStudentAccountInterviewView(APIView):
             "student_id":student_id,
             "interview_date":request.data.get("interview_date")
         }
+        print("payload final....",payload)
         serializer = StudentInterviewCreateOrUpdateSerializer(data = payload)
         if serializer.is_valid(raise_exception = True):
             serializer.save()

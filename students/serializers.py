@@ -2475,7 +2475,6 @@ class StudentInterviewCreateOrUpdateSerializer(serializers.ModelSerializer):
         fields = ["student_id","company","attempt_status","absent_reason","result","interview_date","package_status"]
 
     def validate(self, validate_data):
-        print("calidatio")
         datas = StudentProfile.objects.filter(id = validate_data.get('student_id'))
         if not datas:
             # raise serializers.ValidationError("Invalid Student ID")
@@ -2533,7 +2532,7 @@ class StudentInterviewCreateOrUpdateSerializer(serializers.ModelSerializer):
             except Exception as e:
                 print("API Error:", str(e))
 
-
+        ManageStudentInterviewHistory.objects.create(profile=instance.profile, company=instance.company, attempt_status=instance.attempt_status, absent_reason=instance.absent_reason, result=instance.result, interview_date=instance.interview_date, interview_time=instance.interview_time, package_status=instance.package_status,payment_status=instance.payment_status,payment_amount=instance.payment_amount,remark="profile")
         return instance
         
 
@@ -2622,18 +2621,17 @@ class StudentInterviewCreateSerializer(serializers.ModelSerializer):
         model = ManageStudentInterview
         fields = ["lid","interview_date"]
 
-    def validate(self, validate_data):
-        print("calidatio")
-        lobj = DossierData.objects.filter(id=validate_data.get('lid')).first()
-        datas = StudentProfile.objects.filter(email = lobj.email)
-        if datas:
-            # raise serializers.ValidationError("Invalid Student ID")
-            raise serializers.ValidationError({
-                "status": 400,
-                "message": "Already Scheduled Interview",
-                "data": {}
-            })
-        return validate_data
+    # def validate(self, validate_data):
+    #     lobj = DossierData.objects.filter(id=validate_data.get('lid')).first()
+    #     datas = StudentProfile.objects.filter(email = lobj.email)
+    #     if datas:
+    #         # raise serializers.ValidationError("Invalid Student ID")
+    #         raise serializers.ValidationError({
+    #             "status": 400,
+    #             "message": "Already Scheduled Interview",
+    #             "data": {}
+    #         })
+    #     return validate_data
     
     def create(self , validate_data):
         print(validate_data)
@@ -2644,18 +2642,31 @@ class StudentInterviewCreateSerializer(serializers.ModelSerializer):
             fname = name[0]
             if not user_obj.last_name:
                 lname = " ".join(name[1:])
-            draft_obj = StudentProfileDraft(user=user_obj, email=user_obj.email, first_name=fname,last_name=lname, phone=user_obj.phone1,city=user_obj.city,state=user_obj.state, application_id=user_obj.application_id,fee_waiver_category = user_obj.fee_waiver_category)
-            draft_obj.save()
 
-            profile_obj = StudentProfile(user=user_obj, email=user_obj.email, first_name=fname,last_name=fname, phone=user_obj.phone1,city=user_obj.city,state=user_obj.state, application_id=user_obj.application_id,fee_waiver_category = user_obj.fee_waiver_category)
-            profile_obj.save()
+            std_draft = StudentProfileDraft.objects.filter(user=user_obj)
+            if not std_draft:
+                draft_obj = StudentProfileDraft(user=user_obj, email=user_obj.email, first_name=fname,last_name=lname, phone=user_obj.phone1,city=user_obj.city,state=user_obj.state, application_id=user_obj.application_id,fee_waiver_category = user_obj.fee_waiver_category)
+                draft_obj.save()
 
-            instance = ManageStudentInterview(
-               profile_id = profile_obj.id,  
-               company_id = 6,
-               interview_date = validate_data.get('interview_date')
-            )
-            instance.save()
+            std_profile = StudentProfile.objects.filter(user=user_obj)
+            if not std_profile:
+                profile_obj = StudentProfile(user=user_obj, email=user_obj.email, first_name=fname,last_name=fname, phone=user_obj.phone1,city=user_obj.city,state=user_obj.state, application_id=user_obj.application_id,fee_waiver_category = user_obj.fee_waiver_category)
+                profile_obj.save()
+            else:
+                profile_obj = std_profile.first()
+            
+            interview_obj = ManageStudentInterview.objects.filter(profile_id=profile_obj.id)
+            if not interview_obj:
+                instance = ManageStudentInterview(
+                profile_id = profile_obj.id,  
+                company_id = 6,
+                interview_date = validate_data.get('interview_date')
+                )
+                instance.save()
+            else:
+                instance = interview_obj.first()
+                instance.interview_date = validate_data.get('interview_date')
+                instance.save()
         
             if settings.MERITO_STATUS == "True":
                 meritto_payload = {
@@ -2688,6 +2699,8 @@ class StudentInterviewCreateSerializer(serializers.ModelSerializer):
                     ApplicationLog.objects.create(application_id=profile_obj.id, message=response.text, status=int(response.status_code), activity="Schedule Interview Directly", datas=validate_data, payload_request=meritto_payload)
                 except Exception as e:
                     print("API Error:", str(e))
+
+            ManageStudentInterviewHistory.objects.create(profile=instance.profile, company=instance.company, attempt_status=instance.attempt_status, absent_reason=instance.absent_reason, result=instance.result, interview_date=instance.interview_date, interview_time=instance.interview_time, package_status=instance.package_status,payment_status=instance.payment_status,payment_amount=instance.payment_amount,remark="lead")
             return instance
         raise serializers.ValidationError("Invalid Request")
         

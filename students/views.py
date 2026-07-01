@@ -2091,9 +2091,8 @@ class PostRealExamResultView(APIView):
 class StudentScheduleInterviewView(APIView):
     # permission_classes = [IsAuthenticated]
     def post(self, request):
-        lobj = DossierData.objects.filter(id=request.data.get('lid')).first()
-        datas = StudentProfileDraft.objects.filter(email=lobj.email)
-        if len(datas)==0:
+        lobj = DossierData.objects.filter(id=request.data.get('lid'))
+        if lobj:
             serializers = StudentInterviewCreateSerializer(data=request.data)
             if serializers.is_valid():
                 serializers.save()

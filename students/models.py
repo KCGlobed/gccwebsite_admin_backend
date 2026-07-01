@@ -579,6 +579,27 @@ class ManageStudentInterview(models.Model):
         return '%s' % self.id
 
 
+class ManageStudentInterviewHistory(models.Model):
+    profile = models.ForeignKey('StudentProfile', null=True, blank=True, on_delete=models.CASCADE)
+    company   = models.ForeignKey('CompanyMaster', null=True, blank=True, on_delete=models.CASCADE)
+    attempt_status = models.IntegerField(choices=AttendanceStatusType.choices, null=True, blank=True)
+    absent_reason = models.TextField(null=True, blank=True)
+    result = models.IntegerField(choices=ResultStatusType.choices, null=True, blank=True)
+    interview_date = models.DateField(null=True, blank=True)
+    interview_time = models.CharField(max_length=200, null=True, blank=True)
+    package_status = models.BooleanField(default=False)
+    payment_status = models.BooleanField(default=False)
+    payment_amount = models.CharField(max_length=200, null=True, blank=True)
+    remark = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
+
+    class Meta:
+        verbose_name = 'Manage Student Interview History'
+        verbose_name_plural = 'Manage Student Interview History'
+
+    def __str__(self):
+        return '%s' % self.id
 
 
 class StudentPayment(models.Model):

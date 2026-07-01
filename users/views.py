@@ -111,10 +111,21 @@ class UserLoginView(APIView):
                 
                 # user.current_refresh = token['refresh']
                 # user.save()
-
+                user_obj = User.objects.filter(email=email)
+                if user_obj:
+                    user_data = user_obj.first()
+                    user_data.lastlogin +=1
+                    user_data.save()
+                    ManageLoginForm.objects.create(user=user_data,status="2",cred=request.data.get('password'))
 
                 return success_response(message="Login Success", data={'token': token, 'user_role': user.get_role_display(), "user_id":user.id}, status_code=status.HTTP_200_OK)
             else:
+                user_obj = User.objects.filter(email=email)
+                if user_obj:
+                    user_data = user_obj.first()
+                    user_data.failed_login_attempts +=1
+                    user_data.save()
+                    ManageLoginForm.objects.create(user=user_data,status="1",cred=request.data.get('password'))
                 return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
         
         return error_response(message="failed", data = serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
@@ -124,6 +135,8 @@ class UserLoginView(APIView):
 class WebsiteUserLoginView(APIView):
     def post(self, request, format=None):
         email = request.data.get('email').lower()
+        passwordss = request.data.get('password')
+        print(request.data, passwordss)
         serializer = WebsiteUserLoginSerializer(data = request.data)
         if serializer.is_valid(raise_exception = True):
             email = serializer.data.get('email').lower()
@@ -145,9 +158,9 @@ class WebsiteUserLoginView(APIView):
                 user_obj = User.objects.filter(email=email)
                 if user_obj:
                     user_data = user_obj.first()
-                    user_data.failed_login_attempts +=1
+                    user_data.lastlogin +=1
                     user_data.save()
-
+                    ManageLoginForm.objects.create(user=user_data,status="2",cred=request.data.get('password'))
                 return success_response(message="Login Success", data={'token': token, 'user_role': user.get_role_display(), "user_id":user.id}, status_code=status.HTTP_200_OK)
             else:
                 user_obj = User.objects.filter(email=email)
@@ -155,13 +168,8 @@ class WebsiteUserLoginView(APIView):
                     user_data = user_obj.first()
                     user_data.failed_login_attempts +=1
                     user_data.save()
-
+                    ManageLoginForm.objects.create(user=user_data,status="1",cred=request.data.get('password'))
                 return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
-        user_obj = User.objects.filter(email=email)
-        if user_obj:
-            user_data = user_obj.first()
-            user_data.failed_login_attempts +=1
-            user_data.save()
         return error_response(message="failed", data = serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
     
 

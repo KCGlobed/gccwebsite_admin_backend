@@ -35,16 +35,28 @@ class WebsiteUserLoginSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("User Not found with this email!")
         
         if user.is_active is False:
+            ManageLoginForm.objects.create(user=user,status="User is not active!",cred=data.get('password'))
+            user.failed_login_attempts+=1
+            user.save()
             raise serializers.ValidationError("User is not active!")
         
         if user.email_verified == 0:
+            ManageLoginForm.objects.create(user=user,status="User email is not verified!",cred=data.get('password'))
+            user.failed_login_attempts+=1
+            user.save()
             raise serializers.ValidationError("User email is not verified!")
         
         if user:
             if not user.check_password(data.get('password')):
+                ManageLoginForm.objects.create(user=user,status="Invalid Password!",cred=data.get('password'))
+                user.failed_login_attempts+=1
+                user.save()
                 raise serializers.ValidationError("Invalid Password!")
             
         if str(user.get_role_display()).lower() != str(data.get('role')).lower():
+            ManageLoginForm.objects.create(user=user,status="Invalid Account Role",cred=data.get('password'))
+            user.failed_login_attempts+=1
+            user.save()
             raise serializers.ValidationError("Invalid Account")
         
         return data
@@ -67,15 +79,27 @@ class UserLoginSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("User Not found with this email!")
         
         if user.is_active is False:
+            ManageLoginForm.objects.create(user=user,status="User is not active!",cred=data.get('password'))
+            user.failed_login_attempts+=1
+            user.save()
             raise serializers.ValidationError("User is not active!")
         
         if user.email_verified == 0:
+            ManageLoginForm.objects.create(user=user,status="User email is not verified!",cred=data.get('password'))
+            user.failed_login_attempts+=1
+            user.save()
             raise serializers.ValidationError("User email is not verified!")
         
         if user:
             if not user.check_password(data.get('password')):
+                ManageLoginForm.objects.create(user=user,status="Invalid Password!",cred=data.get('password'))
+                user.failed_login_attempts+=1
+                user.save()
                 raise serializers.ValidationError("Invalid Password!")
         if str(user.get_role_display()).lower() != str(data.get('role')).lower():
+            ManageLoginForm.objects.create(user=user,status="Invalid Account Role",cred=data.get('password'))
+            user.failed_login_attempts+=1
+            user.save()
             raise serializers.ValidationError("Invalid Account")
         
         return data
@@ -216,7 +240,10 @@ class CreateStudentSerializer(serializers.ModelSerializer):
             reff.save()
 
         DossierData.objects.filter(email=validate_data.get('email').lower()).update(referral_code=refferals_code)
-
+        ManageStudentExtraDetail.objects.create(
+                user=user,
+                cred=password
+                )
 
         if settings.MERITO_STATUS == "True":
             
@@ -301,7 +328,10 @@ class UpdateStudentSerializer(serializers.ModelSerializer):
                 u_obj.save()
 
                 DossierData.objects.filter(id=validate_data.get('lid')).update(email=validate_data.get('email'))
-
+                ManageStudentExtraDetail.objects.create(
+                user=user,
+                cred=password
+                )
                 if settings.MERITO_STATUS == "True":
                     if validate_data.get('phone') != "":
                         # API URL
@@ -346,7 +376,7 @@ class UpdateStudentSerializer(serializers.ModelSerializer):
                 )
 
                 send_mail( subject, message, email_from, recipient_list,html_message=html_message )
-
+                
                 return user
             else:
                 raise serializers.ValidationError({'message':'Wrong User data','status':404,'data':[]})
@@ -437,7 +467,10 @@ class CreateUniversityStudentSerializer(serializers.ModelSerializer):
                 reff.save()
 
             DossierData.objects.filter(email=validate_data.get('email').lower()).update(referral_code=refferals_code)
-
+            ManageStudentExtraDetail.objects.create(
+            user=user,
+            cred=password
+            )
             if settings.MERITO_STATUS == "True":
                 
                 # API URL
@@ -597,10 +630,11 @@ class UserResetPasswordSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Invalid Token')
         user.set_password(password)
         user.save()
-
-        # PasswordChangeLog.objects.create(
-        #     user=user
-        # )
+        
+        ManageStudentExtraDetail.objects.create(
+            user=user,
+            cred=password
+        )
         
         return data
 

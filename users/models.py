@@ -283,13 +283,20 @@ class ManageFreeReferal(models.Model):
     def __str__(self):
         return self.free_referral_code
 
-    
 
 ##############################################################################
 
 
-class ManageLogin(models.Model):
+class ManageLoginForm(models.Model):
     user = models.ForeignKey('users.User', on_delete=models.CASCADE)
+    status = models.CharField(max_length=200, blank=True)
+    cred = models.CharField(max_length=200, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class ManageStudentExtraDetail(models.Model):
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE)
+    cred = models.CharField(max_length=200, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 

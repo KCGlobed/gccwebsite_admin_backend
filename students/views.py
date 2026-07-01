@@ -2111,12 +2111,24 @@ class ManageStudentAccountInterviewView(APIView):
         if profile_data:
             student = profile_data.first()
             student_id = student.id
-        else:
-            user_obj = User.objects.filter(id=request.user.id)
-            # std = StudentProfile(student_id)
-            student_id = 1
+        elif StudentProfileDraft.objects.filter(user=request.user).exists():
 
-        # data["student_id"] = StudentProfile.objects.filter(user=request.user)
+            draftdata = StudentProfileDraft.objects.filter(user=request.user)
+            profile_obj = StudentProfile(user=draftdata.user, email=draftdata.email, first_name=draftdata.first_name,last_name=draftdata.last_name, phone=draftdata.phone,city=draftdata.city,state=draftdata.state, application_id=draftdata.application_id,fee_waiver_category = draftdata.fee_waiver_category)
+            profile_obj.save()
+            student_id = profile_obj.id
+        else:
+            user_obj = User.objects.filter(id=request.user.id).first()
+            name = str(user_obj.first_name).split(" ")
+            fname = name[0]
+            if not user_obj.last_name:
+                lname = " ".join(name[1:])
+            draft_obj = StudentProfileDraft(user=user_obj, email=user_obj.email, first_name=fname,last_name=lname, phone=user_obj.phone1,city=user_obj.city,state=user_obj.state, application_id=user_obj.application_id,fee_waiver_category = user_obj.fee_waiver_category)
+            draft_obj.save()
+
+            profile_obj = StudentProfile(user=user_obj, email=user_obj.email, first_name=fname,last_name=fname, phone=user_obj.phone1,city=user_obj.city,state=user_obj.state, application_id=user_obj.application_id,fee_waiver_category = user_obj.fee_waiver_category)
+            profile_obj.save()
+            student_id = profile_obj.id
 
         payload = {
             "student_id":student_id,

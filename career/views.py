@@ -154,6 +154,63 @@ class DossierDataFormCustom_Create(APIView):
             return error_response(message="failed", data = [], status_code=status.HTTP_400_BAD_REQUEST)
 
 
+
+
+
+class InterviewSlotScheduleAdmin_list(APIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = CustomPageNumberPagination
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ["full_name","email", "phone", "interview_date"]
+    ordering_fields = ["id"]
+    def get(self, request):
+        datas = DossierData.objects.filter(source=SourceType.Affiliate7).order_by('-id')
+
+        full_name = request.GET.get('full_name')
+        if full_name:
+            datas = datas.filter(full_name__icontains=full_name)
+
+        email = request.GET.get('email')
+        if email:
+            datas = datas.filter(email__icontains=email)
+
+        phone = request.GET.get('phone')
+        if phone:
+            datas = datas.filter(phone__icontains=phone)
+
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
+
+
+
+        search_filter = filters.SearchFilter()
+        datas = search_filter.filter_queryset(request, datas, self)
+
+        ordering_filter = filters.OrderingFilter()
+        datas = ordering_filter.filter_queryset(request, datas, self)
+
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(datas, request, view=self)
+        serializers = ListDossierDataAffliateSevenInterviewSerializer(page, many=True)
+        
+        return paginator.get_paginated_response(serializers.data)
+
+
+
+
+
+
 from .serializers import push_to_meritto
 class DossierMeritto_CreateUpdate(APIView):
     # permission_classes = [IsAuthenticated]
@@ -2865,100 +2922,130 @@ class GetDossierAffliateSixReportExcelView(APIView):
 
 
 
-# class GetDossierAffliateSixReportExcelView(APIView):
+class GetDossierInterviewAffliateSevenReportExcelView(APIView):
+    permission_classes = [IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ["full_name","email","phone","city","state","interview_date"]
+    ordering_fields = ['id']
 
-#     def get(self, request, sid=None):
-#         datas = (
-#             DossierData.objects
-#             .filter(source=SourceType.Affiliate6)
-#             .order_by('id')
-#         )
+    def get(self, request, sid=None):
+        
+        datas = DossierData.objects.filter(source=SourceType.Affiliate7).order_by('-id')
 
-#         seen = set()
-#         unique_data = []
+        full_name = request.GET.get('full_name')
+        if full_name:
+            datas = datas.filter(full_name__icontains=full_name)
 
-#         for item in datas:
-#             if item.phone not in seen:
-#                 seen.add(item.phone)
-#                 unique_data.append(item)
-
-
-#         data_list = ListDossierDataAffliateSixReportSerializer(
-#             unique_data,
-#             many=True
-#         ).data        
-#         # datas = (
-#         #     DossierData.objects
-#         #     .filter(source=SourceType.Affiliate6)
-#         #     .order_by('phone','id')
-#         #     .distinct('phone')
-#         # )
-
-#         # data_list = ListDossierDataAffliateSixReportSerializer(
-#         #     datas,
-#         #     many=True
-#         # ).data
+        email = request.GET.get('email')
+        if email:
+            datas = datas.filter(email__icontains=email)
 
 
-#         COLUMN_MAPPING = {
-#             "full_name": 'Full Name',
-#             "email": 'Email',
-#             "phone": 'Phone',
-#             "city": 'City',
-#             "state": 'State',
-#             "fbc_id": 'FBC ID',
-#             "utm_source": 'UTM SOURCE',
-#             "utm_medium": 'UTM MEDIUM',
-#             "utm_content": 'UTM CONTENT',
-#             "utm_campaign": 'UTM CAMPAIGN',
-#             "campaign_id": 'CAMPAIGN ID',
-#             "utm_adname": 'UTM ADNAME',
-#             "adset_id": 'ADSET ID',
-#             "fbclid": 'FBCLID',
-#             "ad_source": 'AD SOURCE',
-#             "ad_id": 'AD ID',
-#             "fee_waiver_category": 'FEE WAIVER CATEGORY',
-#             "created_at": 'CREATE TIMESTAMP'
-#         }
+        phone = request.GET.get('phone')
+        if phone:
+            datas = datas.filter(phone__icontains=phone)
 
 
-#         df = pd.DataFrame(data_list)
+        state = request.GET.get('state')
+        if state:
+            datas = datas.filter(state__icontains=state)
+
+        city = request.GET.get('city')
+        if city:
+            datas = datas.filter(city__icontains=city)
+
+        # Date range filter
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                datas = datas.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                datas = datas.filter(created_at__date__lte=end_date)
 
 
-#         # # remove duplicate phone
-#         # df = df.drop_duplicates(
-#         #     subset=["phone"],
-#         #     keep="first"
-#         # )
+        search_filter = filters.SearchFilter()
+        datas = search_filter.filter_queryset(request, datas, self)
+
+        ordering_filter = filters.OrderingFilter()
+        datas = ordering_filter.filter_queryset(request, datas, self)
+
+        serializers = ListDossierDataAffliateSevenInterviewSerializer(datas, many=True)
+
+        lis = []
+        
+        lis.append({
+                "full_name":"Dossier Interview Report",
+                "email":'',
+                "phone":'',
+                "interview_date":'',
+                "created_at":''
+            })
+
+       
+        lis.append({
+                "full_name":"",
+                "email":'',
+                "phone":'',
+                "interview_date":'',
+                "created_at":''
+            })
+        
+        lis.append({
+                "full_name":"Full Name",
+                "email":'Email',
+                "phone":'Phone Number',
+                "interview_date":'Interview Date',
+                "created_at":'Register Date&Time'
+            })
+        
+        
+        for chapter_data in serializers.data:
+            lis.append({
+                "full_name":chapter_data['full_name'],
+                "email":chapter_data['email'],
+                "phone":chapter_data['phone'],
+                "interview_date":chapter_data['interview_date'],
+                "created_at":chapter_data['created_at'],
+            })
 
 
-#         # reorder columns
-#         df = df[list(COLUMN_MAPPING.keys())]
+        with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as temp_file:
+            pdf_path = temp_file.name
+            
+            # Create DataFrame and save to the temporary file
+            df = pd.DataFrame.from_dict(lis)
+            df.to_excel(pdf_path, header=False, index=False)
+        
+        # After the 'with' block, the file is closed but not deleted
+        try:
+            # GCS file naming logic
+            timestamp = datetime.now().strftime("%d_%m_%y_%H_%M")
+            report_name = "dossier_interview_report"
+            gcs_folder_name = "media/reports/dossier/excel"
+            gcs_file_name = f"{gcs_folder_name}/{report_name}_{timestamp}.xlsx"
+
+            # Upload the temporary file to GCS
+            bucket = client.get_bucket(settings.GS_BUCKET_NAME)
+            blob = bucket.blob(gcs_file_name)
+            blob.upload_from_filename(pdf_path)
+
+            return success_response(
+                message="Success",
+                data={"report_url": blob.public_url},
+                status_code=status.HTTP_200_OK
+            )
+        finally:
+            # Ensure the temporary file is deleted
+            os.remove(pdf_path)
 
 
-#         # rename excel headers
-#         df.rename(
-#             columns=COLUMN_MAPPING,
-#             inplace=True
-#         )
 
 
-#         response = HttpResponse(
-#             content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-#         )
-
-#         response["Content-Disposition"] = (
-#             'attachment; filename="lead_report.xlsx"'
-#         )
-
-
-#         df.to_excel(
-#             response,
-#             index=False
-#         )
-
-
-#         return response
 
 
 

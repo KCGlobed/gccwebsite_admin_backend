@@ -185,3 +185,4 @@ class InterviewSchedule_list(APIView):
         serializers = StudentInterviewSerializer(page, many=True)
         
         return paginator.get_paginated_response(serializers.data)
+

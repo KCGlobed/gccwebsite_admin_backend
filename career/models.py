@@ -124,7 +124,8 @@ class DossierData(models.Model):
     fee_waiver_category = models.CharField(max_length=200, default="No Waiver")
     referred_code = models.CharField(max_length=50, null=True, blank=True)
     referral_code = models.CharField(max_length=50, null=True, blank=True)
-
+    #added for affliate 7
+    interview_date = models.DateField(null=True, blank=True)
 
 class DossierDocument(models.Model):
     dossier = models.ForeignKey('DossierData',on_delete=models.CASCADE,null=True,blank=True,related_name='documents')

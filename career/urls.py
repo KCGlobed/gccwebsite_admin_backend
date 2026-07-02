@@ -54,6 +54,9 @@ urlpatterns = [
     ### test ###
     path("excel_import", ImportEmailView.as_view()),
     path("add_lead", GetAffliateSixExcelView.as_view()),
+
+    path("interview_affliateseven_page_list/", InterviewSlotScheduleAdmin_list.as_view(), name="interview_listing_affliateseven"),
+    path("interview_affliateseven_report-excel/", GetDossierInterviewAffliateSevenReportExcelView.as_view(), name="interview_affliateseven_report_excel"),
     
 
 ]

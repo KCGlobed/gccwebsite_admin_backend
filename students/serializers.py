@@ -2593,6 +2593,14 @@ class StudentInterviewCreateSerializer(serializers.ModelSerializer):
         model = ManageStudentInterview
         fields = ["lid","interview_date"]
 
+    def create(self, validate_data):
+        lobj = DossierData.objects.filter(id=validate_data.get('lid')).first()
+        lobj.interview_date=validate_data.get('interview_date')
+        lobj.save()
+        # print(lobj)
+        return validate_data
+
+
     # def validate(self, validate_data):
     #     lobj = DossierData.objects.filter(id=validate_data.get('lid')).first()
     #     datas = StudentProfile.objects.filter(email = lobj.email)
@@ -2605,74 +2613,74 @@ class StudentInterviewCreateSerializer(serializers.ModelSerializer):
     #         })
     #     return validate_data
     
-    def create(self , validate_data):
-        print(validate_data)
-        lobj = DossierData.objects.filter(id=validate_data.get('lid')).first()
-        if lobj:
-            user_obj = User.objects.filter(email=lobj.email).first()
-            name = str(user_obj.first_name).split(" ")
-            fname = name[0]
-            if not user_obj.last_name:
-                lname = " ".join(name[1:])
+    # def create(self , validate_data):
+    #     print(validate_data)
+    #     lobj = DossierData.objects.filter(id=validate_data.get('lid')).first()
+    #     if lobj:
+    #         user_obj = User.objects.filter(email=lobj.email).first()
+    #         name = str(user_obj.first_name).split(" ")
+    #         fname = name[0]
+    #         if not user_obj.last_name:
+    #             lname = " ".join(name[1:])
 
-            std_draft = StudentProfileDraft.objects.filter(user=user_obj)
-            if not std_draft:
-                draft_obj = StudentProfileDraft(user=user_obj, email=user_obj.email, first_name=fname,last_name=lname, phone=user_obj.phone1,city=user_obj.city,state=user_obj.state, application_id=user_obj.application_id,fee_waiver_category = user_obj.fee_waiver_category)
-                draft_obj.save()
+    #         std_draft = StudentProfileDraft.objects.filter(user=user_obj)
+    #         if not std_draft:
+    #             draft_obj = StudentProfileDraft(user=user_obj, email=user_obj.email, first_name=fname,last_name=lname, phone=user_obj.phone1,city=user_obj.city,state=user_obj.state, application_id=user_obj.application_id,fee_waiver_category = user_obj.fee_waiver_category)
+    #             draft_obj.save()
 
-            std_profile = StudentProfile.objects.filter(user=user_obj)
-            if not std_profile:
-                profile_obj = StudentProfile(user=user_obj, email=user_obj.email, first_name=fname,last_name=lname, phone=user_obj.phone1,city=user_obj.city,state=user_obj.state, application_id=user_obj.application_id,fee_waiver_category = user_obj.fee_waiver_category)
-                profile_obj.save()
-            else:
-                profile_obj = std_profile.first()
+    #         std_profile = StudentProfile.objects.filter(user=user_obj)
+    #         if not std_profile:
+    #             profile_obj = StudentProfile(user=user_obj, email=user_obj.email, first_name=fname,last_name=lname, phone=user_obj.phone1,city=user_obj.city,state=user_obj.state, application_id=user_obj.application_id,fee_waiver_category = user_obj.fee_waiver_category)
+    #             profile_obj.save()
+    #         else:
+    #             profile_obj = std_profile.first()
             
-            interview_obj = ManageStudentInterview.objects.filter(profile_id=profile_obj.id)
-            if not interview_obj:
-                instance = ManageStudentInterview(
-                profile_id = profile_obj.id,  
-                company_id = 6,
-                interview_date = validate_data.get('interview_date')
-                )
-                instance.save()
-            else:
-                instance = interview_obj.first()
-                instance.interview_date = validate_data.get('interview_date')
-                instance.save()
+    #         interview_obj = ManageStudentInterview.objects.filter(profile_id=profile_obj.id)
+    #         if not interview_obj:
+    #             instance = ManageStudentInterview(
+    #             profile_id = profile_obj.id,  
+    #             company_id = 6,
+    #             interview_date = validate_data.get('interview_date')
+    #             )
+    #             instance.save()
+    #         else:
+    #             instance = interview_obj.first()
+    #             instance.interview_date = validate_data.get('interview_date')
+    #             instance.save()
         
-            if settings.MERITO_STATUS == "True":
-                meritto_payload = {
-                    "form_id": 22144,
-                    "email": instance.profile.email,
-                    "search_criteria":"email",
-                    "data": {
-                            "first_name":profile_obj.first_name,
-                            "last_name":profile_obj.last_name,
-                            "email":profile_obj.email,
-                            "mobile_no":f"+91-{profile_obj.phone}",
-                            "field_339552":profile_obj.state,
-                            "field_339553":profile_obj.city,
-                            "field_352367":instance.company.name,
-                            "field_352366":instance.interview_date.strftime("%d/%m/%Y %I:%M:%S %p")
-                        }
-                }
-                url = settings.MERITO_BASE_URL+"/application/v1/createOrUpdate"
+    #         if settings.MERITO_STATUS == "True":
+    #             meritto_payload = {
+    #                 "form_id": 22144,
+    #                 "email": instance.profile.email,
+    #                 "search_criteria":"email",
+    #                 "data": {
+    #                         "first_name":profile_obj.first_name,
+    #                         "last_name":profile_obj.last_name,
+    #                         "email":profile_obj.email,
+    #                         "mobile_no":f"+91-{profile_obj.phone}",
+    #                         "field_339552":profile_obj.state,
+    #                         "field_339553":profile_obj.city,
+    #                         "field_352367":instance.company.name,
+    #                         "field_352366":instance.interview_date.strftime("%d/%m/%Y %I:%M:%S %p")
+    #                     }
+    #             }
+    #             url = settings.MERITO_BASE_URL+"/application/v1/createOrUpdate"
 
-                headers = {
-                        "Content-Type": "application/json",
-                        "secret-key": settings.MERITO_SECRETE_KEY,
-                        "access-key": settings.MERITO_ACCESS_KEY
-                    }
+    #             headers = {
+    #                     "Content-Type": "application/json",
+    #                     "secret-key": settings.MERITO_SECRETE_KEY,
+    #                     "access-key": settings.MERITO_ACCESS_KEY
+    #                 }
 
-                try:
-                    response = requests.post(url, headers=headers, json=meritto_payload)
-                    print(response.status_code)
-                    print(response.text)
-                    ApplicationLog.objects.create(application_id=profile_obj.id, message=response.text, status=int(response.status_code), activity="Schedule Interview Directly", datas=validate_data, payload_request=meritto_payload)
-                except Exception as e:
-                    print("API Error:", str(e))
+    #             try:
+    #                 response = requests.post(url, headers=headers, json=meritto_payload)
+    #                 print(response.status_code)
+    #                 print(response.text)
+    #                 ApplicationLog.objects.create(application_id=profile_obj.id, message=response.text, status=int(response.status_code), activity="Schedule Interview Directly", datas=validate_data, payload_request=meritto_payload)
+    #             except Exception as e:
+    #                 print("API Error:", str(e))
 
-            ManageStudentInterviewHistory.objects.create(profile=instance.profile, company=instance.company, attempt_status=instance.attempt_status, absent_reason=instance.absent_reason, result=instance.result, interview_date=instance.interview_date, interview_time=instance.interview_time, package_status=instance.package_status,payment_status=instance.payment_status,payment_amount=instance.payment_amount,remark="lead")
-            return instance
-        raise serializers.ValidationError("Invalid Request")
+    #         ManageStudentInterviewHistory.objects.create(profile=instance.profile, company=instance.company, attempt_status=instance.attempt_status, absent_reason=instance.absent_reason, result=instance.result, interview_date=instance.interview_date, interview_time=instance.interview_time, package_status=instance.package_status,payment_status=instance.payment_status,payment_amount=instance.payment_amount,remark="lead")
+    #         return instance
+    #     raise serializers.ValidationError("Invalid Request")
         

@@ -106,6 +106,7 @@ class SourceType(models.IntegerChoices):
     VslOptin = 12, 'VslOptin'
     VslFinal = 13, 'VslFinal'
     ARC = 14, 'ARC'
+    Affiliate7 = 15, 'Affiliate7'
 
 class Payments(models.Model):
     razorpay_order_id = models.CharField(max_length=255, blank=True, null=True)

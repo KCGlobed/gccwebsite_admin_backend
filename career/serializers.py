@@ -674,3 +674,16 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
 
         return instance
 
+
+class ListDossierDataAffliateSevenInterviewSerializer(serializers.ModelSerializer):
+    # created_at = serializers.DateTimeField(read_only=True, format="%Y-%m-%d %H:%M:%S")
+    created_at = serializers.SerializerMethodField()
+    class Meta:
+        model = DossierData
+        fields = ["full_name","email","phone","created_at","interview_date"]
+        
+    def get_created_at(self, obj):
+        if obj.created_at:
+            local_time = timezone.localtime(obj.created_at)
+            return local_time.strftime("%Y-%m-%d %H:%M:%S")
+        return None

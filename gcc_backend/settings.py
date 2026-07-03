@@ -153,6 +153,7 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.join(
 )
 GOOGLE_SHEET_NAME = "AffliateSix Report"
 GOOGLE_WORKSHEET_NAME = "Sheet1"
+GOOGLE_WORKSHEET_NAME2 = "Affliate Seven"
 
 GOOGLE_CREDENTIAL_FILE = os.path.join(
     BASE_DIR, os.getenv("GOOGLE_APPLICATION_CREDENTIALS")

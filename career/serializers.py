@@ -2,10 +2,11 @@ from rest_framework import serializers
 from .models import *
 from django.conf import settings
 from users.models import User
+from students.models import StudentProfile, ManageStudentInterview
 from users.serializers import StudentProfileDetailSerializer
 import requests
 from django.utils import timezone
-from utils.google_sheet import get_google_sheet
+from utils.google_sheet import get_google_sheet, get_google_sheet_affliate_seven
 
 class ListCareerApplicationSerializer(serializers.ModelSerializer):
     resume_path = serializers.SerializerMethodField('get_resume_path')
@@ -618,8 +619,8 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data["fee_waiver_category"] = "Free of cost (FOC)"
         instance = super().create(validated_data)
+        src_type = instance.source
         if settings.MERITO_STATUS == "True":
-            src_type = instance.source
             if src_type == 15:
                 m_source = "gccaffiliateSeven"
             else:
@@ -654,23 +655,49 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
             except Exception as e:
                 print("API Error:", str(e))
 
+        if src_type == 15:
+            print("sheet enter")
+            if not DossierData.objects.filter(phone=instance.phone, source=src_type).exclude(id=instance.id).exists():
+                print("valida data")
+                try:
+                    sheet = get_google_sheet_affliate_seven()
+                    print("open sheet...",sheet)
+                    local_time = timezone.localtime(instance.created_at)
+                    create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
+                    row = [
+                        instance.full_name,
+                        instance.email,
+                        instance.phone,
+                        instance.city,
+                        instance.state,
+                        "No",
+                        "",
+                        create_times
+                    ]
+                    print("data inster",row)
+                    sheet.append_row(row)
+                    print("completed")
+                except Exception as e:
+                    print("google sheet error", str(e))
 
-        url = settings.CSRF_TRUSTED_ORIGINS[0]+"/api/users/create_student/"
 
-        payload = {
-            "full_name": instance.full_name,
-            "email": instance.email,
-            "phone1": instance.phone
-        }
-        try:
-            print("user....",payload)
-            response = requests.post(url, json=payload)
-            print(response.status_code)
-            print(response.text)
-            User.objects.filter(email=instance.email).update(city=instance.city, state=instance.state, fee_waiver_category="Free of cost (FOC)")
-            # DossierLog.objects.create(dossier=instance, message=response.text, status=int(response.status_code), activity="creating", datas=validated_data)
-        except Exception as e:
-            print("API Error:", str(e))    
+
+        # url = settings.CSRF_TRUSTED_ORIGINS[0]+"/api/users/create_student/"
+
+        # payload = {
+        #     "full_name": instance.full_name,
+        #     "email": instance.email,
+        #     "phone1": instance.phone
+        # }
+        # try:
+        #     print("user....",payload)
+        #     response = requests.post(url, json=payload)
+        #     print(response.status_code)
+        #     print(response.text)
+        #     User.objects.filter(email=instance.email).update(city=instance.city, state=instance.state, fee_waiver_category="Free of cost (FOC)")
+        #     # DossierLog.objects.create(dossier=instance, message=response.text, status=int(response.status_code), activity="creating", datas=validated_data)
+        # except Exception as e:
+        #     print("API Error:", str(e))    
 
         return instance
 
@@ -678,6 +705,7 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
 class ListDossierDataAffliateSevenInterviewSerializer(serializers.ModelSerializer):
     # created_at = serializers.DateTimeField(read_only=True, format="%Y-%m-%d %H:%M:%S")
     created_at = serializers.SerializerMethodField()
+    interview_booked_status = serializers.SerializerMethodField('get_interview_booked_status')
     class Meta:
         model = DossierData
         fields = ["full_name","email","phone","created_at","interview_date"]
@@ -687,3 +715,44 @@ class ListDossierDataAffliateSevenInterviewSerializer(serializers.ModelSerialize
             local_time = timezone.localtime(obj.created_at)
             return local_time.strftime("%Y-%m-%d %H:%M:%S")
         return None
+
+class ListDossierDataAffliateSevenInterviewLiveReportSerializer(serializers.ModelSerializer):
+    # created_at = serializers.DateTimeField(read_only=True, format="%Y-%m-%d %H:%M:%S")
+    created_at = serializers.SerializerMethodField()
+    interview_booked_status = serializers.SerializerMethodField('get_interview_booked_status')
+    interview_date = serializers.SerializerMethodField('get_interview_date')
+    class Meta:
+        model = DossierData
+        fields = ["full_name","email","phone","city","state","created_at","interview_date","interview_booked_status"]
+        
+    def get_created_at(self, obj):
+        if obj.created_at:
+            local_time = timezone.localtime(obj.created_at)
+            return local_time.strftime("%Y-%m-%d %H:%M:%S")
+        return None
+    def get_interview_booked_status(self, obj):
+        if not obj.interview_date:
+            ans = "No"
+            std = StudentProfile.objects.filter(email=obj.email)
+            if std:
+                dd = std.last()
+                intr = ManageStudentInterview.objects.filter(profile=dd)
+                if intr:
+                    ans = "Yes"
+            return ans
+        return "Yes"
+    
+    def get_interview_date(self, obj):
+        print("datas..",obj.interview_date)
+        print("numm.....",obj.id)
+        if not obj.interview_date:
+            dds = ""
+            std = StudentProfile.objects.filter(email=obj.email)
+            if std:
+                dd = std.last()
+                intr = ManageStudentInterview.objects.filter(profile=dd)
+                if intr:
+                    data = intr.last()
+                    dds = data.interview_date
+            return dds
+        return obj.interview_date.strftime("%Y-%m-%d")

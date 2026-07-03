@@ -3120,3 +3120,102 @@ class GetAffliateSixExcelView(APIView):
                 status_code=status.HTTP_200_OK
             )
 
+
+class GetAffliateSevenLeadAllReportExcelView(APIView):
+    # permission_classes = [IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['id',"full_name","email","phone","city","state"]
+    ordering_fields = ['id',"full_name","email","phone","city","state","created_at"]
+
+    def get(self, request, sid=None):
+        
+        datas = DossierData.objects.filter(source=SourceType.Affiliate7).order_by('id')
+        # remove duplicate phone
+        seen = set()
+        unique_data = []
+
+        for item in datas:
+            if item.phone not in seen:
+                seen.add(item.phone)
+                unique_data.append(item)
+
+        serializers = ListDossierDataAffliateSevenInterviewLiveReportSerializer(unique_data, many=True)
+
+        lis = []
+        
+        lis.append({
+                "full_name":"Dossier Report",
+                "email":'',
+                "phone":'',
+                "city":'',
+                "state":'',
+                "interview_booked_status":'',
+                "interview_date":'',
+                "created_at":''
+            })
+
+       
+        lis.append({
+                "full_name":"Dossier Report",
+                "email":'',
+                "phone":'',
+                "city":'',
+                "state":'',
+                "interview_booked_status":'',
+                "interview_date":'',
+                "created_at":''
+            })
+        
+        lis.append({
+                "full_name":"full name",
+                "email":'Email',
+                "phone":'Phone',
+                "city":'City',
+                "state":'State',
+                "interview_booked_status":'status',
+                "interview_date":'interview date',
+                "created_at":'Created_at'
+            })
+        
+        
+        for chapter_data in serializers.data:
+            lis.append({
+                "full_name":chapter_data['full_name'],
+                "email":chapter_data['email'],
+                "phone":chapter_data['phone'],
+                "city":chapter_data['city'],
+                "state":chapter_data['state'],
+                "interview_booked_status":chapter_data['interview_booked_status'],
+                "interview_date":chapter_data['interview_date'],
+                "created_at":chapter_data['created_at']
+            })
+
+
+        with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as temp_file:
+            pdf_path = temp_file.name
+            
+            # Create DataFrame and save to the temporary file
+            df = pd.DataFrame.from_dict(lis)
+            df.to_excel(pdf_path, header=False, index=False)
+        
+        # After the 'with' block, the file is closed but not deleted
+        try:
+            # GCS file naming logic
+            timestamp = datetime.now().strftime("%d_%m_%y_%H_%M")
+            report_name = "dossier_report"
+            gcs_folder_name = "media/reports/source/excel"
+            gcs_file_name = f"{gcs_folder_name}/{report_name}_{timestamp}.xlsx"
+
+            # Upload the temporary file to GCS
+            bucket = client.get_bucket(settings.GS_BUCKET_NAME)
+            blob = bucket.blob(gcs_file_name)
+            blob.upload_from_filename(pdf_path)
+
+            return success_response(
+                message="Success",
+                data={"report_url": blob.public_url},
+                status_code=status.HTTP_200_OK
+            )
+        finally:
+            # Ensure the temporary file is deleted
+            os.remove(pdf_path)

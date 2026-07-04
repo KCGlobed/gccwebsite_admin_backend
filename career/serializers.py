@@ -61,6 +61,10 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 m_source = "gccaffiliateSix"
             elif src_type == 15:
                 m_source = "gccaffiliateSeven"
+            elif src_type == 16:
+                m_source = "gcccpa"
+            elif src_type == 17:
+                m_source = "gccea"
             else:
                 m_source = "gcc"
             # API URL
@@ -461,6 +465,10 @@ class CreateDossierAbondantSerializer(serializers.ModelSerializer):
                 m_source = "gccvslfinal"
             elif src_type == 14:
                 m_source = "gccaffiliateSix"
+            elif src_type == 16:
+                m_source = "gcccpa"
+            elif src_type == 17:
+                m_source = "gccea"
             else:
                 m_source = "gcc"
             # API URL

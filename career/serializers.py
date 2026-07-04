@@ -554,7 +554,7 @@ def push_to_meritto(obj):
     payload = {
         "name": name,
         "email": obj.email,
-        "mobile": obj.phone,
+        "mobile": obj.phone, 
         "search_criteria": "email",
         "country": "India",
         "source": m_source,
@@ -682,22 +682,22 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
 
 
 
-        # url = settings.CSRF_TRUSTED_ORIGINS[0]+"/api/users/create_student/"
+        url = settings.CSRF_TRUSTED_ORIGINS[0]+"/api/users/create_student/"
 
-        # payload = {
-        #     "full_name": instance.full_name,
-        #     "email": instance.email,
-        #     "phone1": instance.phone
-        # }
-        # try:
-        #     print("user....",payload)
-        #     response = requests.post(url, json=payload)
-        #     print(response.status_code)
-        #     print(response.text)
-        #     User.objects.filter(email=instance.email).update(city=instance.city, state=instance.state, fee_waiver_category="Free of cost (FOC)")
-        #     # DossierLog.objects.create(dossier=instance, message=response.text, status=int(response.status_code), activity="creating", datas=validated_data)
-        # except Exception as e:
-        #     print("API Error:", str(e))    
+        payload = {
+            "full_name": instance.full_name,
+            "email": instance.email,
+            "phone1": instance.phone
+        }
+        try:
+            print("user....",payload)
+            response = requests.post(url, json=payload)
+            print(response.status_code)
+            print(response.text)
+            User.objects.filter(email=instance.email).update(city=instance.city, state=instance.state, fee_waiver_category="Free of cost (FOC)")
+            # DossierLog.objects.create(dossier=instance, message=response.text, status=int(response.status_code), activity="creating", datas=validated_data)
+        except Exception as e:
+            print("API Error:", str(e))    
 
         return instance
 

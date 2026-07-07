@@ -3219,3 +3219,7 @@ class GetAffliateSevenLeadAllReportExcelView(APIView):
         finally:
             # Ensure the temporary file is deleted
             os.remove(pdf_path)
+
+
+
+

@@ -716,7 +716,7 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
 class ListDossierDataAffliateSevenInterviewSerializer(serializers.ModelSerializer):
     # created_at = serializers.DateTimeField(read_only=True, format="%Y-%m-%d %H:%M:%S")
     created_at = serializers.SerializerMethodField()
-    interview_booked_status = serializers.SerializerMethodField('get_interview_booked_status')
+    # interview_booked_status = serializers.SerializerMethodField('get_interview_booked_status')
     class Meta:
         model = DossierData
         fields = ["full_name","email","phone","created_at","interview_date"]

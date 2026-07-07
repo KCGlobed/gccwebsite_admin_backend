@@ -113,7 +113,8 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 print("API Error:", str(e))
 
 
-            ### for sheet
+        ### for sheet 
+        if settings.EXCEL_INPUT == "True":
             if src_type == 14:
                 print("sheet enter")
                 if not DossierData.objects.filter(phone=instance.phone, source=src_type).exclude(id=instance.id).exists():
@@ -622,8 +623,9 @@ class CreateOrUpdateDossierDataMerittoSerializer(serializers.ModelSerializer):
 class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
     class Meta:
         model = DossierData
-        fields = ["full_name","email","phone","city","state","source"]
-        
+        # fields = ["full_name","email","phone","city","state","source"]
+        fields = "__all__"
+
     def create(self, validated_data):
         validated_data["fee_waiver_category"] = "Free of cost (FOC)"
         instance = super().create(validated_data)
@@ -663,30 +665,31 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
             except Exception as e:
                 print("API Error:", str(e))
 
-        if src_type == 15:
-            print("sheet enter")
-            if not DossierData.objects.filter(phone=instance.phone, source=src_type).exclude(id=instance.id).exists():
-                print("valida data")
-                try:
-                    sheet = get_google_sheet_affliate_seven()
-                    print("open sheet...",sheet)
-                    local_time = timezone.localtime(instance.created_at)
-                    create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
-                    row = [
-                        instance.full_name,
-                        instance.email,
-                        instance.phone,
-                        instance.city,
-                        instance.state,
-                        "No",
-                        "",
-                        create_times
-                    ]
-                    print("data inster",row)
-                    sheet.append_row(row)
-                    print("completed")
-                except Exception as e:
-                    print("google sheet error", str(e))
+        if settings.EXCEL_INPUT == "True":
+            if src_type == 15:
+                print("sheet enter")
+                if not DossierData.objects.filter(phone=instance.phone, source=src_type).exclude(id=instance.id).exists():
+                    print("valida data")
+                    try:
+                        sheet = get_google_sheet_affliate_seven()
+                        print("open sheet...",sheet)
+                        local_time = timezone.localtime(instance.created_at)
+                        create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
+                        row = [
+                            instance.full_name,
+                            instance.email,
+                            instance.phone,
+                            instance.city,
+                            instance.state,
+                            "No",
+                            "",
+                            create_times
+                        ]
+                        print("data inster",row)
+                        sheet.append_row(row)
+                        print("completed")
+                    except Exception as e:
+                        print("google sheet error", str(e))
 
 
 

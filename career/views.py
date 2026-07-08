@@ -113,7 +113,13 @@ class DossierDataForm_Create(APIView):
         serializer = CreateDossierDataSerializer(data = request.data)
         if serializer.is_valid(raise_exception = True):
             obj = serializer.save()
-            pdf_url = f"{settings.STATIC_URL}files/GCC%20SCHOOL%20Dossier.pdf"
+            source = request.data.get("source")
+            if str(source)=="16":
+                pdf_url = f"{settings.STATIC_URL}files/CPA-STUDENT-BROCHURE.pdf"
+            elif str(source)=="17":
+                pdf_url = f"{settings.STATIC_URL}files/CPA-STUDENT-BROCHURE.pdf"
+            else:
+                pdf_url = f"{settings.STATIC_URL}files/GCC%20SCHOOL%20Dossier.pdf"
             return success_response(message="success", data={"url":pdf_url, "id":obj.id, "data":ListDossierDataSerializer(obj).data}, status_code=status.HTTP_200_OK)
         else:
             return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)

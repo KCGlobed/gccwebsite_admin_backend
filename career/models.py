@@ -91,6 +91,10 @@ class DocumentStatusType(models.IntegerChoices):
     Approved = 2, 'Approved'
     Rejected = 3, 'Rejected'
 
+class ProgramType(models.IntegerChoices):
+    CPA = 1, 'CPA'
+    EA = 2, 'EA'
+
 
 
 
@@ -128,6 +132,9 @@ class DossierData(models.Model):
     referral_code = models.CharField(max_length=50, null=True, blank=True)
     #added for affliate 7
     interview_date = models.DateField(null=True, blank=True)
+    ## for cpa/ea
+    program = models.IntegerField(choices=ProgramType.choices, null=True, blank=True)
+    reffered_by = models.TextField(blank=True, null=True)
 
 class DossierDocument(models.Model):
     dossier = models.ForeignKey('DossierData',on_delete=models.CASCADE,null=True,blank=True,related_name='documents')

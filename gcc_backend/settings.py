@@ -11,10 +11,21 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+import environ
+import json
+from datetime import timedelta
+from google.oauth2 import service_account
+from google.cloud import storage
+
+env = environ.Env()
+environ.Env.read_env()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -43,6 +54,7 @@ INSTALLED_APPS = [
     'users',
     'students',
     'career',
+    'blog',
 ]
 
 MIDDLEWARE = [
@@ -76,31 +88,21 @@ TEMPLATES = [
 ]
 
 
-
-
-
 WSGI_APPLICATION = 'gcc_backend.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT"),
     }
 }
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": "GCCDB",
-#         "USER": "postgres",
-#         "PASSWORD": "Kamal@2026Jan",
-#         "HOST": "35.200.238.228",
-#         "PORT": "5432",
-#     }
-# }
 
 
 # Password validation
@@ -127,19 +129,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "Asia/Kolkata"
 
 USE_I18N = True
 
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
-# STATIC_URL = 'static/'
-# STATIC_ROOT = BASE_DIR / "staticfiles"
-
 
 
 # Default primary key field type
@@ -149,19 +143,20 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:3000",
-#     "http://localhost:3001",
-#     "http://localhost:5173",
-#     "http://localhost:5174",
-# ]
+CSRF_TRUSTED_ORIGINS = [
+    os.getenv("CSRF_TRUSTED_ORIGINS")
+]
 
-from datetime import timedelta
-from google.oauth2 import service_account
-import os
 
-GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    os.path.join(BASE_DIR, 'credentail_bucket.json')
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.join(
+    BASE_DIR, os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+)
+GOOGLE_SHEET_NAME = "AffliateSix Report"
+GOOGLE_WORKSHEET_NAME = "Sheet1"
+GOOGLE_WORKSHEET_NAME2 = "Affliate Seven"
+
+GOOGLE_CREDENTIAL_FILE = os.path.join(
+    BASE_DIR, os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 )
 
 STORAGES = {
@@ -172,11 +167,10 @@ STORAGES = {
         "BACKEND": 'gcc_backend.gcloud.Static',
     },
 }
-
-GS_PROJECT_ID = "gcc-backend"
-GS_BUCKET_NAME = 'gcc_static_files_backend'
-GS_BUCKET_NAME_2 = 'gcc-private-book-bucket'
-GS_STATIC_BUCKET_NAME = 'gcc_static_files_backend'
+GS_PROJECT_ID = os.getenv("GS_PROJECT_ID")
+GS_BUCKET_NAME = os.getenv("GS_BUCKET_NAME")
+GS_BUCKET_NAME_2 = os.getenv("GS_BUCKET_NAME_2")
+GS_STATIC_BUCKET_NAME = os.getenv("GS_STATIC_BUCKET_NAME")
 GS_FILE_OVERWRITE = False
 MEDIA_ROOT = "media/"
 STATIC_ROOT = "static/"
@@ -184,15 +178,7 @@ STATIC_URL = 'https://storage.googleapis.com/{}/static/'.format(GS_STATIC_BUCKET
 MEDIA_URL = 'https://storage.googleapis.com/{}/media/'.format(GS_BUCKET_NAME)
 SECURE_MEDIA_URL = 'https://storage.googleapis.com/{}/media/'.format(GS_BUCKET_NAME_2)
 
-
-# REST_FRAMEWORK = {
-#     "DEFAULT_AUTHENTICATION_CLASSES": [
-#         "rest_framework_simplejwt.authentication.JWTAuthentication",
-#     ],
-#     "DEFAULT_PERMISSION_CLASSES": [
-#         "rest_framework.permissions.IsAuthenticated",
-#     ],
-# }
+SIGNED_URL_EXPIRY = int(os.getenv("SIGNED_URL_EXPIRY")) #minutes
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -203,15 +189,50 @@ REST_FRAMEWORK = {
     # 'PAGE_SIZE': 20,
 }
 
+
 # DRF_STANDARDIZED_ERRORS = {
 #     "EXCEPTION_FORMATTER_CLASS": "gcc_backend.exception_formatter.CustomExceptionFormatter",
 # }
 
 
+ACCESS_TIME_FORMAT = os.getenv("ACCESS_TIME_FORMAT")
+ACCESS_TIME = int(os.getenv("ACCESS_TIME"))
+
+REFRESH_TIME_FORMAT = os.getenv("REFRESH_TIME_FORMAT")
+REFRESH_TIME = int(os.getenv("REFRESH_TIME"))
+
+ACCESS_TOKEN_LIFETIME = timedelta(**{ACCESS_TIME_FORMAT: ACCESS_TIME})
+REFRESH_TOKEN_LIFETIME = timedelta(**{REFRESH_TIME_FORMAT: REFRESH_TIME})
+
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=365),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": ACCESS_TOKEN_LIFETIME,
+    "REFRESH_TOKEN_LIFETIME": REFRESH_TOKEN_LIFETIME,
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_FROM_NAME = os.getenv("EMAIL_FROM_NAME")
+
+DEFAULT_FROM_EMAIL = f"{EMAIL_FROM_NAME}<{EMAIL_HOST_USER}>"
+
+
+
+WEBSITE_BASE_URL = os.getenv("WEBSITE_BASE_URL")
+
+EXCEL_INPUT = os.getenv("EXCEL_INPUT")
+MERITO_STATUS = os.getenv("MERITO_STATUS")
+MERITO_BASE_URL = os.getenv("MERITO_BASE_URL")
+MERITO_SECRETE_KEY = os.getenv("MERITO_SECRETE_KEY")
+MERITO_ACCESS_KEY = os.getenv("MERITO_ACCESS_KEY")
+
+
+
 

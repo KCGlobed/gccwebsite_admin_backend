@@ -5,8 +5,8 @@ from rest_framework import status
 
 
 class CustomPageNumberPagination(pagination.PageNumberPagination):
-    page_size = 20  
-    page_size_query_param = 'pageSize' 
+    page_size = 20
+    page_size_query_param = 'pageSize'
     max_page_size = 100
 
     def get_paginated_response(self, data, status_code=status.HTTP_200_OK):

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            color: #333;
+            line-height: 1.4;
+        }
+        .header-table {
+            width: 100%;
+            padding-bottom: 10px;
+            margin-bottom: 16px;
+        }
+        .school-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1a1a1a;
+        }
+        .location {
+            font-size: 18px;
+            color: #1a1a1a;
+            font-weight: bold;
+        }
+        .nfet-banner {
+            background-color: #5a3182;
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .info-table {
+            width: 100%;
+            margin-bottom: 25px;
+        }
+        .info-table td {
+            padding: 8px 0;
+            font-size: 14px;
+        }
+        .label {
+            font-weight: normal;
+            width: 20%;
+        }
+        .value {
+            /* font-weight: bold; */
+            width: 30%;
+        }
+        .score-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        .score-table th, .score-table td {
+            border: 1px solid #999;
+            padding: 5px;
+            text-align: center;
+            font-size: 13px;
+        }
+        .score-table th {
+            background-color: #fcfcfc;
+            font-weight: bold;
+        }
+        .score-table .text-left {
+            text-align: left;
+        }
+        .total-row {
+            font-weight: bold;
+            background-color: #f9f9f9;
+        }
+        .footer-note {
+            margin-top: 25px;
+            font-size: 12px;
+        }
+        .signature-box {
+            margin-top: 40px;
+            text-align: right;
+        }
+        .signature-img {
+            width: 120px;
+        }
+    </style>
+</head>
+<body>
+
+    <table class="header-table">
+        <tr>
+            <td>
+                <span class="school-name">GCC School,</span> 
+                <span class="location">DLF Cyber City, Gurugram, Haryana (India)</span>
+            </td>
+            <td style="text-align: right;">
+                <img src="https://storage.googleapis.com/gcc_static_files_backend/static/images/gcc-admit-card-logo.jpeg" alt="GCC Logo" style="height: 60px;">
+            </td>
+        </tr>
+    </table>
+
+    <div class="nfet-banner">NFET SCORE CARD</div>
+
+    <table class="info-table">
+        <tr>
+            <td class="label">Candidate Name:</td>
+            <td class="value">{{ candidate_name }}</td>
+            <td class="label">Application ID:</td>
+            <td class="value">{{ application_id }}</td>
+        </tr>
+        <tr>
+            <td class="label">Date of Exam:</td>
+            <td class="value">{{ date_of_exam }}</td>
+            <td class="label">Time of Exam:</td>
+            <td class="value">{{ time_of_exam }}</td>
+        </tr>
+    </table>
+
+    <table class="score-table">
+        <thead>
+            <tr>
+                <th style="width: 40%;">Section</th>
+                <th>No. of Questions</th>
+                <th>Correct</th>
+                <th>Incorrect</th>
+                <th>Not Attempted</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in sections %}
+            <tr>
+                <td class="text-left">{{ row.Name }}</td>
+                <td>{{ row.TotalQuestions }}</td>
+                <td>{{ row.Correct }}</td>
+                <td>{{ row.Incorrect }}</td>
+                <td>{{ row.NotAttempted }}</td>
+            </tr>
+            {% endfor %}
+            <tr class="total-row">
+                <td class="text-left">Total</td>
+                <td>{{ total_questions }}</td>
+                <td>{{ total_correct }}</td>
+                <td>{{ total_incorrect }}</td>
+                <td>{{ total_not_attempted }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="footer-note">
+        <strong>Note</strong><br>
+        The above score is based on your attempt. Further selection will be determined through the merit list. For all future communication, please regularly check your GCC School portal.
+    </div>
+
+    <div class="signature-box">
+        <img src="https://storage.googleapis.com/gcc_static_files_backend/static/images/gcc_admit_card_sign.png" class="signature-img"><br>
+        <small>Authorized Signatory</small>
+    </div>
+
+</body>
+</html>

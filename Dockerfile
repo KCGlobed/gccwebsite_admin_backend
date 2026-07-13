@@ -19,6 +19,9 @@ RUN python -m venv /py && \
 COPY . /app
 WORKDIR /app
 
+# RUN /py/bin/python manage.py collectstatic --noinput
+
+
 # ---- non-root user ----
 RUN adduser --disabled-password --no-create-home django-user
 
@@ -30,8 +33,8 @@ USER django-user
 
 # ---- gunicorn ----
 CMD exec gunicorn gcc_backend.wsgi:application \
-    --bind 0.0.0.0:${PORT:-8080} \
-    --workers 3 \
-    --threads 4 \
-    --worker-class gthread \
-    --timeout 120
+      --bind 0.0.0.0:${PORT:-8000} \
+      --workers 3 \
+      --threads 4 \
+      --worker-class gthread \
+      --timeout 120

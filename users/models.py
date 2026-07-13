@@ -59,11 +59,34 @@ class User(AbstractBaseUser, PermissionsMixin):
     SuperAdmin = 1
     SubAdmin = 2
     Manager = 3
+    Student = 4
+    Other = 5  ##ET users
+    Efos = 6
+    Vsl = 7
+    AffliateOne = 8
+    AffliateTwo = 9
+    AffliateThree = 10
+    AffliateFour = 11
+    AffliateFive = 12
+    AffliateSix = 13
+    AffliateSeven = 14
+
 
     ROLE_CHOICES = (
         (SuperAdmin, 'SuperAdmin'),
         (SubAdmin, 'SubAdmin'),
         (Manager, 'Manager'),
+        (Student, 'Student'),
+        (Other,'Other'),
+        (Efos,'Efos'),
+        (Vsl,'Vsl'),
+        (AffliateOne, 'AffliateOne'),
+        (AffliateTwo, 'AffliateTwo'),
+        (AffliateThree, 'AffliateThree'),
+        (AffliateFour,'AffliateFour'),
+        (AffliateFive,'AffliateFive'),
+        (AffliateSix,'AffliateSix'),
+        (AffliateSeven,'AffliateSeven'),
     )
 
     SOCIAL_LOGIN_CHOICES = (
@@ -103,6 +126,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     banner_image = models.ImageField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
+    #Added
+    application_id = models.CharField(max_length=50, blank=True, null=True)
+    fee_waiver_category = models.CharField(max_length=200, default="No Waiver")
+    referral_code = models.CharField(max_length=50, null=True, blank=True)
+    referred_code = models.CharField(max_length=50, null=True, blank=True)
+
 
     objects = UserManager()
 
@@ -131,3 +160,144 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_staff(self):
         "Is the user a member of staff?"
         return self.is_admin
+    
+
+
+
+class ManageReferal(models.Model):
+    user = models.ForeignKey(
+        'users.User',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name='referral_owner'
+    )
+
+    used_by = models.ForeignKey(
+        'users.User',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name='referral_used_by'
+    )
+
+    referral_code = models.CharField(
+        max_length=50
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.referral_code
+
+
+import re
+import random
+import string
+from django.core.exceptions import ValidationError
+from django.db import models
+# def generate_referral_code(length=20):
+#     return ''.join(random.choices(string.ascii_uppercase, k=length))
+def generate_referral_code(length=6):
+    return ''.join(
+        random.choices(
+            string.ascii_uppercase + string.digits,
+            k=length
+        )
+    )
+
+class ManageFreeReferal(models.Model):
+    free_referral_code = models.CharField(
+        max_length=50,
+        unique=True
+    )
+    code_length = models.IntegerField(default=20)
+    non_auto = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        if not self.non_auto:
+            # If user provides referral name
+            if self.free_referral_code:
+
+                # Take first name only
+                first_name = self.free_referral_code.strip().split(" ")[0]
+
+                # Remove special characters
+                first_name = re.sub(r'[^A-Za-z0-9]', '', first_name)
+
+                base_name = first_name.upper()
+
+                if not base_name:
+                    raise ValidationError(
+                        "Referral code must contain valid alphabets or numbers."
+                    )
+
+                # Validation
+                if len(base_name) >= self.code_length:
+                    raise ValidationError(
+                        f"First name length must be less than {self.code_length}"
+                    )
+
+                # Remaining length after "_"
+                remaining_length = self.code_length - len(base_name) - 1
+
+                random_code = generate_referral_code(
+                    remaining_length
+                )
+
+                code = f"{base_name}_{random_code}"
+
+                # Ensure unique code
+                while ManageFreeReferal.objects.filter(
+                    free_referral_code=code
+                ).exclude(id=self.id).exists():
+
+                    random_code = generate_referral_code(
+                        remaining_length
+                    )
+
+                    code = f"{base_name}_{random_code}"
+
+                self.free_referral_code = code
+
+            else:
+                # Fully random code
+                code = generate_referral_code(self.code_length)
+
+                while ManageFreeReferal.objects.filter(
+                    free_referral_code=code
+                ).exclude(id=self.id).exists():
+
+                    code = generate_referral_code(
+                        self.code_length
+                    )
+
+                self.free_referral_code = code
+
+        super().save(*args, **kwargs)
+
+
+    def __str__(self):
+        return self.free_referral_code
+
+
+##############################################################################
+
+
+class ManageLoginForm(models.Model):
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE)
+    status = models.CharField(max_length=200, blank=True)
+    cred = models.CharField(max_length=200, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class ManageStudentExtraDetail(models.Model):
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE)
+    cred = models.CharField(max_length=200, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+

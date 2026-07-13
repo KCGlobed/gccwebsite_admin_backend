@@ -1,7 +1,8 @@
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from rest_framework import status
-
+import random
+import string
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
@@ -36,4 +37,38 @@ def get_client_ip(request):
         if x_forwarded_for
         else request.META.get("REMOTE_ADDR")
     )
+
+
+
+def generate_random_password(length=8):
+    letters = string.ascii_letters 
+    digits = string.digits       
+    special_characters = '@#$%&*'
+    password = [
+        random.choice(special_characters),  
+        random.choice(letters),             
+        random.choice(digits)
+    ]
+    all_characters = letters + digits + special_characters
+    password += random.choices(all_characters, k=length - 3)
+    random.shuffle(password)
+    return ''.join(password)
+
+from django.core.mail import send_mail
+from django.conf import settings
+from django.template import loader
+
+def send_email_async(subject, message, email_from, recipient_list, html_message):
+    print("start calling")
+    subject = subject
+    message = message
+    email_from = email_from
+    recipient_list = recipient_list
+    html_message = html_message
+
+    send_mail( subject, message, email_from, recipient_list,html_message=html_message )
+
+    print("end calling")
+
+
 

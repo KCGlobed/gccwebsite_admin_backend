@@ -299,5 +299,5 @@ class ManageStudentExtraDetail(models.Model):
     cred = models.CharField(max_length=200, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-
+## test
 

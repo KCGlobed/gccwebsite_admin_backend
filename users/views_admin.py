@@ -68,3 +68,10 @@ class GetLowerReportingPerson(APIView):
         users_data = User.objects.filter(id__in=data).values("id","first_name","last_name","email","role")
 
         return success_response(message="Success", data={"list_data":users_data}, status_code=status.HTTP_200_OK)
+
+class GetUpperReportingPerson(APIView):
+    def post(self, request, format=None):
+        data = get_upper_reporting(5548)
+        users_data = User.objects.filter(id__in=data).values("id","first_name","last_name","email","role")
+
+        return success_response(message="Success", data={"list_data":users_data}, status_code=status.HTTP_200_OK)

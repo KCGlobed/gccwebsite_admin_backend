@@ -33,7 +33,7 @@ urlpatterns = [
     
     path('verify_refferal_code/', VerifyRefferalCodeView.as_view(), name="verify_refferal_code"),
 
-    path('get_upper_reporting/', GetLowerReportingPerson.as_view()),
+    path('get_upper_reporting/', GetUpperReportingPerson.as_view()),
     path('get_lower_reporting/', GetLowerReportingPerson.as_view()),
 
     

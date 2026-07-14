@@ -82,4 +82,16 @@ def get_lower_reporting(user):
     fetch_all(user)                    
     return data
 
+def get_upper_reporting(user):
+    data = []
+    # data.append(user)
+    obj = User.objects.filter(id=user).first()
+    def fetch_all(obj):
+        users_all = User.objects.filter(id=obj.reporting_to).first()
+        data.append(users_all.id)
+        print("add",data)
+        if users_all.reporting_to != "0":
+            fetch_all(users_all)
+    fetch_all(obj)                    
+    return data
 

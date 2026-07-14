@@ -70,6 +70,16 @@ def send_email_async(subject, message, email_from, recipient_list, html_message)
 
     print("end calling")
 
+from users.models import User
+def get_lower_reporting(user):
+    data = []
+    data.append(user)
+    def fetch_all(id):
+        users_list = User.objects.filter(reporting_to=id)
+        for i in users_list:
+            data.append(i.id)
+            fetch_all(i.id)
+    fetch_all(user)                    
+    return data
 
 
-##

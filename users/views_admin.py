@@ -59,3 +59,12 @@ class CreateStudentRefferalCodeView(APIView):
                 i.referral_code = data
                 i.save()
         return success_response(message="User Created Successfully", data={}, status_code=status.HTTP_200_OK)
+
+from gcc_backend.utils import get_lower_reporting
+
+class GetLowerReportingPerson(APIView):
+    def post(self, request, format=None):
+        data = get_lower_reporting(5545)
+        users_data = User.objects.filter(id__in=data).values("id","first_name","last_name","email","role")
+
+        return success_response(message="Success", data={"list_data":users_data}, status_code=status.HTTP_200_OK)

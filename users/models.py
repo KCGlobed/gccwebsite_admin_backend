@@ -2,6 +2,11 @@ import uuid
 from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import BaseUserManager , AbstractBaseUser, PermissionsMixin
+import re
+import random
+import string
+from django.core.exceptions import ValidationError
+from django.db import models
 # from rolepermissions.roles import assign_role
 # from gcc_backend.roles import *
 # from django_softdelete.models import SoftDeleteModel
@@ -70,6 +75,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     AffliateFive = 12
     AffliateSix = 13
     AffliateSeven = 14
+    SalesHead = 15
+    SalesPerson = 16
 
 
     ROLE_CHOICES = (
@@ -87,6 +94,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         (AffliateFive,'AffliateFive'),
         (AffliateSix,'AffliateSix'),
         (AffliateSeven,'AffliateSeven'),
+        (SalesHead,'SalesHead'),
+        (SalesPerson,'SalesPerson'),
     )
 
     SOCIAL_LOGIN_CHOICES = (
@@ -131,7 +140,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     fee_waiver_category = models.CharField(max_length=200, default="No Waiver")
     referral_code = models.CharField(max_length=50, null=True, blank=True)
     referred_code = models.CharField(max_length=50, null=True, blank=True)
-
+    reporting_to = models.CharField(max_length=50,blank=True,null=True)
 
     objects = UserManager()
 
@@ -192,11 +201,7 @@ class ManageReferal(models.Model):
         return self.referral_code
 
 
-import re
-import random
-import string
-from django.core.exceptions import ValidationError
-from django.db import models
+
 # def generate_referral_code(length=20):
 #     return ''.join(random.choices(string.ascii_uppercase, k=length))
 def generate_referral_code(length=6):
@@ -299,5 +304,34 @@ class ManageStudentExtraDetail(models.Model):
     cred = models.CharField(max_length=200, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-## test
+
+class ManageReporting(models.Model):
+    user = models.ForeignKey(
+        'users.User',
+        on_delete=models.CASCADE,
+        related_name='reporting_users'
+    )
+
+    reporting_to = models.ForeignKey(
+        'users.User',
+        on_delete=models.CASCADE,
+        related_name='reports_received'
+    )
+
+    reporting_by = models.ForeignKey(
+        'users.User',
+        on_delete=models.CASCADE,
+        related_name='reports_created'
+    )
+
+    remarks = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user} -> {self.reporting_to}"
+
+
+
+
 

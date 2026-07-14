@@ -79,6 +79,7 @@ class SourceType(models.IntegerChoices):
     Affiliate7 = 15, 'Affiliate7'  ##akshay landing 2
     CPA = 16, 'CPA'
     EA = 17, 'EA'
+    EAWebsite = 18, 'EAWebsite'
 
 class SourceFormType(models.IntegerChoices):
     ApplyNow = 1, 'ApplyNow'
@@ -90,6 +91,10 @@ class DocumentStatusType(models.IntegerChoices):
     Pending = 1, 'Pending'
     Approved = 2, 'Approved'
     Rejected = 3, 'Rejected'
+
+class ProgramType(models.IntegerChoices):
+    CPA = 1, 'CPA'
+    EA = 2, 'EA'
 
 
 
@@ -128,6 +133,9 @@ class DossierData(models.Model):
     referral_code = models.CharField(max_length=50, null=True, blank=True)
     #added for affliate 7
     interview_date = models.DateField(null=True, blank=True)
+    ## for cpa/ea
+    program = models.IntegerField(choices=ProgramType.choices, null=True, blank=True)
+    reffered_by = models.TextField(blank=True, null=True)
 
 class DossierDocument(models.Model):
     dossier = models.ForeignKey('DossierData',on_delete=models.CASCADE,null=True,blank=True,related_name='documents')

@@ -1042,7 +1042,9 @@ class GetDossierReportExcelView(APIView):
                 "total_questions":'',
                 "document_status":'',
                 "referral_code":'',
-                "referred_code":''
+                "referred_code":'',
+                "program":'',
+                "reffered_by":''
             })
 
        
@@ -1070,7 +1072,9 @@ class GetDossierReportExcelView(APIView):
                 "total_questions":'',
                 "document_status":'',
                 "referral_code":'',
-                "referred_code":''
+                "referred_code":'',
+                "program":'',
+                "reffered_by":''
             })
         
         lis.append({
@@ -1097,7 +1101,9 @@ class GetDossierReportExcelView(APIView):
                 "total_questions":'Created At',
                 "document_status":'Document Status',
                 "referral_code":'Referral Code',
-                "referred_code":'Referred Code'
+                "referred_code":'Referred Code',
+                "program":'Program',
+                "reffered_by":'Reffered By'
             })
         
         
@@ -1126,7 +1132,9 @@ class GetDossierReportExcelView(APIView):
                 "total_questions":chapter_data['created_at'],
                 "document_status":chapter_data['document_status'],
                 "referral_code":chapter_data['referral_code'],
-                "referred_code":chapter_data['referred_code']
+                "referred_code":chapter_data['referred_code'],
+                "program":chapter_data['program'],
+                "reffered_by":chapter_data['reffered_by']
             })
 
 
@@ -1544,7 +1552,8 @@ class GetDossierSourceReportExcelView(APIView):
                 "total_questions":'',
                 "document_status":'',
                 "referral_code":'',
-                "referred_code":''
+                "referred_code":'',
+                
             })
 
        

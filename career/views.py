@@ -1610,8 +1610,7 @@ class GetDossierSourceReportExcelView(APIView):
                     "total_questions":'',
                     "document_status":'',
                     "referral_code":'',
-                    "referred_code":'',
-                    
+                    "referred_code":''
                 })
             
         
@@ -1695,9 +1694,7 @@ class GetDossierSourceReportExcelView(APIView):
                     "total_questions":chapter_data['created_at'],
                     "document_status":chapter_data['document_status'],
                     "referral_code":chapter_data['referral_code'],
-                    "referred_code":chapter_data['referred_code'],
-                    "program":chapter_data['program'],
-                    "reffered_by":chapter_data['reffered_by']
+                    "referred_code":chapter_data['referred_code']
                 })
 
 

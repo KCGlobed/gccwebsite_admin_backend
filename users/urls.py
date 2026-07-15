@@ -35,6 +35,7 @@ urlpatterns = [
 
     path('get_upper_reporting/', GetUpperReportingPerson.as_view()),
     path('get_lower_reporting/', GetLowerReportingPerson.as_view()),
+    path('get_manage_user/', GetManageSalesPerson.as_view()),
 
     
 ]

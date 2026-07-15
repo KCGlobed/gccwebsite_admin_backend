@@ -677,6 +677,6 @@ class AdminProfileDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id','first_name','last_name', 'email','phone1','role']
-
+    
     def get_role(get, data):
         return data.get_role_display()

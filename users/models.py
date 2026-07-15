@@ -70,6 +70,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     AffliateFive = 12
     AffliateSix = 13
     AffliateSeven = 14
+    EAWebsite = 15
 
 
     ROLE_CHOICES = (
@@ -87,6 +88,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         (AffliateFive,'AffliateFive'),
         (AffliateSix,'AffliateSix'),
         (AffliateSeven,'AffliateSeven'),
+        (EAWebsite,'EAWebsite')
     )
 
     SOCIAL_LOGIN_CHOICES = (

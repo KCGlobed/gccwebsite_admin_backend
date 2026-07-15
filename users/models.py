@@ -332,6 +332,3 @@ class ManageReporting(models.Model):
         return f"{self.user} -> {self.reporting_to}"
 
 
-
-
-

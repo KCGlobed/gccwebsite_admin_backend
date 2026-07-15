@@ -672,6 +672,9 @@ class StudentProfileDetailSerializer(serializers.ModelSerializer):
             })
             current += timedelta(days=1)
         return result
+    
+
+    
 class AdminProfileDetailSerializer(serializers.ModelSerializer):
     role = serializers.SerializerMethodField('get_role')
     class Meta:

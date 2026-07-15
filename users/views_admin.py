@@ -65,7 +65,8 @@ from gcc_backend.utils import get_lower_reporting
 class GetLowerReportingPerson(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request, format=None):
-        data = get_lower_reporting(5545)
+        id = request.data.get("emp_id")
+        data = get_lower_reporting(id)
         users_data = User.objects.filter(id__in=data).values("id","first_name","last_name","email","role")
 
         return success_response(message="Success", data={"list_data":users_data}, status_code=status.HTTP_200_OK)
@@ -73,21 +74,27 @@ class GetLowerReportingPerson(APIView):
 class GetUpperReportingPerson(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request, format=None):
-        data = get_upper_reporting(5548)
+        id = request.data.get("emp_id")
+        data = get_upper_reporting(id)
         users_data = User.objects.filter(id__in=data).values("id","first_name","last_name","email","role")
 
         return success_response(message="Success", data={"list_data":users_data}, status_code=status.HTTP_200_OK)
     
 
-
-
 class GetManageSalesPerson(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request, format=None):
-        users_data = User.objects.filter(role=User.SalesPerson).values("id","first_name","last_name","email","role")
-
-        return success_response(message="Success", data={"list_data":users_data}, status_code=status.HTTP_200_OK)
+        users_data = User.objects.filter(role__in=[User.SalesPerson, User.SalesHead]).order_by('id')
+        serialize = AdminProfileDetailSerializer(users_data, many=True)
+        return success_response(message="Success", data={"list_data":serialize.data}, status_code=status.HTTP_200_OK)
     
 
+class ReportingEmployee(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, format=None):
+        users_data = User.objects.filter(role=User.SalesPerson)
+        serialize = AdminProfileDetailSerializer(users_data, many=True)
+        return success_response(message="Success", data={"list_data":serialize.data}, status_code=status.HTTP_200_OK)
+    
 
 

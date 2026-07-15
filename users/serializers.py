@@ -683,3 +683,13 @@ class AdminProfileDetailSerializer(serializers.ModelSerializer):
     
     def get_role(get, data):
         return data.get_role_display()
+    
+
+class ManageReportingAssignSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['emp_id','assigned_id','remark']
+    
+    def create(self, validated_data):
+        ManageReporting.objects.create(user=validated_data.get('emp_id'),reporting_to=validated_data.get('assigned_id'), reporting_by=validated_data.get('reporting_by'), remarks=validated_data.get('remarks'))
+        return validated_data

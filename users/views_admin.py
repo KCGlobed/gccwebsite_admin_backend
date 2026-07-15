@@ -89,11 +89,10 @@ class GetManageSalesPerson(APIView):
         return success_response(message="Success", data={"list_data":serialize.data}, status_code=status.HTTP_200_OK)
     
 
-class ReportingEmployee(APIView):
+class AssignedReportingEmployee(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request, format=None):
-        users_data = User.objects.filter(role=User.SalesPerson)
-        serialize = AdminProfileDetailSerializer(users_data, many=True)
+        serialize = ManageReportingAssignSerializer(data=request.data)
         return success_response(message="Success", data={"list_data":serialize.data}, status_code=status.HTTP_200_OK)
     
 

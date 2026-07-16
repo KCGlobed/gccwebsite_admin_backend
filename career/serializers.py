@@ -771,3 +771,39 @@ class ListDossierDataAffliateSevenInterviewLiveReportSerializer(serializers.Mode
                     dds = data.interview_date
             return dds
         return obj.interview_date.strftime("%Y-%m-%d")
+    
+
+## Admin
+
+
+class DossierDetailSerializer(serializers.ModelSerializer):
+    created_at = serializers.SerializerMethodField()
+    application_detail = serializers.SerializerMethodField()
+    class Meta:
+        model = DossierData
+        fields = "__all__"
+        
+    def get_created_at(self, obj):
+        if obj.created_at:
+            local_time = timezone.localtime(obj.created_at)
+            return local_time.strftime("%Y-%m-%d %H:%M:%S")
+        return None
+    
+    def get_application_detail(self, obj):
+        data = []
+        app_obj = StudentProfile.objects.filter(email=obj.email).first()
+        if app_obj:
+            data = []
+        return data
+
+
+
+
+
+
+
+
+
+
+
+

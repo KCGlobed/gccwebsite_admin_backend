@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import *
+from .views_admin import *
 
 urlpatterns = [
 
@@ -60,6 +61,7 @@ urlpatterns = [
     path("interview_affliateseven_page_list/", InterviewSlotScheduleAdmin_list.as_view(), name="interview_listing_affliateseven"),
     path("interview_affliateseven_report-excel/", GetDossierInterviewAffliateSevenReportExcelView.as_view(), name="interview_affliateseven_report_excel"),
     
+    path("get_dossier_detail/<int:id>", GetDossierDetailView.as_view()),
 
 ]
 

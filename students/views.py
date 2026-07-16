@@ -185,7 +185,7 @@ class StudentSourcePayment_list(APIView):
         if source_type:
             datas = Payments.objects.filter(source=source_type).order_by('-id')
             if str(source_type) == str(SourceType.EAWebsite):
-                access_data = ["mkshaw","pankajgoel"]
+                access_data = settings.EAUTMSOURCE
                 if str(request.user.first_name).lower() in access_data:
                     datas = Payments.objects.filter(source=source_type, dossier_form__utm_source=request.user.first_name).order_by('-id')
         else:

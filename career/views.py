@@ -594,6 +594,10 @@ class DossierDataSourceForm_List(APIView):
                     ).filter(has_doc=True).order_by('-id')
             else:
                 datas = DossierData.objects.filter(source=source_type).order_by('-id')
+                if str(source_type) == str(SourceType.EAWebsite):
+                    access_data = ["mkshaw","pankajgoel"]
+                    if str(request.user.first_name).lower() in access_data:
+                        datas = DossierData.objects.filter(source=source_type, utm_source=request.user.first_name).order_by('-id')
         else:
             datas = DossierData.objects.filter(source=SourceType.Website).order_by('-id')
 

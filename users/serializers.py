@@ -17,6 +17,9 @@ from django.db.models import Count
 from django.db.models.functions import TruncDate
 from students.models import *
 from datetime import datetime, timedelta, date
+import threading
+
+
 
 class WebsiteUserLoginSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length = 255,required=True)
@@ -172,6 +175,38 @@ def generate_referral_code(full_name):
 
 
 
+####
+def send_welcome_email(user, generate_application_id, password):
+    subject = "Welcome to GCC School. Here are your login details."
+    message = ""
+    email_from = settings.DEFAULT_FROM_EMAIL
+    recipient_list = [user.email]
+
+    html_message = loader.render_to_string(
+        "user_login_detail_email.html",
+        {
+            "name": user.first_name,
+            "candidate_id": generate_application_id,
+            "slot_booking": "https://forms.gle/UQqKnCsmJzVLK6qU8",
+            "website_url": settings.WEBSITE_BASE_URL,
+            "login_url": f"{settings.WEBSITE_BASE_URL}/login",
+            "email": user.email,
+            "password": password,
+        },
+    )
+
+    send_mail(
+        subject=subject,
+        message=message,
+        from_email=email_from,
+        recipient_list=recipient_list,
+        html_message=html_message,
+    )
+
+#####
+
+
+
 class CreateStudentSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(max_length = 255, required=True)
     email = serializers.EmailField(max_length = 255, required=True)
@@ -272,27 +307,32 @@ class CreateStudentSerializer(serializers.ModelSerializer):
             except Exception as e:
                 print("API Error:", str(e))
 
-        subject = 'Welcome to GCC School. Here are your login details.'
+        # subject = 'Welcome to GCC School. Here are your login details.'
 
-        message = f''
-        email_from = settings.DEFAULT_FROM_EMAIL
-        recipient_list = [user.email, ]
-        html_message = loader.render_to_string(
-            'user_login_detail_email.html',
-            {
-                'name': user.first_name,
-                'candidate_id': generate_application_id,
-                'slot_booking': 'https://forms.gle/UQqKnCsmJzVLK6qU8',
-                'website_url': settings.WEBSITE_BASE_URL,
-                'login_url': settings.WEBSITE_BASE_URL+"/login",
-                "email": user.email,
-                "password": password,               
+        # message = f''
+        # email_from = settings.DEFAULT_FROM_EMAIL
+        # recipient_list = [user.email, ]
+        # html_message = loader.render_to_string(
+        #     'user_login_detail_email.html',
+        #     {
+        #         'name': user.first_name,
+        #         'candidate_id': generate_application_id,
+        #         'slot_booking': 'https://forms.gle/UQqKnCsmJzVLK6qU8',
+        #         'website_url': settings.WEBSITE_BASE_URL,
+        #         'login_url': settings.WEBSITE_BASE_URL+"/login",
+        #         "email": user.email,
+        #         "password": password,               
 
-            }
-        )
+        #     }
+        # )
 
-        send_mail( subject, message, email_from, recipient_list,html_message=html_message )
-
+        # send_mail( subject, message, email_from, recipient_list,html_message=html_message )
+        
+        threading.Thread(
+            target=send_welcome_email,
+            args=(user, generate_application_id, password),
+            daemon=True,
+        ).start()
         return user
 
 

@@ -134,7 +134,7 @@ class DossierDataFormCustom_Create(APIView):
             end_date = date(2026, 7, 31)
             # Count records grouped by interview_date
             booked_slots = (
-                ManageStudentInterview.objects
+                DossierData.objects
                 .filter(interview_date__range=(start_date, end_date))
                 .annotate(day=TruncDate("interview_date"))
                 .values("day")

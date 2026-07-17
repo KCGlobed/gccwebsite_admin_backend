@@ -685,6 +685,11 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
                             instance.phone,
                             instance.city,
                             instance.state,
+                            instance.degree,
+                            instance.age_range,
+                            instance.degree_stage,
+                            instance.fund_mode,
+                            instance.attend_from,
                             "No",
                             "",
                             create_times

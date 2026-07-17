@@ -130,8 +130,8 @@ class DossierDataFormCustom_Create(APIView):
         serializer = CreateDossierDataCustomAffliateSerializer(data = request.data)
         if serializer.is_valid(raise_exception = True):
             obj = serializer.save()
-            start_date = date(2026, 6, 22)
-            end_date = date(2026, 7, 13)
+            start_date = date(2026, 7, 1)
+            end_date = date(2026, 7, 31)
             # Count records grouped by interview_date
             booked_slots = (
                 ManageStudentInterview.objects

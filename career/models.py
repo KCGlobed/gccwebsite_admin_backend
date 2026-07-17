@@ -133,6 +133,9 @@ class DossierData(models.Model):
     referral_code = models.CharField(max_length=50, null=True, blank=True)
     #added for affliate 7
     interview_date = models.DateField(null=True, blank=True)
+    age_range = models.CharField(max_length=250, blank=True, null=True)
+    fund_mode = models.CharField(max_length=250, blank=True, null=True)
+    attend_from = models.CharField(max_length=250, blank=True, null=True)
     ## for cpa/ea
     program = models.IntegerField(choices=ProgramType.choices, null=True, blank=True)
     reffered_by = models.TextField(blank=True, null=True)

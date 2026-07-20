@@ -79,7 +79,8 @@ class SourceType(models.IntegerChoices):
     Affiliate7 = 15, 'Affiliate7'  ##akshay landing 2
     CPA = 16, 'CPA'
     EA = 17, 'EA'
-    EAWebsite = 18, 'EAWebsite'
+    EAWebsite = 18, 'EAWebsite'    ##EA LP
+    CPAWebsite = 19, 'CPAWebsite'  ##CPA LP
 
 class SourceFormType(models.IntegerChoices):
     ApplyNow = 1, 'ApplyNow'

@@ -67,6 +67,8 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 m_source = "gccea"
             elif src_type == 18:
                 m_source = "gcceaWebsite"
+            elif src_type == 19:
+                m_source = "gcccpaWebsite"
             else:
                 m_source = "gcc"
             # API URL

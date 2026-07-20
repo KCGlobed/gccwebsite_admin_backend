@@ -26,6 +26,8 @@ urlpatterns = [
 
     path('mail-test/', Mail_test.as_view(), name="mail-test"),
 
+    
+
     ## Admin
     path('create_university_student/', CreateUniversityStudentView.as_view(), name="create_university_student"),
 

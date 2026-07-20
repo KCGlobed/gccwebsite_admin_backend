@@ -37,7 +37,6 @@ from django.db.models.functions import TruncDate
 
 
 
-
 class GetDossierDetailView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request, id):
@@ -45,6 +44,5 @@ class GetDossierDetailView(APIView):
         serialize_data = DossierDetailSerializer(datas).data
         return success_response(message="success", data={"data":serialize_data}, status_code=status.HTTP_200_OK)
 
-    
 
 

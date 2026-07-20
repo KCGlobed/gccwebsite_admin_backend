@@ -188,6 +188,10 @@ class StudentSourcePayment_list(APIView):
                 access_data = settings.EAUTMSOURCE
                 if str(request.user.first_name).lower() in access_data:
                     datas = Payments.objects.filter(source=source_type, dossier_form__utm_source=request.user.first_name).order_by('-id')
+            if str(source_type) == str(SourceType.CPAWebsite):
+                access_data = settings.CPAUTMSOURCE
+                if str(request.user.first_name).lower() in access_data:
+                    datas = Payments.objects.filter(source=source_type, dossier_form__utm_source=request.user.first_name).order_by('-id')
         else:
             datas = Payments.objects.filter(source=SourceType.Website).order_by('-id')
 

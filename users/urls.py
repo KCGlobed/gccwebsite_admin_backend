@@ -26,6 +26,8 @@ urlpatterns = [
 
     path('mail-test/', Mail_test.as_view(), name="mail-test"),
 
+    
+
     ## Admin
     path('create_university_student/', CreateUniversityStudentView.as_view(), name="create_university_student"),
 
@@ -36,6 +38,9 @@ urlpatterns = [
     path('get_upper_reporting/', GetUpperReportingPerson.as_view()),
     path('get_lower_reporting/', GetLowerReportingPerson.as_view()),
     path('get_manage_user/', GetManageSalesPerson.as_view()),
+
+    
+    path('admin_valid_roles/', AdminRoleListView.as_view(), name="verify_refferal_code"),
 
     
 ]

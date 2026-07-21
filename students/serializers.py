@@ -2620,7 +2620,7 @@ class StudentInterviewCreateSerializer(serializers.ModelSerializer):
                     if cell:
                         row_number = cell.row
                         print("row found:", row_number)
-                        sheet.update(f"F{row_number}:G{row_number}", [row_data])
+                        sheet.update(f"K{row_number}:L{row_number}", [row_data])
                         print(f"Row {row_number} updated successfully")
 
                         print("row updated successfully")

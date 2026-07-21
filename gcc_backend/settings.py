@@ -223,7 +223,8 @@ EMAIL_FROM_NAME = os.getenv("EMAIL_FROM_NAME")
 
 DEFAULT_FROM_EMAIL = f"{EMAIL_FROM_NAME}<{EMAIL_HOST_USER}>"
 
-
+EAUTMSOURCE = json.loads(os.getenv("EAUTMSOURCE",'[]'))
+CPAUTMSOURCE = json.loads(os.getenv("CPAUTMSOURCE",'[]'))
 
 WEBSITE_BASE_URL = os.getenv("WEBSITE_BASE_URL")
 

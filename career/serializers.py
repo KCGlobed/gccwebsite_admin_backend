@@ -67,6 +67,8 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 m_source = "gccea"
             elif src_type == 18:
                 m_source = "gcceaWebsite"
+            elif src_type == 19:
+                m_source = "gcccpaWebsite"
             else:
                 m_source = "gcc"
             # API URL
@@ -685,6 +687,11 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
                             instance.phone,
                             instance.city,
                             instance.state,
+                            instance.degree,
+                            instance.age_range,
+                            instance.degree_stage,
+                            instance.fund_mode,
+                            instance.attend_from,
                             "No",
                             "",
                             create_times

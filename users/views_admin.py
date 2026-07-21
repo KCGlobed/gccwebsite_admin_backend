@@ -48,6 +48,64 @@ def generate_referral_code():
 
 
 
+class AdminRoleListView(APIView):
+    def get(self, request, format=None):
+        role = [
+            {
+                "name":"Admin",
+                "value":"SuperAdmin"
+            },
+            {
+                "name":"EFOS",
+                "value":"Efos"
+            },
+            {
+                "name":"ET",
+                "value":"Other"
+            },
+            {
+                "name":"VSL",
+                "value":"Vsl"
+            },
+            {
+                "name":"AffliateOne",
+                "value":"AffliateOne"
+            },
+            {
+                "name":"AffliateTwo",
+                "value":"AffliateTwo"
+            },
+            {
+                "name":"AffliateThree",
+                "value":"AffliateThree"
+            },
+            {
+                "name":"AffliateFour",
+                "value":"AffliateFour"
+            },
+            {
+                "name":"AffliateFive",
+                "value":"AffliateFive"
+            },
+            {
+                "name":"AffliateSix",
+                "value":"AffliateSix"
+            },
+            {
+                "name":"AffliateSeven",
+                "value":"AffliateSeven"
+            },
+            {
+                "name":"EA LP",
+                "value":"EAWebsite"
+            },
+            {
+                "name":"CPA LP",
+                "value":"CPAWebsite"
+            },
+        ]
+        return success_response(message="Success", data=role, status_code=status.HTTP_200_OK)
+
 
 class CreateStudentRefferalCodeView(APIView):
     def post(self, request, format=None):

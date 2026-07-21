@@ -130,11 +130,11 @@ class DossierDataFormCustom_Create(APIView):
         serializer = CreateDossierDataCustomAffliateSerializer(data = request.data)
         if serializer.is_valid(raise_exception = True):
             obj = serializer.save()
-            start_date = date(2026, 6, 22)
-            end_date = date(2026, 7, 13)
+            start_date = date(2026, 7, 1)
+            end_date = date(2026, 7, 31)
             # Count records grouped by interview_date
             booked_slots = (
-                ManageStudentInterview.objects
+                DossierData.objects
                 .filter(interview_date__range=(start_date, end_date))
                 .annotate(day=TruncDate("interview_date"))
                 .values("day")
@@ -594,6 +594,14 @@ class DossierDataSourceForm_List(APIView):
                     ).filter(has_doc=True).order_by('-id')
             else:
                 datas = DossierData.objects.filter(source=source_type).order_by('-id')
+                if str(source_type) == str(SourceType.EAWebsite):
+                    access_data = settings.EAUTMSOURCE
+                    if str(request.user.first_name).lower() in access_data:
+                        datas = DossierData.objects.filter(source=source_type, utm_source=request.user.first_name).order_by('-id')
+                if str(source_type) == str(SourceType.CPAWebsite):
+                    access_data = settings.CPAUTMSOURCE
+                    if str(request.user.first_name).lower() in access_data:
+                        datas = DossierData.objects.filter(source=source_type, utm_source=request.user.first_name).order_by('-id')
         else:
             datas = DossierData.objects.filter(source=SourceType.Website).order_by('-id')
 
@@ -1469,7 +1477,7 @@ class GetVSLAdvisorReportPDFView(APIView):
 
 
 class GetDossierSourceReportExcelView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['id',"full_name","email","phone","city","state"]
     ordering_fields = ['id',"full_name","email","phone","city","state","created_at"]
@@ -1479,6 +1487,15 @@ class GetDossierSourceReportExcelView(APIView):
         source_type = request.GET.get('source')
         if source_type:
             datas = DossierData.objects.filter(source=source_type).order_by('-id')
+            if str(source_type) == str(SourceType.EAWebsite):
+                access_data = settings.EAUTMSOURCE
+                if str(request.user.first_name).lower() in access_data:
+                    datas = DossierData.objects.filter(source=source_type, utm_source=request.user.first_name).order_by('-id')
+            if str(source_type) == str(SourceType.CPAWebsite):
+                access_data = settings.CPAUTMSOURCE
+                if str(request.user.first_name).lower() in access_data:
+                    datas = DossierData.objects.filter(source=source_type, utm_source=request.user.first_name).order_by('-id')
+
         else:
             datas = DossierData.objects.filter(source=SourceType.Website).order_by('-id')
 
@@ -1527,118 +1544,175 @@ class GetDossierSourceReportExcelView(APIView):
         serializers = ListDossierDataSerializer(datas, many=True)
 
         lis = []
-        
-        lis.append({
-                "name":"Dossier Report",
-                "email":'',
-                "subject":'',
-                "Chapter":'',
-                "Topic":'',
-                "fbc_id":'',
-                "utm_source":'',
-                "utm_medium":'',
-                "utm_content":'',
-                "utm_campaign":'',
-                "campaign_id":'',
-                "utm_adname":'',
-                "adset_id":'',
-                "fbclid":'',
-                "ad_source":'',
-                "ad_id":'',
-                "university":'',
-                "remarks":'',
-                "remarks_timestamp":'',
-                "fee_waiver_category":'',
-                "total_questions":'',
-                "document_status":'',
-                "referral_code":'',
-                "referred_code":'',
-                
-            })
-
-       
-        lis.append({
-                "name":"",
-                "email":'',
-                "subject":'',
-                "Chapter":'',
-                "Topic":'',
-                "fbc_id":'',
-                "utm_source":'',
-                "utm_medium":'',
-                "utm_content":'',
-                "utm_campaign":'',
-                "campaign_id":'',
-                "utm_adname":'',
-                "adset_id":'',
-                "fbclid":'',
-                "ad_source":'',
-                "ad_id":'',
-                "university":'',
-                "remarks":'',
-                "remarks_timestamp":'',
-                "fee_waiver_category":'',
-                "total_questions":'',
-                "document_status":'',
-                "referral_code":'',
-                "referred_code":''
-            })
-        
-        lis.append({
-                "name":"Full Name",
-                "email":'Email',
-                "subject":'Phone Number',
-                "Chapter":'City',
-                "Topic":'State',
-                "fbc_id":'Fbc Id',
-                "utm_source":'UTM Source',
-                "utm_medium":'UTM Medium',
-                "utm_content":'UTM Content',
-                "utm_campaign":'UTM Campaign',
-                "campaign_id":'Campaign Id',
-                "utm_adname":'UTM Adname',
-                "adset_id":'Adset Id',
-                "fbclid":'Fbclid',
-                "ad_source":'Ad Source',
-                "ad_id":'Ad Id',
-                "university":'University',
-                "remarks":'Remarks',
-                "remarks_timestamp":'Remarks Timestamp',
-                "fee_waiver_category":'Fee Waiver Category',
-                "total_questions":'Created At',
-                "document_status":'Document Status',
-                "referral_code":'Referral Code',
-                "referred_code":'Referred Code'
-            })
-        
-        
-        for chapter_data in serializers.data:
+        if str(source_type) == "18":
             lis.append({
-                "name":chapter_data['full_name'],
-                "email":chapter_data['email'],
-                "subject":chapter_data['phone'],
-                "Chapter":chapter_data['city'],
-                "Topic":chapter_data['state'],
-                "fbc_id":chapter_data['fbc_id'],
-                "utm_source":chapter_data['utm_source'],
-                "utm_medium":chapter_data['utm_medium'],
-                "utm_content":chapter_data['utm_content'],
-                "utm_campaign":chapter_data['utm_campaign'],
-                "campaign_id":chapter_data['campaign_id'],
-                "utm_adname":chapter_data['utm_adname'],
-                "adset_id":chapter_data['adset_id'],
-                "fbclid":chapter_data['fbclid'],
-                "ad_source":chapter_data['ad_source'],
-                "ad_id":chapter_data['ad_id'],
-                "university":chapter_data['university'],
-                "remarks":chapter_data['remarks'],
-                "remarks_timestamp":chapter_data['remarks_timestamp'],
-                "fee_waiver_category":chapter_data['fee_waiver_category'],
-                "total_questions":chapter_data['created_at'],
-                "document_status":chapter_data['document_status'],
-                "referral_code":chapter_data['referral_code'],
-                "referred_code":chapter_data['referred_code']
-            })
+                    "name":"Full Name",
+                    "email":'Email',
+                    "subject":'Phone Number',
+                    "Chapter":'City',
+                    "Topic":'State',
+                    "fbc_id":'Fbc Id',
+                    "utm_source":'UTM Source',
+                    "utm_medium":'UTM Medium',
+                    "utm_content":'UTM Content',
+                    "utm_campaign":'UTM Campaign',
+                    "campaign_id":'Campaign Id',
+                    "utm_adname":'UTM Adname',
+                    "adset_id":'Adset Id',
+                    "fbclid":'Fbclid',
+                    "ad_source":'Ad Source',
+                    "ad_id":'Ad Id',
+                    "university":'University',
+                    "remarks":'Remarks',
+                    "remarks_timestamp":'Remarks Timestamp',
+                    "fee_waiver_category":'Fee Waiver Category',
+                    "total_questions":'Created At',
+                    "document_status":'Document Status',
+                    "referral_code":'Referral Code',
+                    "referred_code":'Referred Code',
+                    "program":'Program',
+                    "reffered_by":'Referred By'
+                })
+            for chapter_data in serializers.data:
+                lis.append({
+                    "name":chapter_data['full_name'],
+                    "email":chapter_data['email'],
+                    "subject":chapter_data['phone'],
+                    "Chapter":chapter_data['city'],
+                    "Topic":chapter_data['state'],
+                    "fbc_id":chapter_data['fbc_id'],
+                    "utm_source":chapter_data['utm_source'],
+                    "utm_medium":chapter_data['utm_medium'],
+                    "utm_content":chapter_data['utm_content'],
+                    "utm_campaign":chapter_data['utm_campaign'],
+                    "campaign_id":chapter_data['campaign_id'],
+                    "utm_adname":chapter_data['utm_adname'],
+                    "adset_id":chapter_data['adset_id'],
+                    "fbclid":chapter_data['fbclid'],
+                    "ad_source":chapter_data['ad_source'],
+                    "ad_id":chapter_data['ad_id'],
+                    "university":chapter_data['university'],
+                    "remarks":chapter_data['remarks'],
+                    "remarks_timestamp":chapter_data['remarks_timestamp'],
+                    "fee_waiver_category":chapter_data['fee_waiver_category'],
+                    "total_questions":chapter_data['created_at'],
+                    "document_status":chapter_data['document_status'],
+                    "referral_code":chapter_data['referral_code'],
+                    "referred_code":chapter_data['referred_code'],
+                    "program":chapter_data['program'],
+                    "reffered_by":chapter_data['reffered_by']
+                })
+        else:
+            lis.append({
+                    "name":"Dossier Report",
+                    "email":'',
+                    "subject":'',
+                    "Chapter":'',
+                    "Topic":'',
+                    "fbc_id":'',
+                    "utm_source":'',
+                    "utm_medium":'',
+                    "utm_content":'',
+                    "utm_campaign":'',
+                    "campaign_id":'',
+                    "utm_adname":'',
+                    "adset_id":'',
+                    "fbclid":'',
+                    "ad_source":'',
+                    "ad_id":'',
+                    "university":'',
+                    "remarks":'',
+                    "remarks_timestamp":'',
+                    "fee_waiver_category":'',
+                    "total_questions":'',
+                    "document_status":'',
+                    "referral_code":'',
+                    "referred_code":''
+                })
+            
+        
+            lis.append({
+                    "name":"",
+                    "email":'',
+                    "subject":'',
+                    "Chapter":'',
+                    "Topic":'',
+                    "fbc_id":'',
+                    "utm_source":'',
+                    "utm_medium":'',
+                    "utm_content":'',
+                    "utm_campaign":'',
+                    "campaign_id":'',
+                    "utm_adname":'',
+                    "adset_id":'',
+                    "fbclid":'',
+                    "ad_source":'',
+                    "ad_id":'',
+                    "university":'',
+                    "remarks":'',
+                    "remarks_timestamp":'',
+                    "fee_waiver_category":'',
+                    "total_questions":'',
+                    "document_status":'',
+                    "referral_code":'',
+                    "referred_code":''
+                })
+            
+            lis.append({
+                    "name":"Full Name",
+                    "email":'Email',
+                    "subject":'Phone Number',
+                    "Chapter":'City',
+                    "Topic":'State',
+                    "fbc_id":'Fbc Id',
+                    "utm_source":'UTM Source',
+                    "utm_medium":'UTM Medium',
+                    "utm_content":'UTM Content',
+                    "utm_campaign":'UTM Campaign',
+                    "campaign_id":'Campaign Id',
+                    "utm_adname":'UTM Adname',
+                    "adset_id":'Adset Id',
+                    "fbclid":'Fbclid',
+                    "ad_source":'Ad Source',
+                    "ad_id":'Ad Id',
+                    "university":'University',
+                    "remarks":'Remarks',
+                    "remarks_timestamp":'Remarks Timestamp',
+                    "fee_waiver_category":'Fee Waiver Category',
+                    "total_questions":'Created At',
+                    "document_status":'Document Status',
+                    "referral_code":'Referral Code',
+                    "referred_code":'Referred Code'
+                })
+        
+        
+            for chapter_data in serializers.data:
+                lis.append({
+                    "name":chapter_data['full_name'],
+                    "email":chapter_data['email'],
+                    "subject":chapter_data['phone'],
+                    "Chapter":chapter_data['city'],
+                    "Topic":chapter_data['state'],
+                    "fbc_id":chapter_data['fbc_id'],
+                    "utm_source":chapter_data['utm_source'],
+                    "utm_medium":chapter_data['utm_medium'],
+                    "utm_content":chapter_data['utm_content'],
+                    "utm_campaign":chapter_data['utm_campaign'],
+                    "campaign_id":chapter_data['campaign_id'],
+                    "utm_adname":chapter_data['utm_adname'],
+                    "adset_id":chapter_data['adset_id'],
+                    "fbclid":chapter_data['fbclid'],
+                    "ad_source":chapter_data['ad_source'],
+                    "ad_id":chapter_data['ad_id'],
+                    "university":chapter_data['university'],
+                    "remarks":chapter_data['remarks'],
+                    "remarks_timestamp":chapter_data['remarks_timestamp'],
+                    "fee_waiver_category":chapter_data['fee_waiver_category'],
+                    "total_questions":chapter_data['created_at'],
+                    "document_status":chapter_data['document_status'],
+                    "referral_code":chapter_data['referral_code'],
+                    "referred_code":chapter_data['referred_code']
+                })
 
 
         with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as temp_file:

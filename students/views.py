@@ -2039,7 +2039,6 @@ class WebhookCreatePaymentView(APIView):
 
 
 
-
 class StudentCreatePaymentView(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request):

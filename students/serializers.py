@@ -1663,9 +1663,9 @@ class WebhookCreatePaymentSerializer(serializers.ModelSerializer):
             url = settings.CSRF_TRUSTED_ORIGINS[0]+"/api/users/create_student/"
 
             payload = {
-                "full_name": instance.full_name,
-                "email": instance.email,
-                "phone1": instance.phone
+                "full_name": instance.dossier_form.full_name,
+                "email": instance.dossier_form.email,
+                "phone1": instance.dossier_form.phone
             }
             try:
                 print("user....",payload)

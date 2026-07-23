@@ -1645,6 +1645,34 @@ class CampusStudentVerifiedStatusSerializer(serializers.ModelSerializer):
         return instance
 
 
+
+class WebhookCreatePaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payments
+        fields = "__all__"
+
+    def create(self, validated_data):
+        print("webhook request....",validated_data)
+        if not Payments.objects.filter(razorpay_payment_id=validated_data.get('razorpay_payment_id')).exists():
+            res = validated_data.get("response")
+            validated_data["response"] = validated_data["response"]        
+            validated_data["amount"] = float(validated_data["amount"])         
+            validated_data["created_at"] = timezone.now()           
+            validated_data["updated_at"] = timezone.now()   
+            email = res.get("email")
+            lead_obj = DossierData.objects.filter(email=email)
+            if lead_obj:
+                lead_data = lead_obj.first()
+                validated_data["dossier_form_id"] = lead_data.id
+                validated_data["form_id"] = lead_data.id
+                validated_data["source"] = lead_data.source
+                validated_data["form_type"] = FormType.Payment
+                
+            instance = super().create(validated_data)
+            return instance
+        return validated_data
+
+
 class StudentCreatePaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payments

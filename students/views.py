@@ -2028,6 +2028,17 @@ class GetAdminStudentScoreCardView(APIView):
 
 #########################################################################################
 
+class WebhookCreatePaymentView(APIView):
+    def post(self, request):
+        serializers = WebhookCreatePaymentSerializer(data=request.data)
+        if serializers.is_valid():
+            serializers.save()
+            return Response({'message':'success',"status":200,'data':{}})
+        else:
+            return Response({'message':'failed',"status":400,'data':serializers.errors})
+
+
+
 
 class StudentCreatePaymentView(APIView):
     permission_classes = [IsAuthenticated]

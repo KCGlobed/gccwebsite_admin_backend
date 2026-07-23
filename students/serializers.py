@@ -1647,6 +1647,7 @@ class CampusStudentVerifiedStatusSerializer(serializers.ModelSerializer):
 
 
 class WebhookCreatePaymentSerializer(serializers.ModelSerializer):
+    dossier_form_id = serializers.IntegerField(required=True)
     class Meta:
         model = Payments
         fields = "__all__"

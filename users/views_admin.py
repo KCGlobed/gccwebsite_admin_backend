@@ -224,7 +224,7 @@ class DashboardAnalytics(APIView):
         state_data = DossierData.objects.values('state').annotate(count=Count('id')).order_by('-count')[:10]
         result["state_wise_leads"] = state_data
         
-        fee_waiver_data = DossierData.objects.all().aggregate(
+        fee_waiver_data = DossierData.objects.aggregate(
             total_lead_percent=Count("id"),
             no_waive_percent=Count("id", filter=Q(fee_waiver_category='No Waiver')),
             foc_percent=Count("id", filter=Q(fee_waiver_category='Free of cost (FOC)')),
@@ -259,6 +259,12 @@ class DashboardProfileAnalytics(APIView):
         result = {}
         state_data = StudentProfile.objects.values('state').annotate(count=Count('id')).order_by('-count')[:10]
         result["profile_state_wise_data"] = state_data
+        profile_waiver_data = StudentProfile.objects.aggregate(
+            total_percent=Count('id'),
+            no_waive_percent=Count('id', filter=Q(fee_waiver_category='No Waiver')),
+            foc_percent=Count('id', filter=Q(fee_waiver_category='Free of cost (FOC)')),
+        )
+        # profile_waiver_dat
         return success_response(message="Success", data=result, status_code=status.HTTP_200_OK)
     
 

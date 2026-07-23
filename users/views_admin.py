@@ -7,8 +7,8 @@ from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from gcc_backend.utils import *
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated
-
-
+from career.models import ProgramType
+from django.db.models import Count, Q
 
 class CreateUniversityStudentView(APIView):
     def post(self, request, format=None):
@@ -117,3 +117,112 @@ class CreateStudentRefferalCodeView(APIView):
                 i.referral_code = data
                 i.save()
         return success_response(message="User Created Successfully", data={}, status_code=status.HTTP_200_OK)
+    
+
+
+## dashboard ##
+
+
+class DashboardAnalytics(APIView):
+    # permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        result = {}
+
+        # Subquery instead of loading emails into Python
+        lead_emails = DossierData.objects.values("email").distinct()
+
+        # Total leads
+        result["lead_count"] = DossierData.objects.count()
+
+        # Student statistics in a single query
+        student_stats = StudentProfile.objects.filter(
+            email__in=lead_emails
+        ).aggregate(
+            student_profile_count=Count("id"),
+            foc_profile_count=Count(
+                "id",
+                filter=Q(fee_waiver_category="Free of cost (FOC)")
+            ),
+            ug_complete_count=Count(
+                "id",
+                filter=Q(pg_status=PGStatus.COMPLETED)
+            ),
+            fresher_profile_count=Count(
+                "id",
+                filter=Q(employement_status=EmployementStatus.FRESHER)
+            ),
+            higher_profile_count=Count(
+                "id",
+                filter=Q(higher_education_status=HigherEducation.YES)
+            ),
+        )
+
+        result.update(student_stats)
+
+        # Last 30 days lead chart
+        end_date = timezone.now().date()
+        start_date = end_date - timedelta(days=30)
+
+        lead_data = (
+            DossierData.objects
+            .filter(created_at__date__range=(start_date, end_date))
+            .annotate(day=TruncDate("created_at"))
+            .values("day")
+            .annotate(count=Count("id"))
+            .order_by("day")
+        )
+
+        lead_dict = {item["day"]: item["count"] for item in lead_data}
+
+        result["monthly_leads"] = [
+            {
+                "day": start_date + timedelta(days=i),
+                "count": lead_dict.get(start_date + timedelta(days=i), 0),
+            }
+            for i in range((end_date - start_date).days + 1)
+        ]
+        
+        state_data = DossierData.objects.values('state').annotate(count=Count('id')).order_by('-count')[:10]
+        result["state_wise_leads"] = state_data
+        
+        fee_waiver_data = DossierData.objects.all().aggregate(
+            total_lead_percent=Count("id"),
+            no_waive_percent=Count("id", filter=Q(fee_waiver_category='No Waiver')),
+            foc_percent=Count("id", filter=Q(fee_waiver_category='Free of cost (FOC)')),
+            cpa_enrolled=Count("id", filter=Q(program=ProgramType.CPA)),
+            ea_enrolled=Count("id", filter=Q(program=ProgramType.EA)),
+            other_enrolled=Count("id", filter=Q(program=None)),
+            )
+        waiver_data = {}
+        waiver_data["no_waive_percent"] = round(int(fee_waiver_data["no_waive_percent"])/int(fee_waiver_data["total_lead_percent"]) * 100, 2)
+        waiver_data["foc_percent"] = round(int(fee_waiver_data["foc_percent"])/int(fee_waiver_data["total_lead_percent"]) * 100, 2)
+        waiver_data["total_lead_percent"] = 100.0
+        result["fee_waiver_stats"] = waiver_data
+
+        program_data = {}
+        program_data["cpa_percent"] = round(int(fee_waiver_data["cpa_enrolled"])/int(fee_waiver_data["total_lead_percent"]) * 100, 2)
+        program_data["ea_percent"] = round(int(fee_waiver_data["ea_enrolled"])/int(fee_waiver_data["total_lead_percent"]) * 100, 2)
+        program_data["other_percent"] = round(int(fee_waiver_data["other_enrolled"])/int(fee_waiver_data["total_lead_percent"]) * 100, 2)
+        result["program_stats"] = program_data
+        
+        university_data = DossierData.objects.values('university').annotate(count=Count('id')).order_by('-count')[:10]
+        result["university_wise_leads"] = university_data
+
+        referred_data = DossierData.objects.filter(Q(referred_code__isnull=False) & ~Q(referred_code="")).values('referred_code').annotate(count=Count('id')).order_by('-count')[:10]
+        result["top_referred_leads"] = referred_data
+
+        return success_response(message="Success",data=result,status_code=status.HTTP_200_OK)
+    
+
+class DashboardProfileAnalytics(APIView):
+    # permission_classes = [IsAuthenticated]
+    def get(self, request, format=None):
+        result = {}
+        state_data = StudentProfile.objects.values('state').annotate(count=Count('id')).order_by('-count')[:10]
+        result["profile_state_wise_data"] = state_data
+        return success_response(message="Success", data=result, status_code=status.HTTP_200_OK)
+    
+
+
+

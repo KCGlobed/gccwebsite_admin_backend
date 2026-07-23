@@ -35,7 +35,10 @@ urlpatterns = [
     
     path('verify_refferal_code/', VerifyRefferalCodeView.as_view(), name="verify_refferal_code"),
 
-    path('admin_valid_roles/', AdminRoleListView.as_view(), name="verify_refferal_code"),
+    path('admin_valid_roles/', AdminRoleListView.as_view()),
 
+    path('dashboard/', DashboardAnalytics.as_view()),
+
+    path('profile_dashboard/', DashboardProfileAnalytics.as_view()),
     
 ]

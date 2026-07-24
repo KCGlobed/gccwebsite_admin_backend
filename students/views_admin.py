@@ -186,3 +186,7 @@ class InterviewSchedule_list(APIView):
         
         return paginator.get_paginated_response(serializers.data)
 
+
+
+
+

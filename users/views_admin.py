@@ -254,7 +254,7 @@ class DashboardAnalytics(APIView):
     
 
 class DashboardProfileAnalytics(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     def get(self, request, format=None):
         result = {}
         state_data = StudentProfile.objects.values('state').annotate(count=Count('id')).order_by('-count')[:10]
@@ -263,8 +263,58 @@ class DashboardProfileAnalytics(APIView):
             total_percent=Count('id'),
             no_waive_percent=Count('id', filter=Q(fee_waiver_category='No Waiver')),
             foc_percent=Count('id', filter=Q(fee_waiver_category='Free of cost (FOC)')),
+            fresher_percent=Count('id', filter=Q(employement_status=EmployementStatus.FRESHER)),
+            experience_percent=Count('id', filter=Q(employement_status=EmployementStatus.EXPERIENCED)),
+            persue_percent=Count('id', filter=Q(pg_status=PGStatus.PURSURING)),
+            complete_percent=Count('id', filter=Q(pg_status=PGStatus.COMPLETED)),
+            mgender_percent=Count('id', filter=Q(gender=Gender.MALE)),
+            fgender_percent=Count('id', filter=Q(gender=Gender.FEMALE)),
+            ogender_percent=Count('id', filter=Q(gender=Gender.OTHER)),
+            higher_percent=Count('id', filter=Q(higher_education_status=HigherEducation.YES)),
+            non_higher_percent=Count('id', filter=Q(higher_education_status=HigherEducation.NO)),
         )
-        # profile_waiver_dat
+
+        waiver_data = {}
+        waiver_data["no_waive_percent"] = round(int(profile_waiver_data["no_waive_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
+        waiver_data["foc_percent"] = round(int(profile_waiver_data["foc_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
+        waiver_data["total_percent"] = 100.0
+        result["fee_waiver_stats"] = waiver_data
+
+        employement_stats = {}
+        employement_stats["fresher_percent"] = round(int(profile_waiver_data["fresher_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
+        employement_stats["experience_percent"] = round(int(profile_waiver_data["experience_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
+        employement_stats["total_percent"] = 100.0
+        result["employement_stats"] = employement_stats
+
+        pg_stats = {}
+        pg_stats["fresher_percent"] = round(int(profile_waiver_data["persue_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
+        pg_stats["experience_percent"] = round(int(profile_waiver_data["complete_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
+        pg_stats["total_percent"] = 100.0
+        result["pg_stats"] = pg_stats
+
+        gender_stats = {}
+        gender_stats["male_percent"] = round(int(profile_waiver_data["mgender_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
+        gender_stats["female_percent"] = round(int(profile_waiver_data["fgender_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
+        gender_stats["other_percent"] = round(int(profile_waiver_data["ogender_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
+        result["gender_stats"] = gender_stats
+
+        higher_qualify_stats = {}
+        higher_qualify_stats["higher_percent"] = round(int(profile_waiver_data["higher_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
+        higher_qualify_stats["non_higher_percent"] = round(int(profile_waiver_data["non_higher_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
+        result["higher_qualify_stats"] = higher_qualify_stats
+
+        lstate_data = DossierData.objects.filter(state__isnull=False).values('state').annotate(lead_count=Count('id')).order_by('-lead_count')[:10]
+        profile_state_data = StudentProfile.objects.values('state').annotate(profile_count=Count('id')).order_by('-profile_count')
+        lead_profile_stats = []
+        for lead in list(lstate_data):
+            count = profile_state_data.filter(state=lead["state"]).first()
+            if count:
+                num = count["profile_count"]
+            else:
+                num = 0
+            lead["profile_count"] = num
+            lead_profile_stats.append(lead)
+        result["lead_profile_stats"] = lead_profile_stats
         return success_response(message="Success", data=result, status_code=status.HTTP_200_OK)
     
 

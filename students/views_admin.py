@@ -153,7 +153,7 @@ class InterviewSchedule_list(APIView):
         email = request.GET.get('email')
         if email:
             datas = datas.filter(profile__email__icontains=email)
-
+        
 
         # Date range filter
         start_date = request.GET.get('start_date')

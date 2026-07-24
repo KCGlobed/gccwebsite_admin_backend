@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status
 import random
 import string
+from datetime import datetime
+
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
@@ -95,3 +97,16 @@ def get_upper_reporting(user):
     fetch_all(obj)                    
     return data
 
+
+def parse_date(date_str):
+    parsed_date = date_str
+    type(parsed_date)
+    try:
+        parsed_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+        print("gg", parsed_date)
+    except ValueError as e:
+        print(str(e), parsed_date)
+        # day is out of range for month
+    print("data...", parsed_date)
+    print(type(parsed_date))
+    return parsed_date

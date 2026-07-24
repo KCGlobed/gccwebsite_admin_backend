@@ -163,7 +163,7 @@ from datetime import datetime, date
 from gcc_backend.utils import parse_date
 
 class DashboardAnalytics(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     def get(self, request, format=None):
         start_date = request.GET.get("start_date")
         end_date   = request.GET.get("end_date")
@@ -315,7 +315,7 @@ class DashboardLeadAnalytics(APIView):
 
 
 class DashboardLeadAnalytics(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     def get(self, request, format=None):
         start_date = request.GET.get("start_date")
         end_date   = request.GET.get("end_date")
@@ -382,7 +382,7 @@ class DashboardLeadAnalytics(APIView):
 
 
 class DashboardProfileAnalytics(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     def get(self, request, format=None):
         start_date = request.GET.get("start_date")
         end_date   = request.GET.get("end_date")
@@ -454,7 +454,7 @@ class DashboardProfileAnalytics(APIView):
     
 
 class DashboardLeadProfileAnalytics(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     def get(self, request, format=None):
         start_date = request.GET.get("start_date")
         end_date   = request.GET.get("end_date")
@@ -467,7 +467,7 @@ class DashboardLeadProfileAnalytics(APIView):
             end_date = parse_date(end_date)
         else:
             end_date = datetime.now().date()
-            
+
         result = {}
         lstate_data = DossierData.objects.filter(state__isnull=False, created_at__date__gte=start_date, created_at__date__lte=end_date).values('state').annotate(lead_count=Count('id')).order_by('-lead_count')[:10]
         profile_state_data = StudentProfile.objects.values('state').annotate(profile_count=Count('id')).order_by('-profile_count')

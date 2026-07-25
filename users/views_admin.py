@@ -123,17 +123,31 @@ class CreateStudentRefferalCodeView(APIView):
 ## dashboard ##
 
 
-class DashboardAnalytics(APIView):
-    # permission_classes = [IsAuthenticated]
+from datetime import datetime, date
+from gcc_backend.utils import parse_date
 
+class DashboardAnalytics(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request, format=None):
+        start_date = request.GET.get("start_date")
+        end_date   = request.GET.get("end_date")
+        if start_date:
+            start_date = parse_date(start_date)
+        else:
+            start_date = datetime.now().date() - timedelta(days=30)
+
+        if end_date:
+            end_date = parse_date(end_date)
+        else:
+            end_date = datetime.now().date()
+
         result = {}
 
         # Subquery instead of loading emails into Python
-        lead_emails = DossierData.objects.values("email").distinct()
+        lead_emails = DossierData.objects.filter(created_at__date__gte=start_date, created_at__date__lte=end_date).values("email").distinct()
 
         # Total leads
-        result["lead_count"] = DossierData.objects.count()
+        result["lead_count"] = DossierData.objects.filter(created_at__date__gte=start_date, created_at__date__lte=end_date).count()
 
         # Student statistics in a single query
         student_stats = StudentProfile.objects.filter(
@@ -159,11 +173,25 @@ class DashboardAnalytics(APIView):
         )
 
         result.update(student_stats)
+        return success_response(message="Success",data=result,status_code=status.HTTP_200_OK)
 
-        # Last 30 days lead chart
-        end_date = timezone.now().date()
-        start_date = end_date - timedelta(days=30)
 
+class DashboardLeadAnalytics(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, format=None):
+        start_date = request.GET.get("start_date")
+        end_date   = request.GET.get("end_date")
+        if start_date:
+            start_date = parse_date(start_date)
+        else:
+            start_date = datetime.now().date() - timedelta(days=30)
+
+        if end_date:
+            end_date = parse_date(end_date)
+        else:
+            end_date = datetime.now().date()
+
+        result = {}
         lead_data = (
             DossierData.objects
             .filter(created_at__date__range=(start_date, end_date))
@@ -183,10 +211,10 @@ class DashboardAnalytics(APIView):
             for i in range((end_date - start_date).days + 1)
         ]
         
-        state_data = DossierData.objects.values('state').annotate(count=Count('id')).order_by('-count')[:10]
+        state_data = DossierData.objects.filter(created_at__date__gte=start_date, created_at__date__lte=end_date).values('state').annotate(count=Count('id')).order_by('-count')[:10]
         result["state_wise_leads"] = state_data
         
-        fee_waiver_data = DossierData.objects.all().aggregate(
+        fee_waiver_data = DossierData.objects.filter(created_at__date__gte=start_date, created_at__date__lte=end_date).aggregate(
             total_lead_percent=Count("id"),
             no_waive_percent=Count("id", filter=Q(fee_waiver_category='No Waiver')),
             foc_percent=Count("id", filter=Q(fee_waiver_category='Free of cost (FOC)')),
@@ -206,22 +234,34 @@ class DashboardAnalytics(APIView):
         program_data["other_percent"] = round(int(fee_waiver_data["other_enrolled"])/int(fee_waiver_data["total_lead_percent"]) * 100, 2)
         result["program_stats"] = program_data
         
-        university_data = DossierData.objects.values('university').annotate(count=Count('id')).order_by('-count')[:10]
+        university_data = DossierData.objects.filter(created_at__date__gte=start_date, created_at__date__lte=end_date).values('university').annotate(count=Count('id')).order_by('-count')[:10]
         result["university_wise_leads"] = university_data
 
-        referred_data = DossierData.objects.filter(Q(referred_code__isnull=False) & ~Q(referred_code="")).values('referred_code').annotate(count=Count('id')).order_by('-count')[:10]
+        referred_data = DossierData.objects.filter(created_at__date__gte=start_date, created_at__date__lte=end_date).filter(Q(referred_code__isnull=False) & ~Q(referred_code="")).values('referred_code').annotate(count=Count('id')).order_by('-count')[:10]
         result["top_referred_leads"] = referred_data
+        return success_response(message="Success", data=result, status_code=status.HTTP_200_OK)
 
-        return success_response(message="Success",data=result,status_code=status.HTTP_200_OK)
-    
+
 
 class DashboardProfileAnalytics(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request, format=None):
+        start_date = request.GET.get("start_date")
+        end_date   = request.GET.get("end_date")
+        if start_date:
+            start_date = parse_date(start_date)
+        else:
+            start_date = datetime.now().date() - timedelta(days=30)
+
+        if end_date:
+            end_date = parse_date(end_date)
+        else:
+            end_date = datetime.now().date()
+
         result = {}
-        state_data = StudentProfile.objects.values('state').annotate(count=Count('id')).order_by('-count')[:10]
+        state_data = StudentProfile.objects.filter(created_at__date__gte=start_date, created_at__date__lte=end_date).values('state').annotate(count=Count('id')).order_by('-count')[:10]
         result["profile_state_wise_data"] = state_data
-        profile_waiver_data = StudentProfile.objects.aggregate(
+        profile_waiver_data = StudentProfile.objects.filter(created_at__date__gte=start_date, created_at__date__lte=end_date).aggregate(
             total_percent=Count('id'),
             no_waive_percent=Count('id', filter=Q(fee_waiver_category='No Waiver')),
             foc_percent=Count('id', filter=Q(fee_waiver_category='Free of cost (FOC)')),
@@ -239,13 +279,11 @@ class DashboardProfileAnalytics(APIView):
         waiver_data = {}
         waiver_data["no_waive_percent"] = round(int(profile_waiver_data["no_waive_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
         waiver_data["foc_percent"] = round(int(profile_waiver_data["foc_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
-        waiver_data["total_percent"] = 100.0
         result["fee_waiver_stats"] = waiver_data
 
         employement_stats = {}
         employement_stats["fresher_percent"] = round(int(profile_waiver_data["fresher_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
         employement_stats["experience_percent"] = round(int(profile_waiver_data["experience_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
-        employement_stats["total_percent"] = 100.0
         result["employement_stats"] = employement_stats
 
         pg_stats = {}
@@ -265,7 +303,35 @@ class DashboardProfileAnalytics(APIView):
         higher_qualify_stats["non_higher_percent"] = round(int(profile_waiver_data["non_higher_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
         result["higher_qualify_stats"] = higher_qualify_stats
 
-        lstate_data = DossierData.objects.filter(state__isnull=False).values('state').annotate(lead_count=Count('id')).order_by('-lead_count')[:10]
+        profile_metric_stats = {}
+        profile_metric_stats["profiles"] = int(profile_waiver_data["total_percent"])
+        profile_metric_stats["freshers"] = int(profile_waiver_data["fresher_percent"])
+        profile_metric_stats["ug_done"] = int(profile_waiver_data["complete_percent"])
+        profile_metric_stats["higher_qualify"] = int(profile_waiver_data["higher_percent"])
+        profile_metric_stats["foc"] = int(profile_waiver_data["foc_percent"])
+        profile_metric_stats["male"] = int(profile_waiver_data["mgender_percent"])
+        result["profile_metric_stats"] = profile_metric_stats
+
+        return success_response(message="Success", data=result, status_code=status.HTTP_200_OK)
+    
+
+class DashboardLeadProfileAnalytics(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, format=None):
+        start_date = request.GET.get("start_date")
+        end_date   = request.GET.get("end_date")
+        if start_date:
+            start_date = parse_date(start_date)
+        else:
+            start_date = datetime.now().date() - timedelta(days=30)
+
+        if end_date:
+            end_date = parse_date(end_date)
+        else:
+            end_date = datetime.now().date()
+
+        result = {}
+        lstate_data = DossierData.objects.filter(state__isnull=False, created_at__date__gte=start_date, created_at__date__lte=end_date).values('state').annotate(lead_count=Count('id')).order_by('-lead_count')[:10]
         profile_state_data = StudentProfile.objects.values('state').annotate(profile_count=Count('id')).order_by('-profile_count')
         lead_profile_stats = []
         for lead in list(lstate_data):
@@ -277,6 +343,7 @@ class DashboardProfileAnalytics(APIView):
             lead["profile_count"] = num
             lead_profile_stats.append(lead)
         result["lead_profile_stats"] = lead_profile_stats
+
         return success_response(message="Success", data=result, status_code=status.HTTP_200_OK)
     
 

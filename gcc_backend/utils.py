@@ -57,6 +57,9 @@ def generate_random_password(length=8):
 from django.core.mail import send_mail
 from django.conf import settings
 from django.template import loader
+from datetime import datetime
+
+
 
 def send_email_async(subject, message, email_from, recipient_list, html_message):
     print("start calling")
@@ -69,6 +72,20 @@ def send_email_async(subject, message, email_from, recipient_list, html_message)
     send_mail( subject, message, email_from, recipient_list,html_message=html_message )
 
     print("end calling")
+
+
+
+
+def parse_date(date_str):
+    parsed_date = date_str
+    type(parsed_date)
+    try:
+        parsed_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+        print("gg", parsed_date)
+    except ValueError as e:
+        print(str(e), parsed_date)
+        # day is out of range for month
+    return parsed_date
 
 
 

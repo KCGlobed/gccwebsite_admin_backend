@@ -38,7 +38,8 @@ urlpatterns = [
     path('admin_valid_roles/', AdminRoleListView.as_view()),
 
     path('dashboard/', DashboardAnalytics.as_view()),
-
+    path('lead_dashboard/', DashboardLeadAnalytics.as_view()),
     path('profile_dashboard/', DashboardProfileAnalytics.as_view()),
+    path('lead_profile_dashboard/', DashboardLeadProfileAnalytics.as_view()),
     
 ]

@@ -645,7 +645,7 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
                     daemon=True,
                 ).start()
 
-        print("complete response")
+        # print("complete response")
         # if settings.MERITO_STATUS == "True":
         #     if src_type == 15:
         #         m_source = "gccaffiliateSeven"

@@ -130,32 +130,64 @@ class DossierDataFormCustom_Create(APIView):
         serializer = CreateDossierDataCustomAffliateSerializer(data = request.data)
         if serializer.is_valid(raise_exception = True):
             obj = serializer.save()
-            start_date = date(2026, 7, 1)
-            end_date = date(2026, 7, 31)
+
+            start_date = datetime.now().date()
+            end_date = date(2026, 8, 10)
+
             # Count records grouped by interview_date
-            booked_slots = (
-                DossierData.objects
-                .filter(interview_date__range=(start_date, end_date))
-                .annotate(day=TruncDate("interview_date"))
-                .values("day")
-                .annotate(count=Count("id"))
-                .order_by("day")
-            )
-            # Convert queryset to dictionary
-            count_map = {item["day"]: item["count"] for item in booked_slots}  
+            # booked_slots = (
+            #     DossierData.objects
+            #     .filter(interview_date__range=(start_date, end_date))
+            #     .annotate(day=TruncDate("interview_date"))
+            #     .values("day")
+            #     .annotate(count=Count("id"))
+            #     .order_by("day")
+            # )
+            # # Convert queryset to dictionary
+            # count_map = {item["day"]: item["count"] for item in booked_slots}  
 
-            # Fill missing dates with 0
+            # # Fill missing dates with 0
+            # result = []
+            # current = start_date
+
+            # while current <= end_date:
+            #     result.append({
+            #         "date": current.strftime("%d-%m-%Y"),
+            #         "count": count_map.get(current, 0)
+            #     })
+            #     current += timedelta(days=1)
+
+
             result = []
-            current = start_date
-
-            while current <= end_date:
-                result.append({
-                    "date": current.strftime("%d-%m-%Y"),
-                    "count": count_map.get(current, 0)
-                })
-                current += timedelta(days=1)
-
-            return success_response(message="success", data={"id":obj.id, "slot_data":result}, status_code=status.HTTP_200_OK)
+            booking_slots = {}
+    
+            current_date = start_date
+            
+            while current_date <= end_date:
+                days_from_today = (current_date - start_date).days
+            
+                # Higher occupancy for nearer dates
+                if days_from_today <= 5:
+                    booked = random.randint(24, 30)
+                elif days_from_today <= 10:
+                    booked = random.randint(18, 28)
+                elif days_from_today <= 20:
+                    booked = random.randint(10, 22)
+                else:
+                    booked = random.randint(2, 15)
+            
+                booking_slots = {
+                    # "max_slots": 30,
+                    # "booked_slots": booked,
+                    # "available_slots": 30 - booked,
+                    # "is_full": booked == 30
+                    "date": current_date.strftime("%d-%m-%Y"),
+                    "count": booked
+                }
+            
+                current_date += timedelta(days=1)
+                result.append(booking_slots)
+            return success_response(message="success", data={"id":123, "slot_data":result}, status_code=status.HTTP_200_OK)
         else:
             return error_response(message="failed", data = [], status_code=status.HTTP_400_BAD_REQUEST)
 

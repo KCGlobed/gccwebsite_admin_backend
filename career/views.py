@@ -168,7 +168,7 @@ class DossierDataFormCustom_Create(APIView):
             
                 # Higher occupancy for nearer dates
                 if days_from_today <= 5:
-                    booked = random.randint(24, 30)
+                    booked = random.randint(23, 28)
                 elif days_from_today <= 10:
                     booked = random.randint(18, 28)
                 elif days_from_today <= 20:

@@ -163,7 +163,7 @@ from datetime import datetime, date
 from gcc_backend.utils import parse_date
 
 class DashboardAnalytics(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     def get(self, request, format=None):
         start_date = request.GET.get("start_date")
         end_date   = request.GET.get("end_date")
@@ -181,6 +181,12 @@ class DashboardAnalytics(APIView):
 
         # Subquery instead of loading emails into Python
         lead_emails = DossierData.objects.filter(created_at__date__gte=start_date, created_at__date__lte=end_date).values("email").distinct()
+
+        register = StudentProfile.objects.filter(email__in=lead_emails).filter(slot_date__isnull=False)
+
+        register_non = StudentProfile.objects.filter(email__in=lead_emails).filter(slot_date__isnull=True)
+
+        # return Response({"msg":"sucess","count":len(register),"cournt":len(register_non)})
 
         # Total leads
         result["lead_count"] = DossierData.objects.filter(created_at__date__gte=start_date, created_at__date__lte=end_date).count()

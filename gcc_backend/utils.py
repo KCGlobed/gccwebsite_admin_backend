@@ -4,6 +4,21 @@ from rest_framework import status
 import random
 import string
 
+from django.core.mail import send_mail
+from django.conf import settings
+from django.template import loader
+from datetime import datetime
+
+import requests
+from django.utils import timezone
+from utils.google_sheet import get_google_sheet, get_google_sheet_affliate_seven
+from django.conf import settings
+from career.models import *
+from users.models import User
+from students.models import StudentProfile, ManageStudentInterview
+from users.serializers import StudentProfileDetailSerializer
+
+
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
     return {
@@ -54,12 +69,6 @@ def generate_random_password(length=8):
     random.shuffle(password)
     return ''.join(password)
 
-from django.core.mail import send_mail
-from django.conf import settings
-from django.template import loader
-from datetime import datetime
-
-
 
 def send_email_async(subject, message, email_from, recipient_list, html_message):
     print("start calling")
@@ -89,14 +98,6 @@ def parse_date(date_str):
 
 
 
-import requests
-from django.utils import timezone
-from utils.google_sheet import get_google_sheet, get_google_sheet_affliate_seven
-from django.conf import settings
-from career.models import *
-from users.models import User
-from students.models import StudentProfile, ManageStudentInterview
-from users.serializers import StudentProfileDetailSerializer
 
 def create_affliate_seven_services_async(instance, src_type, validated_data):
     print("affliate seven call...",instance, src_type)
@@ -220,3 +221,47 @@ def update_affliate_seven_services_async(lobj, src_type):
             except Exception as e:
                 print("google sheet error", str(e))
     return "success"
+
+
+
+def create_affliate_six_services_async(instance, src_type):
+    if settings.EXCEL_INPUT == "True":
+        if src_type == 14:
+            print("sheet enter")
+            if not DossierData.objects.filter(phone=instance.phone, source=src_type).exclude(id=instance.id).exists():
+                print("valida data")
+                try:
+                    sheet = get_google_sheet()
+                    print("open sheet...",sheet)
+                    local_time = timezone.localtime(instance.created_at)
+                    create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
+                    row = [
+                        instance.full_name,
+                        instance.email,
+                        instance.phone,
+                        instance.city,
+                        instance.state,
+                        instance.fbc_id,
+                        instance.utm_source,
+                        instance.utm_medium,
+                        instance.utm_content,
+                        instance.utm_campaign,
+                        instance.campaign_id,
+                        instance.utm_adname,
+                        instance.adset_id,
+                        instance.fbclid,
+                        instance.ad_source,
+                        instance.ad_id,
+                        instance.fee_waiver_category,
+                        create_times
+                    ]
+                    print("data inster",row)
+                    sheet.append_row(row)
+                    print("completed")
+                except Exception as e:
+                    print("google sheet error", str(e))
+
+    return "success"
+
+
+

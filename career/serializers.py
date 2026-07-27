@@ -7,6 +7,8 @@ from users.serializers import StudentProfileDetailSerializer
 import requests
 from django.utils import timezone
 from utils.google_sheet import get_google_sheet, get_google_sheet_affliate_seven
+import threading
+from gcc_backend.utils import create_affliate_seven_services_async, create_affliate_six_services_async
 
 class ListCareerApplicationSerializer(serializers.ModelSerializer):
     resume_path = serializers.SerializerMethodField('get_resume_path')
@@ -116,43 +118,48 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
             except Exception as e:
                 print("API Error:", str(e))
 
-
-        ### for sheet 
-        if settings.EXCEL_INPUT == "True":
-            if src_type == 14:
-                print("sheet enter")
-                if not DossierData.objects.filter(phone=instance.phone, source=src_type).exclude(id=instance.id).exists():
-                    print("valida data")
-                    try:
-                        sheet = get_google_sheet()
-                        print("open sheet...",sheet)
-                        local_time = timezone.localtime(instance.created_at)
-                        create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
-                        row = [
-                            instance.full_name,
-                            instance.email,
-                            instance.phone,
-                            instance.city,
-                            instance.state,
-                            instance.fbc_id,
-                            instance.utm_source,
-                            instance.utm_medium,
-                            instance.utm_content,
-                            instance.utm_campaign,
-                            instance.campaign_id,
-                            instance.utm_adname,
-                            instance.adset_id,
-                            instance.fbclid,
-                            instance.ad_source,
-                            instance.ad_id,
-                            instance.fee_waiver_category,
-                            create_times
-                        ]
-                        print("data inster",row)
-                        sheet.append_row(row)
-                        print("completed")
-                    except Exception as e:
-                        print("google sheet error", str(e))
+        threading.Thread(
+                target=create_affliate_six_services_async,
+                args=(instance, src_type),
+                daemon=True,
+            ).start()
+        
+        # ### for sheet 
+        # if settings.EXCEL_INPUT == "True":
+        #     if src_type == 14:
+        #         print("sheet enter")
+        #         if not DossierData.objects.filter(phone=instance.phone, source=src_type).exclude(id=instance.id).exists():
+        #             print("valida data")
+        #             try:
+        #                 sheet = get_google_sheet()
+        #                 print("open sheet...",sheet)
+        #                 local_time = timezone.localtime(instance.created_at)
+        #                 create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
+        #                 row = [
+        #                     instance.full_name,
+        #                     instance.email,
+        #                     instance.phone,
+        #                     instance.city,
+        #                     instance.state,
+        #                     instance.fbc_id,
+        #                     instance.utm_source,
+        #                     instance.utm_medium,
+        #                     instance.utm_content,
+        #                     instance.utm_campaign,
+        #                     instance.campaign_id,
+        #                     instance.utm_adname,
+        #                     instance.adset_id,
+        #                     instance.fbclid,
+        #                     instance.ad_source,
+        #                     instance.ad_id,
+        #                     instance.fee_waiver_category,
+        #                     create_times
+        #                 ]
+        #                 print("data inster",row)
+        #                 sheet.append_row(row)
+        #                 print("completed")
+        #             except Exception as e:
+        #                 print("google sheet error", str(e))
 
         return instance
 
@@ -625,8 +632,7 @@ class CreateOrUpdateDossierDataMerittoSerializer(serializers.ModelSerializer):
         return instance
 
     
-import threading
-from gcc_backend.utils import create_affliate_seven_services_async
+
 
 class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
     class Meta:

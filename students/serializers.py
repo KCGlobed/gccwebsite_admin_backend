@@ -15,7 +15,7 @@ client = storage.Client(project=settings.GS_PROJECT_ID)
 from django.db.models import Count
 from django.db.models.functions import TruncDate
 from utils.google_sheet import get_google_sheet_affliate_seven
-
+from gcc_backend.utils import update_affliate_seven_services_async
 
 class ListStudentQuerySerializer(serializers.ModelSerializer) :
     class Meta:
@@ -2623,7 +2623,7 @@ class StudentInterviewReportSerializer(serializers.ModelSerializer):
 
 
 
-
+import threading
 class StudentInterviewCreateSerializer(serializers.ModelSerializer):
     lid = serializers.IntegerField(required=True)
     interview_date = serializers.DateField(required=True)
@@ -2638,36 +2638,13 @@ class StudentInterviewCreateSerializer(serializers.ModelSerializer):
         lobj.save()
         # print(lobj)
         src_type = lobj.source
-        if settings.EXCEL_INPUT == "True":
-            if src_type == 15:
-                print("sheet enter")
-                try:
-                    sheet = get_google_sheet_affliate_seven()
-                    print("open sheet...",sheet)
-                    # local_time = timezone.localtime(lobj.interview_date)
-                    # create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
-                    # lobj.interview_date
-                    selected_date = lobj.interview_date.strftime("%Y-%m-%d")
-                    row_data = [
-                        "Yes",
-                        selected_date
-                    ]
 
-                    # find email in column B
-                    cell = sheet.find(lobj.phone)
-
-                    if cell:
-                        row_number = cell.row
-                        print("row found:", row_number)
-                        sheet.update(f"K{row_number}:L{row_number}", [row_data])
-                        print(f"Row {row_number} updated successfully")
-
-                        print("row updated successfully")
-
-                    else:
-                        print("row not found, new row inserted")
-                except Exception as e:
-                    print("google sheet error", str(e))
+        
+        threading.Thread(
+            target=update_affliate_seven_services_async,
+            args=(lobj,src_type),
+            daemon=True,
+        ).start()
 
         return validate_data
 

@@ -641,7 +641,7 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
 
         threading.Thread(
                     target=create_affliate_seven_services_async,
-                    args=(instance, src_type),
+                    args=(instance, src_type, validated_data),
                     daemon=True,
                 ).start()
 

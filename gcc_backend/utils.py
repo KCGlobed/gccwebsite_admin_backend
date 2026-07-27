@@ -98,7 +98,7 @@ from users.models import User
 from students.models import StudentProfile, ManageStudentInterview
 from users.serializers import StudentProfileDetailSerializer
 
-def create_affliate_seven_services_async(instance, src_type):
+def create_affliate_seven_services_async(instance, src_type, validated_data):
     print("affliate seven call...",instance, src_type)
     if settings.MERITO_STATUS == "True":
         if src_type == 15:
@@ -188,3 +188,35 @@ def create_affliate_seven_services_async(instance, src_type):
 
 
 
+def update_affliate_seven_services_async(lobj, src_type):
+    if settings.EXCEL_INPUT == "True":
+        if src_type == 15:
+            print("sheet enter")
+            try:
+                sheet = get_google_sheet_affliate_seven()
+                print("open sheet...",sheet)
+                # local_time = timezone.localtime(lobj.interview_date)
+                # create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
+                # lobj.interview_date
+                selected_date = lobj.interview_date.strftime("%Y-%m-%d")
+                row_data = [
+                    "Yes",
+                    selected_date
+                ]
+
+                # find email in column B
+                cell = sheet.find(lobj.phone)
+
+                if cell:
+                    row_number = cell.row
+                    print("row found:", row_number)
+                    sheet.update(f"K{row_number}:L{row_number}", [row_data])
+                    print(f"Row {row_number} updated successfully")
+
+                    print("row updated successfully")
+
+                else:
+                    print("row not found, new row inserted")
+            except Exception as e:
+                print("google sheet error", str(e))
+    return "success"

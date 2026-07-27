@@ -624,7 +624,9 @@ class CreateOrUpdateDossierDataMerittoSerializer(serializers.ModelSerializer):
         push_to_meritto(instance)
         return instance
 
-
+    
+import threading
+from gcc_backend.utils import create_affliate_seven_services_async
 
 class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -636,90 +638,98 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
         validated_data["fee_waiver_category"] = "Free of cost (FOC)"
         instance = super().create(validated_data)
         src_type = instance.source
-        if settings.MERITO_STATUS == "True":
-            if src_type == 15:
-                m_source = "gccaffiliateSeven"
-            else:
-                m_source = "gcc"
-            # API URL
-            url = settings.MERITO_BASE_URL+"/lead/v1/createOrUpdate"
 
-            headers = {
-                "Content-Type": "application/json",
-                "secret-key": settings.MERITO_SECRETE_KEY,
-                "access-key": settings.MERITO_ACCESS_KEY
-            }
+        threading.Thread(
+                    target=create_affliate_seven_services_async,
+                    args=(instance, src_type),
+                    daemon=True,
+                ).start()
 
-            payload = {
-                "name": instance.full_name,
-                "email": instance.email,
-                "mobile": instance.phone,
-                "city": instance.city,
-                "state": instance.state,
-                "search_criteria": "email",
-                "source":m_source,
-                "cf_source":m_source,
-                "cf_payment_status":"Complete",
-                "cf_fee_waiver_category":"Free of cost (FOC)"
-            }
-            try:
-                print("mer..",payload)
-                response = requests.post(url, headers=headers, json=payload)
-                print(response.status_code)
-                print(response.text)
-                DossierLog.objects.create(dossier=instance, message=response.text, status=int(response.status_code), activity="creating", datas=validated_data)
-            except Exception as e:
-                print("API Error:", str(e))
+        print("complete response")
+        # if settings.MERITO_STATUS == "True":
+        #     if src_type == 15:
+        #         m_source = "gccaffiliateSeven"
+        #     else:
+        #         m_source = "gcc"
+        #     # API URL
+        #     url = settings.MERITO_BASE_URL+"/lead/v1/createOrUpdate"
 
-        if settings.EXCEL_INPUT == "True":
-            if src_type == 15:
-                print("sheet enter")
-                if not DossierData.objects.filter(phone=instance.phone, source=src_type).exclude(id=instance.id).exists():
-                    print("valida data")
-                    try:
-                        sheet = get_google_sheet_affliate_seven()
-                        print("open sheet...",sheet)
-                        local_time = timezone.localtime(instance.created_at)
-                        create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
-                        row = [
-                            instance.full_name,
-                            instance.email,
-                            instance.phone,
-                            instance.city,
-                            instance.state,
-                            instance.degree,
-                            instance.age_range,
-                            instance.degree_stage,
-                            instance.fund_mode,
-                            instance.attend_from,
-                            "No",
-                            "",
-                            create_times
-                        ]
-                        print("data inster",row)
-                        sheet.append_row(row)
-                        print("completed")
-                    except Exception as e:
-                        print("google sheet error", str(e))
+        #     headers = {
+        #         "Content-Type": "application/json",
+        #         "secret-key": settings.MERITO_SECRETE_KEY,
+        #         "access-key": settings.MERITO_ACCESS_KEY
+        #     }
+
+        #     payload = {
+        #         "name": instance.full_name,
+        #         "email": instance.email,
+        #         "mobile": instance.phone,
+        #         "city": instance.city,
+        #         "state": instance.state,
+        #         "search_criteria": "email",
+        #         "source":m_source,
+        #         "cf_source":m_source,
+        #         "cf_payment_status":"Complete",
+        #         "cf_fee_waiver_category":"Free of cost (FOC)"
+        #     }
+        #     try:
+        #         print("mer..",payload)
+        #         response = requests.post(url, headers=headers, json=payload)
+        #         print(response.status_code)
+        #         print(response.text)
+        #         DossierLog.objects.create(dossier=instance, message=response.text, status=int(response.status_code), activity="creating", datas=validated_data)
+        #     except Exception as e:
+        #         print("API Error:", str(e))
+
+        # if settings.EXCEL_INPUT == "True":
+        #     if src_type == 15:
+        #         print("sheet enter")
+        #         if not DossierData.objects.filter(phone=instance.phone, source=src_type).exclude(id=instance.id).exists():
+        #             print("valida data")
+        #             try:
+        #                 sheet = get_google_sheet_affliate_seven()
+        #                 print("open sheet...",sheet)
+        #                 local_time = timezone.localtime(instance.created_at)
+        #                 create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
+        #                 row = [
+        #                     instance.full_name,
+        #                     instance.email,
+        #                     instance.phone,
+        #                     instance.city,
+        #                     instance.state,
+        #                     instance.degree,
+        #                     instance.age_range,
+        #                     instance.degree_stage,
+        #                     instance.fund_mode,
+        #                     instance.attend_from,
+        #                     "No",
+        #                     "",
+        #                     create_times
+        #                 ]
+        #                 print("data inster",row)
+        #                 sheet.append_row(row)
+        #                 print("completed")
+        #             except Exception as e:
+        #                 print("google sheet error", str(e))
 
 
 
-        url = settings.CSRF_TRUSTED_ORIGINS[0]+"/api/users/create_student/"
+        # url = settings.CSRF_TRUSTED_ORIGINS[0]+"/api/users/create_student/"
 
-        payload = {
-            "full_name": instance.full_name,
-            "email": instance.email,
-            "phone1": instance.phone
-        }
-        try:
-            print("user....",payload)
-            response = requests.post(url, json=payload)
-            print(response.status_code)
-            print(response.text)
-            User.objects.filter(email=instance.email).update(city=instance.city, state=instance.state, fee_waiver_category="Free of cost (FOC)")
-            # DossierLog.objects.create(dossier=instance, message=response.text, status=int(response.status_code), activity="creating", datas=validated_data)
-        except Exception as e:
-            print("API Error:", str(e))    
+        # payload = {
+        #     "full_name": instance.full_name,
+        #     "email": instance.email,
+        #     "phone1": instance.phone
+        # }
+        # try:
+        #     print("user....",payload)
+        #     response = requests.post(url, json=payload)
+        #     print(response.status_code)
+        #     print(response.text)
+        #     User.objects.filter(email=instance.email).update(city=instance.city, state=instance.state, fee_waiver_category="Free of cost (FOC)")
+        #     # DossierLog.objects.create(dossier=instance, message=response.text, status=int(response.status_code), activity="creating", datas=validated_data)
+        # except Exception as e:
+        #     print("API Error:", str(e))    
 
         return instance
 

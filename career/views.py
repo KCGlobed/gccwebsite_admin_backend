@@ -187,7 +187,7 @@ class DossierDataFormCustom_Create(APIView):
             
                 current_date += timedelta(days=1)
                 result.append(booking_slots)
-            return success_response(message="success", data={"id":123, "slot_data":result}, status_code=status.HTTP_200_OK)
+            return success_response(message="success", data={"id":obj.id, "slot_data":result}, status_code=status.HTTP_200_OK)
         else:
             return error_response(message="failed", data = [], status_code=status.HTTP_400_BAD_REQUEST)
 

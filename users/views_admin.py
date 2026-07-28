@@ -143,12 +143,41 @@ class DashboardAnalytics(APIView):
 
         result = {}
 
-        # Subquery instead of loading emails into Python
-        lead_emails = DossierData.objects.filter(created_at__date__gte=start_date, created_at__date__lte=end_date).values("email").distinct()
-
-        # Total leads
         result["lead_count"] = DossierData.objects.filter(created_at__date__gte=start_date, created_at__date__lte=end_date).count()
+        
+        lead_emails = DossierData.objects.filter(
+                        created_at__date__range=(start_date, end_date)
+                    ).values_list("email", flat=True).distinct()
+        
+        register = StudentProfile.objects.filter(
+                user__isnull=False,created_at__date__range=(start_date, end_date)
+            ).count()
 
+        exam_profile = StudentRealExamResult.objects.filter(created_at__date__range=(start_date, end_date)).aggregate(
+                exam_profile=Count("student_profile", distinct=True)
+            )["exam_profile"]
+
+        stats = ManageStudentInterview.objects.filter(
+                profile__isnull=False, created_at__date__range=(start_date, end_date)
+            ).aggregate(
+                interview_data=Count(
+                    "profile",
+                    filter=Q(attempt_status=AttendanceStatusType.Present),
+                    distinct=True,
+                ),
+                seat_reserved=Count(
+                    "profile",
+                    filter=Q(payment_status=True),
+                    distinct=True,
+                ),
+            )
+
+        result["registered"] = register
+        result["exam_taken"] = exam_profile
+        result["interview_taken"] = stats["interview_data"]
+        result["seat_reserved"] = stats["seat_reserved"]
+
+        
         # Student statistics in a single query
         student_stats = StudentProfile.objects.filter(
             email__in=lead_emails

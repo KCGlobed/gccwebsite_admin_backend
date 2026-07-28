@@ -151,6 +151,7 @@ class GetManageSalesPerson(APIView):
         return success_response(message="Success", data={"list_data":serialize.data}, status_code=status.HTTP_200_OK)
     
 
+
 class AssignedReportingEmployee(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request, format=None):
@@ -179,23 +180,41 @@ class DashboardAnalytics(APIView):
 
         result = {}
 
-        # Subquery instead of loading emails into Python
-        lead_emails = DossierData.objects.filter(created_at__date__gte=start_date, created_at__date__lte=end_date).values("email").distinct()
-
-        register = list(StudentProfile.objects.filter(email__in=lead_emails).filter(slot_date__isnull=False).values_list('id', flat=True))
-
-        register_non = list(StudentProfile.objects.filter(email__in=lead_emails).filter(slot_date__isnull=True).values_list('id',flat=True))+register
-        # print("count..",register)
-        # print("count..",register_non)
         
-        register_nonn = list(StudentProfile.objects.exclude(id__in=register_non).values_list('email',flat=True))
-        print(register_nonn)
-        dd = DossierData.objects.filter(email__in=register_nonn)
-        print(dd)
-        # Total leads
         result["lead_count"] = DossierData.objects.filter(created_at__date__gte=start_date, created_at__date__lte=end_date).count()
 
-        return Response({"msg":"sucess"})
+        lead_emails = DossierData.objects.filter(
+                        created_at__date__range=(start_date, end_date)
+                    ).values_list("email", flat=True).distinct()
+        
+        register = StudentProfile.objects.filter(
+                user__isnull=False,created_at__date__range=(start_date, end_date)
+            ).count()
+
+        exam_profile = StudentRealExamResult.objects.filter(created_at__date__range=(start_date, end_date)).aggregate(
+                exam_profile=Count("student_profile", distinct=True)
+            )["exam_profile"]
+
+        stats = ManageStudentInterview.objects.filter(
+                profile__isnull=False, created_at__date__range=(start_date, end_date)
+            ).aggregate(
+                interview_data=Count(
+                    "profile",
+                    filter=Q(attempt_status=AttendanceStatusType.Present),
+                    distinct=True,
+                ),
+                seat_reserved=Count(
+                    "profile",
+                    filter=Q(payment_status=True),
+                    distinct=True,
+                ),
+            )
+
+        result["registered"] = register
+        result["exam_taken"] = exam_profile
+        result["interview_taken"] = stats["interview_data"]
+        result["seat_reserved"] = stats["seat_reserved"]
+        
         # Student statistics in a single query
         student_stats = StudentProfile.objects.filter(
             email__in=lead_emails
@@ -240,7 +259,6 @@ class DashboardLeadAnalytics(APIView):
 
         result = {}
 
-        # Subquery instead of loading emails into Python
         lead_emails = DossierData.objects.values("email").distinct()
 
         # Total leads

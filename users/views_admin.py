@@ -182,15 +182,20 @@ class DashboardAnalytics(APIView):
         # Subquery instead of loading emails into Python
         lead_emails = DossierData.objects.filter(created_at__date__gte=start_date, created_at__date__lte=end_date).values("email").distinct()
 
-        register = StudentProfile.objects.filter(email__in=lead_emails).filter(slot_date__isnull=False)
+        register = list(StudentProfile.objects.filter(email__in=lead_emails).filter(slot_date__isnull=False).values_list('id', flat=True))
 
-        register_non = StudentProfile.objects.filter(email__in=lead_emails).filter(slot_date__isnull=True)
-
-        # return Response({"msg":"sucess","count":len(register),"cournt":len(register_non)})
-
+        register_non = list(StudentProfile.objects.filter(email__in=lead_emails).filter(slot_date__isnull=True).values_list('id',flat=True))+register
+        # print("count..",register)
+        # print("count..",register_non)
+        
+        register_nonn = list(StudentProfile.objects.exclude(id__in=register_non).values_list('email',flat=True))
+        print(register_nonn)
+        dd = DossierData.objects.filter(email__in=register_nonn)
+        print(dd)
         # Total leads
         result["lead_count"] = DossierData.objects.filter(created_at__date__gte=start_date, created_at__date__lte=end_date).count()
 
+        return Response({"msg":"sucess"})
         # Student statistics in a single query
         student_stats = StudentProfile.objects.filter(
             email__in=lead_emails

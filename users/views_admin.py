@@ -222,16 +222,20 @@ class DashboardLeadAnalytics(APIView):
             ea_enrolled=Count("id", filter=Q(program=ProgramType.EA)),
             other_enrolled=Count("id", filter=Q(program=None)),
             )
+        
+        total = int(fee_waiver_data.get("total_lead_percent") or 0)
+        
         waiver_data = {}
-        waiver_data["no_waive_percent"] = round(int(fee_waiver_data["no_waive_percent"])/int(fee_waiver_data["total_lead_percent"]) * 100, 2)
-        waiver_data["foc_percent"] = round(int(fee_waiver_data["foc_percent"])/int(fee_waiver_data["total_lead_percent"]) * 100, 2)
+        # waiver_data["no_waive_percent"] = round(int(fee_waiver_data["no_waive_percent"])/int(fee_waiver_data["total_lead_percent"]) * 100, 2)
+        waiver_data["no_waive_percent"] = (round(int(fee_waiver_data.get("no_waive_percent") or 0) / total * 100, 2)if total else 0)
+        waiver_data["foc_percent"] = (round(int(fee_waiver_data.get("foc_percent") or 0) / total * 100, 2)if total else 0)
         waiver_data["total_lead_percent"] = 100.0
         result["fee_waiver_stats"] = waiver_data
 
         program_data = {}
-        program_data["cpa_percent"] = round(int(fee_waiver_data["cpa_enrolled"])/int(fee_waiver_data["total_lead_percent"]) * 100, 2)
-        program_data["ea_percent"] = round(int(fee_waiver_data["ea_enrolled"])/int(fee_waiver_data["total_lead_percent"]) * 100, 2)
-        program_data["other_percent"] = round(int(fee_waiver_data["other_enrolled"])/int(fee_waiver_data["total_lead_percent"]) * 100, 2)
+        program_data["cpa_percent"] = (round(int(fee_waiver_data.get("cpa_enrolled") or 0) / total * 100, 2)if total else 0)
+        program_data["ea_percent"] = (round(int(fee_waiver_data.get("ea_enrolled") or 0) / total * 100, 2)if total else 0)
+        program_data["other_percent"] = (round(int(fee_waiver_data.get("other_enrolled") or 0) / total * 100, 2)if total else 0)
         result["program_stats"] = program_data
         
         university_data = DossierData.objects.filter(created_at__date__gte=start_date, created_at__date__lte=end_date).values('university').annotate(count=Count('id')).order_by('-count')[:10]
@@ -275,41 +279,42 @@ class DashboardProfileAnalytics(APIView):
             higher_percent=Count('id', filter=Q(higher_education_status=HigherEducation.YES)),
             non_higher_percent=Count('id', filter=Q(higher_education_status=HigherEducation.NO)),
         )
-
+        total = int(profile_waiver_data.get("total_percent") or 0)
         waiver_data = {}
-        waiver_data["no_waive_percent"] = round(int(profile_waiver_data["no_waive_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
-        waiver_data["foc_percent"] = round(int(profile_waiver_data["foc_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
+        waiver_data["no_waive_percent"] = (round(int(profile_waiver_data.get("no_waive_percent") or 0) / total * 100, 2)if total else 0)
+        # waiver_data["no_waive_percent"] = round(int(profile_waiver_data["no_waive_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
+        waiver_data["foc_percent"] = (round(int(profile_waiver_data.get("foc_percent") or 0) / total * 100, 2)if total else 0)
         result["fee_waiver_stats"] = waiver_data
 
         employement_stats = {}
-        employement_stats["fresher_percent"] = round(int(profile_waiver_data["fresher_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
-        employement_stats["experience_percent"] = round(int(profile_waiver_data["experience_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
+        employement_stats["fresher_percent"] = (round(int(profile_waiver_data.get("fresher_percent") or 0) / total * 100, 2)if total else 0)
+        employement_stats["experience_percent"] = (round(int(profile_waiver_data.get("experience_percent") or 0) / total * 100, 2)if total else 0)
         result["employement_stats"] = employement_stats
 
         pg_stats = {}
-        pg_stats["fresher_percent"] = round(int(profile_waiver_data["persue_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
-        pg_stats["experience_percent"] = round(int(profile_waiver_data["complete_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
+        pg_stats["fresher_percent"] = (round(int(profile_waiver_data.get("persue_percent") or 0) / total * 100, 2)if total else 0)
+        pg_stats["experience_percent"] = (round(int(profile_waiver_data.get("complete_percent") or 0) / total * 100, 2)if total else 0)
         pg_stats["total_percent"] = 100.0
         result["pg_stats"] = pg_stats
 
         gender_stats = {}
-        gender_stats["male_percent"] = round(int(profile_waiver_data["mgender_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
-        gender_stats["female_percent"] = round(int(profile_waiver_data["fgender_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
-        gender_stats["other_percent"] = round(int(profile_waiver_data["ogender_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
+        gender_stats["male_percent"] = (round(int(profile_waiver_data.get("mgender_percent") or 0) / total * 100, 2)if total else 0)
+        gender_stats["female_percent"] = (round(int(profile_waiver_data.get("fgender_percent") or 0) / total * 100, 2)if total else 0)
+        gender_stats["other_percent"] = (round(int(profile_waiver_data.get("ogender_percent") or 0) / total * 100, 2)if total else 0)
         result["gender_stats"] = gender_stats
 
         higher_qualify_stats = {}
-        higher_qualify_stats["higher_percent"] = round(int(profile_waiver_data["higher_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
-        higher_qualify_stats["non_higher_percent"] = round(int(profile_waiver_data["non_higher_percent"])/int(profile_waiver_data["total_percent"]) * 100, 2)
+        higher_qualify_stats["higher_percent"] = (round(int(profile_waiver_data.get("higher_percent") or 0) / total * 100, 2)if total else 0)
+        higher_qualify_stats["non_higher_percent"] = (round(int(profile_waiver_data.get("non_higher_percent") or 0) / total * 100, 2)if total else 0)
         result["higher_qualify_stats"] = higher_qualify_stats
 
         profile_metric_stats = {}
-        profile_metric_stats["profiles"] = int(profile_waiver_data["total_percent"])
-        profile_metric_stats["freshers"] = int(profile_waiver_data["fresher_percent"])
-        profile_metric_stats["ug_done"] = int(profile_waiver_data["complete_percent"])
-        profile_metric_stats["higher_qualify"] = int(profile_waiver_data["higher_percent"])
-        profile_metric_stats["foc"] = int(profile_waiver_data["foc_percent"])
-        profile_metric_stats["male"] = int(profile_waiver_data["mgender_percent"])
+        profile_metric_stats["profiles"] = total
+        profile_metric_stats["freshers"] = (round(int(profile_waiver_data.get("persue_percent") or 0) / total * 100, 2)if total else 0)
+        profile_metric_stats["ug_done"] = (round(int(profile_waiver_data.get("complete_percent") or 0) / total * 100, 2)if total else 0)
+        profile_metric_stats["higher_qualify"] = (round(int(profile_waiver_data.get("higher_percent") or 0) / total * 100, 2)if total else 0)
+        profile_metric_stats["foc"] = (round(int(profile_waiver_data.get("foc_percent") or 0) / total * 100, 2)if total else 0)
+        profile_metric_stats["male"] = (round(int(profile_waiver_data.get("mgender_percent") or 0) / total * 100, 2)if total else 0)
         result["profile_metric_stats"] = profile_metric_stats
 
         return success_response(message="Success", data=result, status_code=status.HTTP_200_OK)

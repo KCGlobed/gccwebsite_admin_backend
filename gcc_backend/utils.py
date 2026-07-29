@@ -12,7 +12,6 @@ from datetime import datetime
 import requests
 from django.utils import timezone
 from utils.google_sheet import get_google_sheet, get_google_sheet_affliate_seven
-from django.conf import settings
 from career.models import *
 from users.models import User
 from students.models import StudentProfile, ManageStudentInterview

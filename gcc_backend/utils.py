@@ -80,7 +80,7 @@ def send_email_async(subject, message, email_from, recipient_list, html_message)
 
     send_mail( subject, message, email_from, recipient_list,html_message=html_message )
 
-    print("end calling")
+    print("end calling, mail sent")
 
 
 
@@ -220,7 +220,44 @@ def update_affliate_seven_services_async(lobj, src_type):
                     print("row not found, new row inserted")
             except Exception as e:
                 print("google sheet error", str(e))
+    send_interview_reserved_email(lobj)
     return "success"
+
+
+
+from django.template.loader import render_to_string
+from django.conf import settings
+import threading
+
+
+def send_interview_reserved_email(student):
+    subject = f"Congratulations, {student.full_name} — Your Interview Seat is Reserved"
+
+    html_message = render_to_string(
+        "emails/interview_reserved.html",
+        {
+            "first_name": student.full_name,
+            "phone": student.phone,
+            "interview_slot": student.interview_date,
+        },
+    )
+
+    threading.Thread(
+        target=send_email_async,
+        args=(
+            subject,
+            "",
+            settings.DEFAULT_FROM_EMAIL,
+            [student.email],
+            html_message,
+        ),
+    ).start()
+
+
+
+
+
+
 
 
 

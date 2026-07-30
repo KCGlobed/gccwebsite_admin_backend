@@ -35,8 +35,8 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
         
     def create(self, validated_data):
         instance = super().create(validated_data)
+        src_type = instance.source
         if settings.MERITO_STATUS == "True":
-            src_type = instance.source
             if src_type == 1:
                 m_source = "gccwebsite"
             elif src_type == 2:

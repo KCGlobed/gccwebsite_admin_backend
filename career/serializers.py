@@ -8,7 +8,7 @@ import requests
 from django.utils import timezone
 from utils.google_sheet import get_google_sheet, get_google_sheet_affliate_seven
 import threading
-from gcc_backend.utils import create_affliate_seven_services_async, create_affliate_six_services_async, create_lpcampaign_services_async
+from gcc_backend.utils import create_affliate_seven_services_async, create_affliate_six_services_async
 
 class ListCareerApplicationSerializer(serializers.ModelSerializer):
     resume_path = serializers.SerializerMethodField('get_resume_path')

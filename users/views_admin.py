@@ -152,7 +152,7 @@ class DashboardAnalytics(APIView):
         register = StudentProfile.objects.filter(
                 user__isnull=False,created_at__date__range=(start_date, end_date)
             ).count()
-
+        
         exam_profile = StudentRealExamResult.objects.filter(created_at__date__range=(start_date, end_date)).aggregate(
                 exam_profile=Count("student_profile", distinct=True)
             )["exam_profile"]
@@ -285,7 +285,7 @@ class DashboardProfileAnalytics(APIView):
             start_date = parse_date(start_date)
         else:
             start_date = datetime.now().date() - timedelta(days=30)
-
+        
         if end_date:
             end_date = parse_date(end_date)
         else:
@@ -345,8 +345,9 @@ class DashboardProfileAnalytics(APIView):
         profile_metric_stats["foc"] = (round(int(profile_waiver_data.get("foc_percent") or 0) / total * 100, 2)if total else 0)
         profile_metric_stats["male"] = (round(int(profile_waiver_data.get("mgender_percent") or 0) / total * 100, 2)if total else 0)
         result["profile_metric_stats"] = profile_metric_stats
-
+        
         return success_response(message="Success", data=result, status_code=status.HTTP_200_OK)
+    
     
 
 class DashboardLeadProfileAnalytics(APIView):

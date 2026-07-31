@@ -103,8 +103,13 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
     if settings.MERITO_STATUS == "True":
         if src_type == 15:
             m_source = "gccaffiliateSeven"
+        elif src_type == 20:
+            m_source = "gccealpCampaign"
+        elif src_type == 21:
+            m_source = "gcccpalpCampaign"
         else:
             m_source = "gcc"
+        print("m_source...",m_source)
         # API URL
         url = settings.MERITO_BASE_URL+"/lead/v1/createOrUpdate"
 
@@ -184,6 +189,7 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
         print("API Error:", str(e))
 
     return "success"
+
 
 
 

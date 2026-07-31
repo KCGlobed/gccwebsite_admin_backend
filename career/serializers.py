@@ -8,7 +8,7 @@ import requests
 from django.utils import timezone
 from utils.google_sheet import get_google_sheet, get_google_sheet_affliate_seven
 import threading
-from gcc_backend.utils import create_affliate_seven_services_async, create_affliate_six_services_async
+from gcc_backend.utils import create_affliate_seven_services_async, create_affliate_six_services_async, create_lpcampaign_services_async
 
 class ListCareerApplicationSerializer(serializers.ModelSerializer):
     resume_path = serializers.SerializerMethodField('get_resume_path')
@@ -71,6 +71,10 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 m_source = "gcceaWebsite"
             elif src_type == 19:
                 m_source = "gcccpaWebsite"
+            elif src_type == 20:
+                m_source = "gccealpCampaign"
+            elif src_type == 21:
+                m_source = "gcccpalpCampaign"
             else:
                 m_source = "gcc"
             # API URL
@@ -644,12 +648,12 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
         validated_data["fee_waiver_category"] = "Free of cost (FOC)"
         instance = super().create(validated_data)
         src_type = instance.source
-
-        threading.Thread(
-                    target=create_affliate_seven_services_async,
-                    args=(instance, src_type, validated_data),
-                    daemon=True,
-                ).start()
+        if src_type == 18:
+            threading.Thread(
+                        target=create_affliate_seven_services_async,
+                        args=(instance, src_type, validated_data),
+                        daemon=True,
+                    ).start()
 
         # print("complete response")
         # if settings.MERITO_STATUS == "True":

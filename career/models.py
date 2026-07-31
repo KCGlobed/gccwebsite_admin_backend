@@ -81,6 +81,9 @@ class SourceType(models.IntegerChoices):
     EA = 17, 'EA'
     EAWebsite = 18, 'EAWebsite'    ##EA LP
     CPAWebsite = 19, 'CPAWebsite'  ##CPA LP
+    EALPCampaign = 20, 'EALPCampaign'
+    CPALPCampaign = 21, 'CPALPCampaign'
+    
 
 class SourceFormType(models.IntegerChoices):
     ApplyNow = 1, 'ApplyNow'

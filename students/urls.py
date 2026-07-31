@@ -60,7 +60,6 @@ urlpatterns = [
     path('update-student-verification-status/', CampusStudentVerifiedStatusView.as_view(), name="update-student-verification-status"),
     path('update-student-mail-status/', CampusStudentAccountMailStatusView.as_view(), name="update-student-mail-status"),
 
-
     ## download score card for references
     path('student-score-card-download/', GetStudentScoreCardView.as_view(), name="student-score-card-download"),
     path('admin-student-score-card-download/<int:stid>', GetAdminStudentScoreCardView.as_view(), name="admin-student-score-card-download"),

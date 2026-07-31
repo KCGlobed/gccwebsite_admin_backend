@@ -453,7 +453,7 @@ class GetPaymentReportExcelView(APIView):
             df = pd.DataFrame(data_list)
 
             # Reorder columns as per COLUMN_MAPPING keys
-            df = df[list(COLUMN_MAPPING.keys())]+
+            df = df[list(COLUMN_MAPPING.keys())]
 
             # Rename columns for Excel headers
             df.rename(columns=COLUMN_MAPPING, inplace=True)

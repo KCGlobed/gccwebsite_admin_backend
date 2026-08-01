@@ -2639,7 +2639,6 @@ class StudentInterviewCreateSerializer(serializers.ModelSerializer):
         # print(lobj)
         src_type = lobj.source
 
-        
         threading.Thread(
             target=update_affliate_seven_services_async,
             args=(lobj,src_type),

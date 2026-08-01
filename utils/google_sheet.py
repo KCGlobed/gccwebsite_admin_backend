@@ -52,3 +52,51 @@ def get_google_sheet_affliate_seven():
 
     return worksheet
 
+
+def get_google_sheet_aeutplp():
+
+    scopes = [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive"
+    ]
+
+    credentials = Credentials.from_service_account_file(
+        settings.GOOGLE_CREDENTIAL_FILE,
+        scopes=scopes
+    )
+
+    client = gspread.authorize(credentials)
+
+    spreadsheet = client.open(
+        settings.GOOGLE_SHEET_NAME
+    )
+
+    worksheet = spreadsheet.worksheet(
+        settings.GOOGLE_WORKSHEET_NAME3
+    )
+
+    return worksheet
+
+def get_google_sheet_aeuaplp():
+
+    scopes = [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive"
+    ]
+
+    credentials = Credentials.from_service_account_file(
+        settings.GOOGLE_CREDENTIAL_FILE,
+        scopes=scopes
+    )
+
+    client = gspread.authorize(credentials)
+
+    spreadsheet = client.open(
+        settings.GOOGLE_SHEET_NAME
+    )
+
+    worksheet = spreadsheet.worksheet(
+        settings.GOOGLE_WORKSHEET_NAME4
+    )
+
+    return worksheet

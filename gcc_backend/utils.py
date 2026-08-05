@@ -142,12 +142,9 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
 
     if settings.EXCEL_INPUT == "True":
         if src_type == 15:
-            print("sheet enter")
             if not DossierData.objects.filter(phone=instance.phone, source=src_type).exclude(id=instance.id).exists():
-                print("valida data")
                 try:
                     sheet = get_google_sheet_affliate_seven()
-                    print("open sheet...",sheet)
                     local_time = timezone.localtime(instance.created_at)
                     create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
                     row = [
@@ -172,12 +169,9 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
                     print("google sheet error", str(e))
 
         elif src_type == 20:
-            print("sheet enter")
             if not DossierData.objects.filter(phone=instance.phone, source=src_type).exclude(id=instance.id).exists():
-                print("valida data")
                 try:
                     sheet = get_google_sheet_aeutplp()
-                    print("open sheet...",sheet)
                     local_time = timezone.localtime(instance.created_at)
                     create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
                     row = [
@@ -201,12 +195,9 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
                 except Exception as e:
                     print("google sheet error", str(e))
         elif src_type == 21:
-            print("sheet enter")
             if not DossierData.objects.filter(phone=instance.phone, source=src_type).exclude(id=instance.id).exists():
-                print("valida data")
                 try:
                     sheet = get_google_sheet_aeuaplp()
-                    print("open sheet...",sheet)
                     local_time = timezone.localtime(instance.created_at)
                     create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
                     row = [
@@ -258,10 +249,8 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
 def update_affliate_seven_services_async(lobj, src_type):
     if settings.EXCEL_INPUT == "True":
         if src_type == 15:
-            print("sheet enter")
             try:
                 sheet = get_google_sheet_affliate_seven()
-                print("open sheet...",sheet)
                 # local_time = timezone.localtime(lobj.interview_date)
                 # create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
                 # lobj.interview_date
@@ -276,7 +265,6 @@ def update_affliate_seven_services_async(lobj, src_type):
 
                 if cell:
                     row_number = cell.row
-                    print("row found:", row_number)
                     sheet.update(f"K{row_number}:L{row_number}", [row_data])
                     print(f"Row {row_number} updated successfully")
 
@@ -287,10 +275,8 @@ def update_affliate_seven_services_async(lobj, src_type):
             except Exception as e:
                 print("google sheet error", str(e))
         elif src_type == 20:
-            print("sheet enter")
             try:
                 sheet = get_google_sheet_aeutplp()
-                print("open sheet...",sheet)
                 # local_time = timezone.localtime(lobj.interview_date)
                 # create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
                 # lobj.interview_date
@@ -305,7 +291,6 @@ def update_affliate_seven_services_async(lobj, src_type):
 
                 if cell:
                     row_number = cell.row
-                    print("row found:", row_number)
                     sheet.update(f"K{row_number}:L{row_number}", [row_data])
                     print(f"Row {row_number} updated successfully")
 
@@ -319,7 +304,6 @@ def update_affliate_seven_services_async(lobj, src_type):
             print("sheet enter")
             try:
                 sheet = get_google_sheet_aeuaplp()
-                print("open sheet...",sheet)
                 # local_time = timezone.localtime(lobj.interview_date)
                 # create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
                 # lobj.interview_date
@@ -334,7 +318,6 @@ def update_affliate_seven_services_async(lobj, src_type):
 
                 if cell:
                     row_number = cell.row
-                    print("row found:", row_number)
                     sheet.update(f"K{row_number}:L{row_number}", [row_data])
                     print(f"Row {row_number} updated successfully")
 
@@ -390,12 +373,10 @@ def send_interview_reserved_email(student):
 def create_affliate_six_services_async(instance, src_type):
     if settings.EXCEL_INPUT == "True":
         if src_type == 14:
-            print("sheet enter")
             if not DossierData.objects.filter(phone=instance.phone, source=src_type).exclude(id=instance.id).exists():
                 print("valida data")
                 try:
                     sheet = get_google_sheet()
-                    print("open sheet...",sheet)
                     local_time = timezone.localtime(instance.created_at)
                     create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
                     row = [
@@ -418,7 +399,6 @@ def create_affliate_six_services_async(instance, src_type):
                         instance.fee_waiver_category,
                         create_times
                     ]
-                    print("data inster",row)
                     sheet.append_row(row)
                     print("completed")
                 except Exception as e:

@@ -19,6 +19,8 @@ from students.models import *
 from datetime import datetime, timedelta, date
 import threading
 
+import string
+import random
 
 
 class WebsiteUserLoginSerializer(serializers.ModelSerializer):
@@ -205,6 +207,19 @@ def send_welcome_email(user, generate_application_id, password):
 
 #####
 
+def generate_random_password_new(length=8):
+    letters = string.ascii_letters 
+    digits = string.digits       
+    special_characters = '@#$%&*'
+    password = [
+        random.choice(special_characters),  
+        random.choice(letters),             
+        random.choice(digits)
+    ]
+    all_characters = letters + digits + special_characters
+    password += random.choices(all_characters, k=length - 3)
+    random.shuffle(password)
+    return ''.join(password)
 
 
 class CreateStudentSerializer(serializers.ModelSerializer):
@@ -229,7 +244,7 @@ class CreateStudentSerializer(serializers.ModelSerializer):
 
 
     def create(self, validate_data):
-        password = generate_random_password(8)
+        password = generate_random_password_new(8)
         info = { "first_name": validate_data.get('full_name'), "last_name":"", 'email': validate_data.get('email').lower(), 'password': password}
         user = User.objects.create_user(**info)
         self.generated_password = password
@@ -353,7 +368,7 @@ class UpdateStudentSerializer(serializers.ModelSerializer):
 
 
     def create(self, validate_data):
-        password = generate_random_password(8)
+        password = generate_random_password_new(8)
         self.generated_password = password
         lead = DossierData.objects.filter(id=validate_data.get('lid'))
         if lead:
@@ -475,7 +490,7 @@ class CreateUniversityStudentSerializer(serializers.ModelSerializer):
             # refferals_code = generate_referral_code()
             refferals_code = generate_referral_code(validate_data.get('full_name'))
 
-            password = generate_random_password(8)
+            password = generate_random_password_new(8)
             info = { "first_name": validate_data.get('full_name'), "last_name":"", 'email': validate_data.get('email').lower(), 'password': password}
             user = User.objects.create_user(**info)
             self.generated_password = password

@@ -4,6 +4,7 @@ from rest_framework import status
 import random
 import string
 
+import time
 from django.core.mail import send_mail
 from django.conf import settings
 from django.template import loader
@@ -77,7 +78,25 @@ def send_email_async(subject, message, email_from, recipient_list, html_message)
     recipient_list = recipient_list
     html_message = html_message
 
-    send_mail( subject, message, email_from, recipient_list,html_message=html_message )
+    send_mail( subject, message, email_from, recipient_list,html_message=html_message)
+
+    print("end calling, mail sent")
+
+
+from django.core.mail import EmailMultiAlternatives
+def send_email_async_multiple(subject, message, email_from, recipient_list, html_message, cc_list=None):
+    print("start calling")
+
+    email = EmailMultiAlternatives(
+        subject=subject,
+        body=message,
+        from_email=email_from,
+        to=recipient_list,
+        cc=cc_list or [],
+    )
+
+    email.attach_alternative(html_message, "text/html")
+    email.send()
 
     print("end calling, mail sent")
 
@@ -94,7 +113,6 @@ def parse_date(date_str):
         print(str(e), parsed_date)
         # day is out of range for month
     return parsed_date
-
 
 
 
@@ -240,6 +258,11 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
     except Exception as e:
         print("API Error:", str(e))
 
+    if settings.EXCEL_INPUT == "True":
+        if str(src_type) == str(SourceType.Affiliate7):
+            time.sleep(30)
+            send_interview_trigger_email(instance)
+
     return "success"
 
 
@@ -364,8 +387,33 @@ def send_interview_reserved_email(student):
 
 
 
+def send_interview_trigger_email(student):
 
+    obj = DossierData.objects.get(id=student.id)
 
+    subject = f"New Lead Received"
+    slot = obj.interview_date
+    if not obj.interview_date:
+        slot = "N/A"
+    html_message = render_to_string(
+        "emails/dossier_trigger.html",
+        {
+            "full_name": obj.full_name,
+            "email": obj.email,
+            "phone": obj.phone,
+            "city": obj.city,
+            "state": obj.state,
+            "degree": obj.degree,
+            "age_range": obj.age_range,
+            "degree_stage": obj.degree_stage,
+            "fund_mode": obj.fund_mode,
+            "interview_slot": slot
+        },
+    )
+
+    send_email_async_multiple(subject, "", settings.DEFAULT_FROM_EMAIL, ['vironika.takkar@kcglobed.com'], html_message, cc_list=['info@kcglobed.com','akshay.jangra@gccschool.com'],)
+
+    return "success"
 
 
 

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Lead Notification</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,Helvetica,sans-serif;">
+
+<table width="100%" cellpadding="0" cellspacing="0" bgcolor="#f4f4f4">
+    <tr>
+        <td align="center" style="padding:30px 15px;">
+            <table width="600" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="border-radius:8px;border:1px solid #e5e5e5;overflow:hidden;">
+
+                <!-- Header -->
+                <tr>
+                    <td align="center" bgcolor="#1f4e79" style="padding:20px;">
+                        <h2 style="margin:0;color:#ffffff;">
+                            New Lead Received
+                        </h2>
+                    </td>
+                </tr>
+
+                <!-- Body -->
+                <tr>
+                    <td style="padding:30px;color:#333333;font-size:15px;line-height:24px;">
+
+                        <p style="margin-top:0;">Hi Team,</p>
+
+                        <p>
+                            You have received a new lead from the
+                            <strong>Get Hired Landing Page</strong>.
+                            The lead details are as follows:
+                        </p>
+
+                        <table width="100%" cellpadding="8" cellspacing="0" style="border-collapse:collapse;margin-top:20px;">
+                            <tr>
+                                <td width="35%" style="background:#f8f8f8;border:1px solid #dddddd;"><strong>Full Name</strong></td>
+                                <td style="border:1px solid #dddddd;">{{ full_name }}</td>
+                            </tr>
+                            <tr>
+                                <td style="background:#f8f8f8;border:1px solid #dddddd;"><strong>Email ID</strong></td>
+                                <td style="border:1px solid #dddddd;">{{ email }}</td>
+                            </tr>
+                            <tr>
+                                <td style="background:#f8f8f8;border:1px solid #dddddd;"><strong>Phone No.</strong></td>
+                                <td style="border:1px solid #dddddd;">{{ phone }}</td>
+                            </tr>
+                            <tr>
+                                <td style="background:#f8f8f8;border:1px solid #dddddd;"><strong>City</strong></td>
+                                <td style="border:1px solid #dddddd;">{{ city }}</td>
+                            </tr>
+                            <tr>
+                                <td style="background:#f8f8f8;border:1px solid #dddddd;"><strong>State</strong></td>
+                                <td style="border:1px solid #dddddd;">{{ state }}</td>
+                            </tr>
+                            <tr>
+                                <td style="background:#f8f8f8;border:1px solid #dddddd;"><strong>Highest Qualification</strong></td>
+                                <td style="border:1px solid #dddddd;">{{ degree }}</td>
+                            </tr>
+                            <tr>
+                                <td style="background:#f8f8f8;border:1px solid #dddddd;"><strong>Age range</strong></td>
+                                <td style="border:1px solid #dddddd;">{{ age_range }}</td>
+                            </tr>
+                            <tr>
+                                <td style="background:#f8f8f8;border:1px solid #dddddd;"><strong>Employment Status</strong></td>
+                                <td style="border:1px solid #dddddd;">{{ degree_stage }}</td>
+                            </tr>
+                            <tr>
+                                <td style="background:#f8f8f8;border:1px solid #dddddd;"><strong>Program Fee Fund</strong></td>
+                                <td style="border:1px solid #dddddd;">{{ fund_mode }}</td>
+                            </tr>
+                            <tr>
+                                <td style="background:#f8f8f8;border:1px solid #dddddd;"><strong>Interview Slot</strong></td>
+                                <td style="border:1px solid #dddddd;">{{ interview_slot }}</td>
+                            </tr>
+                        </table>
+
+                        <!-- <p style="margin-top:30px;">
+                            Please follow up with the lead at the earliest.
+                        </p> -->
+
+                        <p>
+                            Regards,<br>
+                            <strong>Get Hired Team</strong>
+                        </p>
+
+                    </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                    <td align="center" bgcolor="#f8f8f8" style="padding:15px;font-size:12px;color:#777777;">
+                        This is an automated email. Please do not reply.
+                    </td>
+                </tr>
+
+            </table>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

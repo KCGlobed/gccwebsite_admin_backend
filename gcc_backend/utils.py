@@ -118,6 +118,7 @@ def parse_date(date_str):
 
 def create_affliate_seven_services_async(instance, src_type, validated_data):
     print("affliate seven call...",instance, src_type)
+    trigger = False
     if settings.MERITO_STATUS == "True":
         if src_type == 15:
             m_source = "gccaffiliateSeven"
@@ -163,6 +164,7 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
     if settings.EXCEL_INPUT == "True":
         if src_type == 15:
             if not DossierData.objects.filter(phone=instance.phone, source=src_type).exclude(id=instance.id).exists():
+                trigger = True
                 try:
                     sheet = get_google_sheet_affliate_seven()
                     local_time = timezone.localtime(instance.created_at)
@@ -261,7 +263,7 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
         print("API Error:", str(e))
 
     if settings.EXCEL_INPUT == "True":
-        if str(src_type) == str(SourceType.Affiliate7):
+        if trigger:
             time.sleep(30)
             send_interview_trigger_email(instance)
 

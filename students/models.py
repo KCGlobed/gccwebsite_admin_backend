@@ -113,6 +113,7 @@ class SourceType(models.IntegerChoices):
     CPAWebsite = 19, 'CPAWebsite'
     EALPCampaign = 20, 'EALPCampaign'
     CPALPCampaign = 21, 'CPALPCampaign'
+    EALPRudrapur = 22, 'EALPRudrapur'
 
 class Payments(models.Model):
     razorpay_order_id = models.CharField(max_length=255, blank=True, null=True)

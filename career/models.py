@@ -83,6 +83,7 @@ class SourceType(models.IntegerChoices):
     CPAWebsite = 19, 'CPAWebsite'  ##CPA LP
     EALPCampaign = 20, 'EALPCampaign'
     CPALPCampaign = 21, 'CPALPCampaign'
+    EALPRudrapur = 22, 'EALPRudrapur'
     
 
 class SourceFormType(models.IntegerChoices):
@@ -99,7 +100,6 @@ class DocumentStatusType(models.IntegerChoices):
 class ProgramType(models.IntegerChoices):
     CPA = 1, 'CPA'
     EA = 2, 'EA'
-
 
 
 

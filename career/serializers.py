@@ -34,6 +34,7 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
         fields = "__all__"
         
     def create(self, validated_data):
+        print("leads data...",validated_data)
         instance = super().create(validated_data)
         src_type = instance.source
         if settings.MERITO_STATUS == "True":
@@ -648,7 +649,7 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
         validated_data["fee_waiver_category"] = "Free of cost (FOC)"
         instance = super().create(validated_data)
         src_type = instance.source
-        if src_type in [15,20,21]:
+        if src_type in [15,20,21,22]:
             threading.Thread(
                 target=create_affliate_seven_services_async,
                 args=(instance, src_type, validated_data),

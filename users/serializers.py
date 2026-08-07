@@ -236,15 +236,18 @@ class CreateStudentSerializer(serializers.ModelSerializer):
         
 
     def validate(self, data):
+        print("validate... data",data)
         user_count = User.objects.filter(email = data.get('email').lower()).count()
         if user_count > 0:
             raise serializers.ValidationError('Email address is already registered with Us')
-        
+        print("success")
         return data
 
 
     def create(self, validate_data):
+        print("creating student")
         password = generate_random_password_new(8)
+        print("password...",password)
         info = { "first_name": validate_data.get('full_name'), "last_name":"", 'email': validate_data.get('email').lower(), 'password': password}
         user = User.objects.create_user(**info)
         self.generated_password = password

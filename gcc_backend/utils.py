@@ -125,6 +125,8 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
             m_source = "gccealpCampaign"
         elif src_type == 21:
             m_source = "gcccpalpCampaign"
+        elif src_type == 22:
+            m_source = "gccealpRudrapur"
         else:
             m_source = "gcc"
         print("m_source...",m_source)

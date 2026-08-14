@@ -1570,7 +1570,13 @@ class GetDossierSourceReportExcelView(APIView):
         
         source_type = request.GET.get('source')
         if source_type:
-            datas = DossierData.objects.filter(source=source_type).order_by('-id')
+            # datas = DossierData.objects.filter(source=source_type).order_by('-id')
+            datas = (
+            DossierData.objects
+                .filter(source=source_type)
+                .order_by('email', 'phone', '-id')
+                .distinct('email', 'phone')
+            )
             if str(source_type) == str(SourceType.EAWebsite):
                 access_data = settings.EAUTMSOURCE
                 if str(request.user.first_name).lower() in access_data:

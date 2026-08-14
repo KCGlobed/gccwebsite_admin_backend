@@ -312,3 +312,119 @@ class Mail_test(APIView):
        
         
         return success_response(message="Success", data=[], status_code=status.HTTP_200_OK)
+
+
+
+
+import requests
+from requests.auth import HTTPBasicAuth
+
+ACCOUNT_ID = "PxicTngdTxewxGNCZ69ANQ"
+CLIENT_ID = "WH6b4ExrS4KO145mbyNjPw"
+CLIENT_SECRET = "sxA2YPgF8swXKSp4ORNAJS8Wpppig4AE"
+
+class Zoom_test(APIView):
+    def post(self, request, format=None):
+        
+
+        url = f"https://zoom.us/oauth/token?grant_type=account_credentials&account_id={ACCOUNT_ID}"
+
+        response = requests.post(
+            url,
+            auth=HTTPBasicAuth(CLIENT_ID, CLIENT_SECRET)
+        )
+        print(response)
+        access_token = response.json()["access_token"]
+        return success_response(message="Success", data=[access_token], status_code=status.HTTP_200_OK)
+
+
+import requests
+from requests.auth import HTTPBasicAuth
+from django.conf import settings
+
+
+class ZoomService:
+
+    @staticmethod
+    def get_access_token():
+        url = (
+            "https://zoom.us/oauth/token"
+            f"?grant_type=account_credentials&account_id={settings.ZOOM_ACCOUNT_ID}"
+        )
+
+        response = requests.post(
+            url,
+            auth=HTTPBasicAuth(
+                settings.ZOOM_CLIENT_ID,
+                settings.ZOOM_CLIENT_SECRET
+            )
+        )
+
+        response.raise_for_status()
+        return response.json()["access_token"]
+
+    @staticmethod
+    def create_meeting(topic, start_time, duration=30):
+        token = ZoomService.get_access_token()
+
+        url = "https://api.zoom.us/v2/users/me/meetings"
+
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+        }
+
+        payload = {
+            "topic": topic,
+            "type": 2,
+            "start_time": start_time,      # ISO format
+            "duration": duration,
+            "timezone": "Asia/Kolkata",
+            "agenda": "Interview Discussion",
+            "settings": {
+                "host_video": True,
+                "participant_video": True,
+                "join_before_host": False,
+                "waiting_room": True,
+                "approval_type": 0,
+            },
+        }
+
+        response = requests.post(url, json=payload, headers=headers)
+
+        print(response.status_code)
+        print(response.text)   # <-- Important
+
+        response.raise_for_status()
+
+        return response.json()
+
+
+
+class CreateZoomMeetingAPIView(APIView):
+
+    def post(self, request):
+        topic = request.data.get("topic")
+        start_time = request.data.get("start_time")
+        duration = request.data.get("duration", 30)
+
+        meeting = ZoomService.create_meeting(
+            topic=topic,
+            start_time=start_time,
+            duration=duration
+        )
+
+        return Response({
+            "status": True,
+            "message": "Meeting created successfully",
+            "data": {
+                "meeting_id": meeting["id"],
+                "password": meeting["password"],
+                "join_url": meeting["join_url"],
+                "start_url": meeting["start_url"],
+                "start_time": meeting["start_time"],
+            }
+        })
+
+
+    

@@ -26,6 +26,8 @@ urlpatterns = [
 
     path('mail-test/', Mail_test.as_view(), name="mail-test"),
 
+    path('zoom-test/', CreateZoomMeetingAPIView.as_view(), name="zoom-test"),
+
     
 
     ## Admin

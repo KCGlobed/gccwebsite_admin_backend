@@ -192,7 +192,59 @@ class DossierDataFormCustom_Create(APIView):
             return error_response(message="failed", data = [], status_code=status.HTTP_400_BAD_REQUEST)
 
 
+from datetime import datetime, timedelta
+from .models import DossierData
 
+def generate_time_slots(date_str, speak_with):
+    start = datetime.strptime(f"{date_str} 09:00", "%Y-%m-%d %H:%M")
+    end = datetime.strptime(f"{date_str} 21:00", "%Y-%m-%d %H:%M")
+
+    # Single DB query
+    booked_slots = set(
+        DossierData.objects.filter(
+            source=23,
+            interview_date=date_str,
+            speak_with=speak_with
+        ).values_list("slot_time", flat=True)
+    )
+    print(booked_slots)
+    slots = []
+
+    while start < end:
+        slot_end = start + timedelta(minutes=45)
+
+        if slot_end > end:
+            break
+
+        time_str = start.strftime("%I:%M %p")
+
+        slots.append({
+            "start_time": time_str,
+            "end_time": slot_end.strftime("%I:%M %p"),
+            "book_status": 1 if time_str in booked_slots else 0
+        })
+
+        start = slot_end
+
+    return slots
+
+
+class DossierTimeSlotAPIView(APIView):
+    def get(self, request):
+        date = request.query_params.get("date")  # 2026-08-14
+        speak_with = request.query_params.get("speak_with")  # 1/2
+
+        if not date:
+            return Response({"error": "date is required"}, status=400)
+        if not speak_with:
+            return Response({"error": "speak_with is required"}, status=400)
+
+        slots = generate_time_slots(date, speak_with)
+
+        return Response({
+            "date": date,
+            "slots": slots
+        })
 
 
 class InterviewSlotScheduleAdmin_list(APIView):

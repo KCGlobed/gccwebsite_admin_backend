@@ -84,6 +84,7 @@ class SourceType(models.IntegerChoices):
     EALPCampaign = 20, 'EALPCampaign'
     CPALPCampaign = 21, 'CPALPCampaign'
     EALPRudrapur = 22, 'EALPRudrapur'
+    Affliate8 = 23, 'Affliate8'    ## New NFET Page
     
 
 class SourceFormType(models.IntegerChoices):
@@ -100,6 +101,10 @@ class DocumentStatusType(models.IntegerChoices):
 class ProgramType(models.IntegerChoices):
     CPA = 1, 'CPA'
     EA = 2, 'EA'
+
+class MeetingWith(models.IntegerChoices):
+    Kamal = 1, 'Kamal'
+    Nitish = 2, 'Nitish'
 
 
 
@@ -143,6 +148,13 @@ class DossierData(models.Model):
     ## for cpa/ea
     program = models.IntegerField(choices=ProgramType.choices, null=True, blank=True)
     reffered_by = models.TextField(blank=True, null=True)
+    ## for new nfet
+    child_full_name = models.CharField(max_length=200, blank=True, null=True)
+    child_email = models.EmailField(max_length=50, blank=True, null=True)
+    child_phone = models.CharField(max_length=200, blank=True, null=True)
+    slot_time = models.CharField(max_length=250, blank=True, null=True)
+    speak_with = models.IntegerField(choices=MeetingWith.choices, null=True, blank=True)
+    
 
 class DossierDocument(models.Model):
     dossier = models.ForeignKey('DossierData',on_delete=models.CASCADE,null=True,blank=True,related_name='documents')

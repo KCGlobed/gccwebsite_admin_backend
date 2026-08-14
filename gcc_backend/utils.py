@@ -128,6 +128,8 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
             m_source = "gcccpalpCampaign"
         elif src_type == 22:
             m_source = "gccealpRudrapur"
+        elif src_type == 23:
+            m_source = "gccaffliateEight"
         else:
             m_source = "gcc"
         print("m_source...",m_source)
@@ -242,30 +244,67 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
                     print("completed")
                 except Exception as e:
                     print("google sheet error", str(e))
-        else:
-            pass
+        elif src_type == 23:
+            if not DossierData.objects.filter(phone=instance.phone, source=src_type).exclude(id=instance.id).exists():
+                try:
+                    print("start excel")
+                    if instance.speak_with == 1:
+                        meet = "Kamal Chhabra"
+                    elif instance.speak_with == 2:
+                        meet = "Nitish Khatri"
+                    else:
+                        meet = "N/A"
+                    sheet = get_google_sheet_affliate_eight()
+                    
+                    local_time = timezone.localtime(instance.created_at)
+                    create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
 
-    url = settings.CSRF_TRUSTED_ORIGINS[0]+"/api/users/create_student/"
+                    session_str_date = instance.interview_date.strftime("%Y-%m-%d")
+                    row = [
+                        instance.full_name,
+                        instance.email,
+                        instance.phone,
+                        instance.child_full_name,
+                        instance.child_email,
+                        instance.child_phone,
+                        instance.degree,
+                        instance.age_range,
+                        instance.degree_stage,
+                        meet,
+                        session_str_date,
+                        instance.slot_time,
+                        create_times
+                    ]
+                    print("data inster",row)
+                    sheet.append_row(row)
+                    print("completed")
+                except Exception as e:
+                    print("google sheet error", str(e))
 
-    payload = {
-        "full_name": instance.full_name,
-        "email": instance.email,
-        "phone1": instance.phone
-    }
-    try:
-        print("user....",payload)
-        response = requests.post(url, json=payload)
-        print(response.status_code)
-        print(response.text)
-        User.objects.filter(email=instance.email).update(city=instance.city, state=instance.state, fee_waiver_category="Free of cost (FOC)")
-        # DossierLog.objects.create(dossier=instance, message=response.text, status=int(response.status_code), activity="creating", datas=validated_data)
-    except Exception as e:
-        print("API Error:", str(e))
+    if instance.source == 23:
+        pass
+    else:
+        url = settings.CSRF_TRUSTED_ORIGINS[0]+"/api/users/create_student/"
 
-    if settings.EXCEL_INPUT == "True":
-        if trigger:
-            time.sleep(30)
-            send_interview_trigger_email(instance)
+        payload = {
+            "full_name": instance.full_name,
+            "email": instance.email,
+            "phone1": instance.phone
+        }
+        try:
+            print("user....",payload)
+            response = requests.post(url, json=payload)
+            print(response.status_code)
+            print(response.text)
+            User.objects.filter(email=instance.email).update(city=instance.city, state=instance.state, fee_waiver_category="Free of cost (FOC)")
+            # DossierLog.objects.create(dossier=instance, message=response.text, status=int(response.status_code), activity="creating", datas=validated_data)
+        except Exception as e:
+            print("API Error:", str(e))
+
+        if settings.EXCEL_INPUT == "True":
+            if trigger:
+                time.sleep(30)
+                send_interview_trigger_email(instance)
 
     return "success"
 

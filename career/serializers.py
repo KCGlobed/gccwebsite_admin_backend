@@ -649,7 +649,7 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
         validated_data["fee_waiver_category"] = "Free of cost (FOC)"
         instance = super().create(validated_data)
         src_type = instance.source
-        if src_type in [15,20,21,22]:
+        if src_type in [15,20,21,22,23]:
             threading.Thread(
                 target=create_affliate_seven_services_async,
                 args=(instance, src_type, validated_data),

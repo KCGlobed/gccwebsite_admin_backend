@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Interview Notification</title>
+</head>
+
+<body style="margin:0;padding:0;background:#F4F4F7;font-family:Arial,Helvetica,sans-serif;">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#F4F4F7">
+<tr>
+<td align="center" style="padding:30px 15px;">
+
+<table width="600" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;border-radius:12px;overflow:hidden;">
+
+<!-- Header -->
+<tr>
+<td bgcolor="#4F157C" align="center" style="padding:28px;">
+<h1 style="margin:0;color:#ffffff;font-size:24px;font-weight:bold;">
+GCC School
+</h1>
+<p style="margin:8px 0 0;color:#E8DDF4;font-size:14px;">
+New 1:1 Counselling Session Scheduled
+</p>
+</td>
+</tr>
+
+<!-- Body -->
+<tr>
+<td style="padding:35px;">
+
+<p style="margin:0 0 20px;font-size:16px;color:#333;">
+Hello Admin Team,
+</p>
+
+<p style="margin:0 0 25px;font-size:14px;line-height:22px;color:#555;">
+A new counselling interview has been successfully booked. Please review the session details below.
+</p>
+
+<!-- Candidate Details -->
+<h3 style="margin:0 0 12px;color:#4F157C;font-size:18px;">
+Candidate Details
+</h3>
+
+<table width="100%" cellpadding="8" cellspacing="0" style="border:1px solid #ECECEC;border-collapse:collapse;">
+<tr>
+<td width="35%" bgcolor="#F8F8FB"><strong>Parent Name</strong></td>
+<td>{{parent_name}}</td>
+</tr>
+<tr>
+<td bgcolor="#F8F8FB"><strong>Candidate</strong></td>
+<td>{{child_name}}</td>
+</tr>
+<tr>
+<td bgcolor="#F8F8FB"><strong>Qualification</strong></td>
+<td>{{child_qualification}}</td>
+</tr>
+<tr>
+<td bgcolor="#F8F8FB"><strong>Lead ID</strong></td>
+<td>{{lead_id}}</td>
+</tr>
+</table>
+
+<!-- Counsellor -->
+<h3 style="margin:28px 0 12px;color:#4F157C;font-size:18px;">
+Assigned Counsellor
+</h3>
+
+<table width="100%" cellpadding="8" cellspacing="0" style="border:1px solid #ECECEC;border-collapse:collapse;">
+<tr>
+<td width="35%" bgcolor="#F8F8FB"><strong>Name</strong></td>
+<td>{{Speaker_name}}</td>
+</tr>
+<tr>
+<td bgcolor="#F8F8FB"><strong>Designation</strong></td>
+<td>{{Speaker_designation}}</td>
+</tr>
+</table>
+
+<!-- Session -->
+<h3 style="margin:28px 0 12px;color:#4F157C;font-size:18px;">
+Session Schedule
+</h3>
+
+<table width="100%" cellpadding="8" cellspacing="0" style="border:1px solid #ECECEC;border-collapse:collapse;">
+<tr>
+<td width="35%" bgcolor="#F8F8FB"><strong>Day</strong></td>
+<td>{{session_day}}</td>
+</tr>
+<tr>
+<td bgcolor="#F8F8FB"><strong>Date</strong></td>
+<td>{{session_date}}</td>
+</tr>
+<tr>
+<td bgcolor="#F8F8FB"><strong>Time</strong></td>
+<td>{{session_time}}</td>
+</tr>
+<tr>
+<td bgcolor="#F8F8FB"><strong>Duration</strong></td>
+<td>40 Minutes</td>
+</tr>
+<tr>
+<td bgcolor="#F8F8FB"><strong>Mode</strong></td>
+<td>Zoom Meeting</td>
+</tr>
+</table>
+
+<!-- Zoom -->
+<div style="margin-top:30px;padding:18px;background:#F8F5FC;border-left:4px solid #4F157C;">
+<p style="margin:0 0 8px;font-size:13px;color:#666;font-weight:bold;">
+ZOOM MEETING
+</p>
+<p style="margin:0;font-size:14px;word-break:break-all;">
+<a href="{{admin_link}}" style="color:#4F157C;text-decoration:none;">
+Join As Admin -
+</a>
+</p>
+</div>
+
+<!-- Note -->
+<div style="margin-top:25px;padding:15px;background:#FFF8E8;border:1px solid #F1D98A;border-radius:8px;">
+<p style="margin:0;font-size:13px;line-height:20px;color:#7A5A00;">
+Please ensure the assigned counsellor joins the meeting 5–10 minutes before the scheduled time. The candidate has already received their confirmation email.
+</p>
+</div>
+
+</td>
+</tr>
+
+<!-- Footer -->
+<tr>
+<td bgcolor="#FAFAFC" style="padding:25px;text-align:center;border-top:1px solid #EEEEEE;">
+<p style="margin:0;font-size:13px;color:#666;">
+<strong>GCC School – Admission System</strong>
+</p>
+<p style="margin:8px 0 0;font-size:11px;color:#999;">
+This is an automated internal notification email.
+</p>
+</td>
+</tr>
+
+</table>
+
+</td>
+</tr>
+</table>
+
+</body>
+</html>

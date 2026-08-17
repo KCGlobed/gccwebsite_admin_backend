@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>Your 1:1 counselling session is confirmed — GCC School</title>
+
+<!-- ══════════════════════════════════════════════════════════
+  TRANSACTIONAL EMAIL · 1:1 counselling confirmation (GCC School)
+
+  SUBJECT:  Confirmed: your 1:1 with {{Speaker_name}} — {{session_date}}, {{session_time}} IST
+  PREVIEW:  Your session is booked with {{Speaker_name}}, {{Speaker_designation}} — add it to your calendar so you don't miss it.
+
+  VARIABLES (map from the booking record):
+    {{parent_name}}          recipient (parent) full name
+    {{Speaker_name}}         counsellor name
+    {{Speaker_designation}}  counsellor role / designation
+    {{child_name}}           candidate (child) name
+    {{child_qualification}}  candidate qualification (e.g. B Com)
+    {{session_day}}          e.g. Sunday
+    {{session_date}}         e.g. 16th August 2026
+    {{session_time}}         e.g. 10 00 Hours   (IST)
+    {{lead_id}}              booking reference
+    {{zoom_link}}            join URL
+    {{calendar_google_url}}  Add-to-calendar (Google TEMPLATE link, built server-side)
+    {{calendar_ics_url}}     .ics download URL
+    {{reschedule_url}}       reschedule URL
+    {{whatsapp_url}}         WhatsApp chat URL (e.g. https://wa.me/91XXXXXXXXXX)
+    {{support_phone}}        display phone number
+    {{support_email}}        reply-to / support inbox
+    {{header_image_url}}     hosted header image (upload gcc-email-header.jpg to your CDN)
+
+  Google-Calendar recipe for {{calendar_google_url}} (server-side, IST, +40 min):
+    https://calendar.google.com/calendar/render?action=TEMPLATE
+      &text=1:1%20Counselling%20with%20{{Speaker_name}}%20%C2%B7%20GCC%20School
+      &dates=YYYYMMDDTHHMMSS/YYYYMMDDTHHMMSS&ctz=Asia/Kolkata&location=Zoom
+══════════════════════════════════════════════════════════ -->
+
+<!--[if mso]>
+<noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
+<![endif]-->
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap');
+  body,table,td,a{ -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+  table,td{ mso-table-lspace:0; mso-table-rspace:0; }
+  img{ -ms-interpolation-mode:bicubic; border:0; }
+  body{ margin:0; padding:0; width:100%!important; }
+  a{ text-decoration:none; }
+  @media only screen and (max-width:600px){
+    .container{ width:100%!important; }
+    .px{ padding-left:26px!important; padding-right:26px!important; }
+    .h1{ font-size:27px!important; }
+    .when{ font-size:19px!important; }
+    .btn-full a{ display:block!important; width:100%!important; box-sizing:border-box!important; }
+    .lbl{ width:88px!important; }
+  }
+</style>
+</head>
+
+<body style="margin:0;padding:0;background-color:#F3F2F6;">
+
+<!-- Preheader (hidden) -->
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#F3F2F6;opacity:0;">
+  Your session is booked with {{Speaker_name}}, {{Speaker_designation}} &mdash; add it to your calendar so you don&rsquo;t miss it.
+  &#8199;&#65279;&#8199;&#65279;&#8199;&#65279;&#8199;&#65279;&#8199;&#65279;&#8199;&#65279;&#8199;&#65279;&#8199;&#65279;
+</div>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F3F2F6;">
+<tr>
+<td align="center" style="padding:32px 12px 44px;">
+
+  <!--[if mso]><table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+  <table role="presentation" class="container" width="560" cellpadding="0" cellspacing="0" border="0" style="width:560px;max-width:560px;background-color:#FFFFFF;border:1px solid #EAE8EE;border-radius:14px;overflow:hidden;">
+
+    <!-- ── HEADER IMAGE (replaces the GCC School wordmark) ── -->
+    <tr>
+    <td align="center" bgcolor="#EAF1F7" style="padding:0;font-size:0;line-height:0;background-color:#EAF1F7;">
+      <img src="{{header_image_url}}" width="560" height="321" alt="GCC School" style="display:block;width:100%;max-width:560px;height:auto;border:0;outline:none;text-decoration:none;font-family:'Sora','Segoe UI',Helvetica,Arial,sans-serif;font-size:16px;font-weight:700;color:#1A1424;" />
+    </td>
+    </tr>
+    <!-- gold hairline accent, now under the header image -->
+    <tr><td height="3" bgcolor="#8A6413" style="background-color:#8A6413;font-size:0;line-height:0;">&nbsp;</td></tr>
+
+    <!-- ── HERO ── -->
+    <tr>
+    <td class="px" style="padding:30px 40px 0;">
+      <p style="margin:0 0 14px;font-family:'IBM Plex Mono',Consolas,monospace;font-size:10px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:#8A6413;">
+        &#10003;&nbsp;&nbsp;Session confirmed
+      </p>
+      <h1 class="h1" style="margin:0;font-family:'Sora','Segoe UI',Helvetica,Arial,sans-serif;font-weight:600;font-size:30px;line-height:1.18;letter-spacing:-.02em;color:#1A1424;">
+        It&rsquo;s confirmed, {{parent_name}}.
+      </h1>
+      <p style="margin:16px 0 0;font-family:'Figtree','Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.65;color:#332E3D;">
+        A private 1:1 counselling session has been reserved for you &mdash; the first step toward <span style="color:#1A1424;font-weight:600;">{{child_name}}&rsquo;s</span> &#8377;10&nbsp;LPA pre-placement job offer letter.
+      </p>
+    </td>
+    </tr>
+
+    <!-- divider -->
+    <tr><td class="px" style="padding:28px 40px 0;"><div style="border-top:1px solid #ECEBEF;font-size:0;line-height:0;">&nbsp;</div></td></tr>
+
+    <!-- ── RESERVED SESSION ── -->
+    <tr>
+    <td class="px" style="padding:24px 40px 0;">
+      <p style="margin:0 0 12px;font-family:'IBM Plex Mono',Consolas,monospace;font-size:9.5px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:#6A6478;">Your reserved session with</p>
+
+      <div style="font-family:'Sora','Segoe UI',Helvetica,Arial,sans-serif;font-weight:600;font-size:17px;color:#1A1424;line-height:1.25;">{{Speaker_name}}</div>
+      <div style="font-family:'Figtree',Helvetica,Arial,sans-serif;font-size:13px;color:#4E4860;line-height:1.5;margin-top:3px;">{{Speaker_designation}}</div>
+
+      <!-- When (emphasis) -->
+      <div style="margin-top:22px;">
+        <p style="margin:0 0 5px;font-family:'IBM Plex Mono',Consolas,monospace;font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:#6A6478;">When</p>
+        <div class="when" style="font-family:'Sora','Segoe UI',Helvetica,Arial,sans-serif;font-weight:600;font-size:21px;letter-spacing:-.01em;color:#1A1424;line-height:1.2;">{{session_day}}, {{session_date}}</div>
+        <div style="font-family:'Figtree',Helvetica,Arial,sans-serif;font-size:14px;color:#332E3D;margin-top:4px;">{{session_time}} IST &nbsp;&middot;&nbsp; Approx. 40 minutes</div>
+      </div>
+
+      <!-- detail rows -->
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:20px;">
+        <tr>
+          <td class="lbl" width="112" valign="top" style="padding:12px 0;border-top:1px solid #F0EFF3;font-family:'IBM Plex Mono',Consolas,monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#6A6478;">Format</td>
+          <td valign="top" style="padding:12px 0;border-top:1px solid #F0EFF3;font-family:'Figtree',Helvetica,Arial,sans-serif;font-size:14px;font-weight:500;color:#1A1424;">Private 1:1 counselling</td>
+        </tr>
+        <tr>
+          <td class="lbl" valign="top" style="padding:12px 0;border-top:1px solid #F0EFF3;font-family:'IBM Plex Mono',Consolas,monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#6A6478;">For</td>
+          <td valign="top" style="padding:12px 0;border-top:1px solid #F0EFF3;font-family:'Figtree',Helvetica,Arial,sans-serif;font-size:14px;font-weight:500;color:#1A1424;">{{child_name}} &nbsp;&middot;&nbsp; {{child_qualification}}</td>
+        </tr>
+        <tr>
+          <td class="lbl" valign="top" style="padding:12px 0;border-top:1px solid #F0EFF3;font-family:'IBM Plex Mono',Consolas,monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#6A6478;">Meeting ID</td>
+          <td valign="top" style="padding:12px 0;border-top:1px solid #F0EFF3;font-family:'IBM Plex Mono',Consolas,monospace;font-size:13px;font-weight:500;color:#51157C;">{{meeting_id}}</td>
+        </tr>
+        <tr>
+          <td class="lbl" valign="top" style="padding:12px 0;border-top:1px solid #F0EFF3;font-family:'IBM Plex Mono',Consolas,monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#6A6478;">Password</td>
+          <td valign="top" style="padding:12px 0;border-top:1px solid #F0EFF3;font-family:'IBM Plex Mono',Consolas,monospace;font-size:13px;font-weight:500;color:#51157C;">{{password}}</td>
+        </tr>
+        <tr>
+          <td class="lbl" valign="top" style="padding:12px 0;border-top:1px solid #F0EFF3;font-family:'IBM Plex Mono',Consolas,monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#6A6478;">Reference</td>
+          <td valign="top" style="padding:12px 0;border-top:1px solid #F0EFF3;font-family:'IBM Plex Mono',Consolas,monospace;font-size:13px;font-weight:500;color:#51157C;">{{lead_id}}</td>
+        </tr>
+        <tr>
+          <td class="lbl" valign="top" style="padding:12px 0;border-top:1px solid #F0EFF3;border-bottom:1px solid #F0EFF3;font-family:'IBM Plex Mono',Consolas,monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#6A6478;">Join</td>
+          <td valign="top" style="padding:12px 0;border-top:1px solid #F0EFF3;border-bottom:1px solid #F0EFF3;font-family:'Figtree',Helvetica,Arial,sans-serif;font-size:14px;font-weight:600;">
+            <a href="{{zoom_link}}" style="color:#51157C;text-decoration:none;border-bottom:1px solid #D8C7EC;padding-bottom:1px;">Join on Zoom &rarr;</a>
+          </td>
+        </tr>
+      </table>
+    </td>
+    </tr>
+
+    <!-- ── PRIMARY CTA ── -->
+    <tr>
+    <td class="px" style="padding:26px 40px 0;">
+      <!-- <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="btn-full"><tr><td align="center"> -->
+        <!--[if mso]>
+        <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="{{calendar_google_url}}" style="height:50px;v-text-anchor:middle;width:480px;" arcsize="22%" strokecolor="#51157C" fillcolor="#51157C">
+          <w:anchorlock/><center style="color:#ffffff;font-family:'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;font-weight:600;">Add to my calendar</center>
+        </v:roundrect>
+        <![endif]-->
+        <!--[if !mso]><!-->
+        <!-- <a href="{{calendar_google_url}}" style="display:inline-block;width:100%;max-width:480px;box-sizing:border-box;background-color:#51157C;color:#ffffff;font-family:'Sora','Segoe UI',Helvetica,Arial,sans-serif;font-weight:600;font-size:15px;line-height:20px;text-align:center;padding:15px 24px;border-radius:11px;">Add to my calendar</a> -->
+        <!--<![endif]-->
+      <!-- </td></tr></table> -->
+      <!-- <p style="margin:12px 0 0;text-align:center;font-family:'Figtree',Helvetica,Arial,sans-serif;font-size:12.5px;color:#554F63;">
+        Apple / Outlook? <a href="{{calendar_ics_url}}" style="color:#51157C;text-decoration:none;border-bottom:1px solid #E4D8F0;">Download the .ics file</a>
+      </p> -->
+
+      <p style="margin:16px 0 0;text-align:center;font-family:'Figtree',Helvetica,Arial,sans-serif;font-size:13px;color:#554F63;">
+        <a href="{{reschedule_url}}" style="color:#332E3D;text-decoration:none;border-bottom:1px solid #C9C4D4;padding-bottom:1px;">Need a different time?</a>
+        &nbsp;&nbsp;&middot;&nbsp;&nbsp;
+        <a href="{{whatsapp_url}}" style="color:#332E3D;text-decoration:none;border-bottom:1px solid #C9C4D4;padding-bottom:1px;">Message us on WhatsApp</a>
+      </p>
+    </td>
+    </tr>
+
+    <!-- ── HELD FOR YOU (quiet note) ── -->
+    <tr>
+    <td class="px" style="padding:26px 40px 0;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#FAFAFC;border:1px solid #EEEDF2;border-radius:10px;"><tr>
+        <td style="padding:16px 18px;">
+          <p style="margin:0;font-family:'Figtree',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;color:#332E3D;">
+            <span style="color:#1A1424;font-weight:600;">This time is blocked exclusively for you.</span> Sessions with our senior experts are limited &mdash; if anything changes, please use the reschedule link above so we can offer the slot to another candidate, and keep yours open when you&rsquo;re ready.
+          </p>
+        </td>
+      </tr></table>
+    </td>
+    </tr>
+
+    <!-- ── REMINDER + CONTACT ── -->
+    <tr>
+    <td class="px" style="padding:22px 40px 0;">
+      <!-- <p style="margin:0;font-family:'Figtree',Helvetica,Arial,sans-serif;font-size:14px;line-height:1.65;color:#332E3D;">
+        We&rsquo;ll send you a reminder before the session. <span style="color:#1A1424;font-weight:600;">Add it to your calendar now</span> so it&rsquo;s the one thing you don&rsquo;t miss this week.
+      </p> -->
+      <p style="margin:12px 0 0;font-family:'Figtree',Helvetica,Arial,sans-serif;font-size:13.5px;line-height:1.65;color:#4E4860;">
+        Any questions before then? Call or WhatsApp <a href="{{whatsapp_url}}" style="color:#51157C;text-decoration:none;border-bottom:1px solid #E4D8F0;">{{support_phone}}</a>, or simply reply to this email &mdash; we&rsquo;re glad to help.
+      </p>
+      <p style="margin:18px 0 0;font-family:'Figtree',Helvetica,Arial,sans-serif;font-size:14px;color:#1A1424;line-height:1.5;">
+        Warmly,<br>
+        <span style="font-family:'Sora',Helvetica,Arial,sans-serif;font-weight:600;">Team GCC School</span>
+      </p>
+    </td>
+    </tr>
+
+    <!-- ── FOOTER ── -->
+    <tr>
+    <td class="px" style="padding:26px 40px 30px;">
+      <div style="border-top:1px solid #ECEBEF;padding-top:20px;">
+        <p style="margin:0;font-family:'Figtree',Helvetica,Arial,sans-serif;font-size:12px;line-height:1.7;color:#554F63;">
+          <span style="font-family:'Sora',Helvetica,Arial,sans-serif;font-weight:600;color:#332E3D;">GCC School</span><br>
+          Floor 16, Building 9B, DLF Cyber City, Gurugram, Haryana, India<br>
+          <!-- <a href="mailto:{{support_email}}" style="color:#554F63;text-decoration:none;border-bottom:1px solid #EAE8EE;">{{support_email}}</a> -->
+        </p>
+        <p style="margin:14px 0 0;font-family:'IBM Plex Mono',Consolas,monospace;font-size:10px;letter-spacing:.04em;color:#8A6413;">&#8377;10&nbsp;LPA offer letter first &mdash; the fee comes after.</p>
+        <p style="margin:12px 0 0;font-family:'Figtree',Helvetica,Arial,sans-serif;font-size:10.5px;line-height:1.65;color:#726C84;">
+          This email confirms a counselling reservation you requested via the AEIAP page. Pre-placement offer letters are issued to candidates who clear the eligibility test and company interview, before program fees apply.
+        </p>
+      </div>
+    </td>
+    </tr>
+
+  </table>
+  <!--[if mso]></td></tr></table><![endif]-->
+
+</td>
+</tr>
+</table>
+
+</body>
+</html>

@@ -115,6 +115,44 @@ def parse_date(date_str):
     return parsed_date
 
 
+from datetime import datetime
+from zoneinfo import ZoneInfo  # Python 3.9+
+from career.models import DossierData
+from users.service import zoom
+# class CreateZoommMeetingAPIView(APIView):
+
+def send_email_invite(std_id):
+    std = std_id
+    obj = DossierData.objects.get(id=std)
+    topic = "GCC School | Admission Counselling Session"
+    # start_time = request.data.get("start_time")
+    interview_date = obj.interview_date      # date object
+    slot_time = obj.slot_time                # "09:45 AM"
+
+    # Combine date + time in IST
+    dt_ist = datetime.strptime(
+        f"{interview_date} {slot_time}",
+        "%Y-%m-%d %I:%M %p"
+    ).replace(tzinfo=ZoneInfo("Asia/Kolkata"))
+
+    # Convert to UTC ISO format
+    zoom_start_time = dt_ist.astimezone(ZoneInfo("UTC")).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    print(zoom_start_time)
+    duration = 45
+    meeting = zoom.create_zoom_meeting(
+        topic=topic,
+        start_time=zoom_start_time,
+        duration=duration
+    )
+    join_link = meeting["join_url"]
+    admin_link = meeting["start_url"]
+    meeting_id = meeting["id"]
+    password = meeting["password"]
+    send_zoom_invite_email(std,join_link,admin_link,meeting_id,password)
+
+    return "success"
+
 
 def create_affliate_seven_services_async(instance, src_type, validated_data):
     print("affliate seven call...",instance, src_type)
@@ -282,7 +320,7 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
                     print("google sheet error", str(e))
 
     if instance.source == 23:
-        pass
+        send_email_invite(instance.id)
     else:
         url = settings.CSRF_TRUSTED_ORIGINS[0]+"/api/users/create_student/"
 
@@ -497,5 +535,91 @@ def create_affliate_six_services_async(instance, src_type):
 
     return "success"
 
+from datetime import datetime
+
+def ordinal(n):
+    if 11 <= (n % 100) <= 13:
+        suffix = "th"
+    else:
+        suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+    return f"{n}{suffix}"
 
 
+
+
+
+def send_zoom_invite_email(student, zoom_link, admin_link, meeting_id, password):
+
+    obj = DossierData.objects.get(id=student)
+    send_to = obj.email
+    if obj.speak_with == 1:
+        speaker = "Kamal Chhabra"
+        des = "Founder & CEO - KC GlobEd & GCC School"
+        send_admin = "kamal.chhabra@kcglobed.com"
+        # send_admin = "vishal.dubey@kcglobed.com"
+    else:
+        speaker = "Nitish Khatri"
+        des = "Vice President, KC GlobEd & GCC School"
+        send_admin = "nitish.khatri@kcglobed.com"
+        # send_admin = "vishal.dubey@kcglobed.com"
+
+    subject = f"Session With {speaker}"
+
+    # Values for email template
+    session_day = obj.interview_date.strftime("%A")  # Sunday
+    session_date = (
+            f"{ordinal(obj.interview_date.day)} "
+            f"{obj.interview_date.strftime('%B %Y')}"
+        )  # 16th August 2026
+
+    html_message = render_to_string(
+        "zoom_invite.html",
+        {
+            "parent_name": obj.full_name,
+            "child_name": obj.child_full_name,
+            "Speaker_name": speaker,
+            "Speaker_designation":des,
+            "session_day": session_day,
+            "session_date": session_date,
+            "session_time": obj.slot_time,
+            "child_qualification": obj.degree,
+            "lead_id": obj.id,
+            "zoom_link": zoom_link,
+            "meeting_id": meeting_id,
+            "password": password,
+            "calendar_google_url": "",
+            "calendar_ics_url": "",
+            "reschedule_url": "",
+            "whatsapp_url": "https://web.whatsapp.com/send?phone=918796880189",
+            "support_phone": "8796880189",
+            "support_email": "info@gccschool.com",
+            "header_image_url":"https://storage.googleapis.com/gcc_prod_static_files_backend/static/images/gcc_dlf_logo.jpg"
+        },
+    )
+    subject_admin = f"New Interview Scheduled | {obj.child_full_name} | {obj.degree}"
+    html_msg = render_to_string(
+            "admin_invite.html",
+            {
+                "parent_name": obj.full_name,
+                "child_name": obj.child_full_name,
+                "Speaker_name": speaker,
+                "Speaker_designation":des,
+                "session_day": session_day,
+                "session_date": session_date,
+                "session_time": obj.slot_time,
+                "child_qualification": obj.degree,
+                "lead_id": obj.id,
+                "admin_link": admin_link,
+                "calendar_google_url": "",
+                "calendar_ics_url": "",
+                "reschedule_url": "",
+                "whatsapp_url": "https://web.whatsapp.com/send?phone=918796880189",
+                "support_phone": "8796880189",
+                "support_email": "info@gccschool.com",
+                "header_image_url":"https://storage.googleapis.com/gcc_prod_static_files_backend/static/images/gcc_dlf_logo.jpg"
+            },
+        )
+    send_email_async_multiple(subject, "", settings.DEFAULT_FROM_EMAIL, [send_to], html_message, cc_list=['akshay.jangra@gccschool.com','vironika.takkar@kcglobed.com','kamal.chhabra@kcglobed.com','nitish.khatri@kcglobed.com'])
+    send_email_async_multiple(subject_admin, "", settings.DEFAULT_FROM_EMAIL, [send_admin], html_msg, cc_list=['akshay.jangra@gccschool.com','vironika.takkar@kcglobed.com','kamal.chhabra@kcglobed.com','nitish.khatri@kcglobed.com'])
+
+    return "success"

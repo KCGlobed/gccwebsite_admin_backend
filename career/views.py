@@ -3410,12 +3410,13 @@ class GetAffliateSevenLeadAllReportExcelView(APIView):
 
 from datetime import datetime, timedelta
 from .models import DossierData
+from django.utils import timezone
 
 def generate_time_slots(date_str, speak_with):
     start = datetime.strptime(f"{date_str} 09:00", "%Y-%m-%d %H:%M")
     end = datetime.strptime(f"{date_str} 21:00", "%Y-%m-%d %H:%M")
 
-    # Single DB query
+    # Booked slots
     booked_slots = set(
         DossierData.objects.filter(
             source=23,
@@ -3423,7 +3424,10 @@ def generate_time_slots(date_str, speak_with):
             speak_with=speak_with
         ).values_list("slot_time", flat=True)
     )
-    print(booked_slots)
+
+    now = timezone.localtime()
+    today_str = now.strftime("%Y-%m-%d")
+
     slots = []
 
     while start < end:
@@ -3431,6 +3435,13 @@ def generate_time_slots(date_str, speak_with):
 
         if slot_end > end:
             break
+
+        # Skip past slots if selected date is today
+        if date_str == today_str:
+            slot_datetime = timezone.make_aware(start)
+            if slot_datetime <= now:
+                start = slot_end
+                continue
 
         time_str = start.strftime("%I:%M %p")
 
@@ -3443,6 +3454,7 @@ def generate_time_slots(date_str, speak_with):
         start = slot_end
 
     return slots
+
 
 
 class DossierTimeSlotAPIView(APIView):

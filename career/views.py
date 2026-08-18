@@ -132,7 +132,7 @@ class DossierDataFormCustom_Create(APIView):
             obj = serializer.save()
 
             start_date = datetime.now().date()
-            end_date = date(2026, 8, 18)
+            end_date = date(2026, 8, 31)
 
             # Count records grouped by interview_date
             # booked_slots = (

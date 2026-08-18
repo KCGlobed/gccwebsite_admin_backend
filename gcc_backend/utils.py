@@ -552,6 +552,7 @@ def send_zoom_invite_email(student, zoom_link, admin_link, meeting_id, password)
 
     obj = DossierData.objects.get(id=student)
     send_to = obj.email
+    support_email = "placement.support@kcglobed.com"
     if obj.speak_with == 1:
         speaker = "Kamal Chhabra"
         des = "Founder & CEO - KC GlobEd & GCC School"
@@ -601,6 +602,8 @@ def send_zoom_invite_email(student, zoom_link, admin_link, meeting_id, password)
             "admin_invite.html",
             {
                 "parent_name": obj.full_name,
+                "parent_email": obj.email,
+                "parent_phone": obj.phone,
                 "child_name": obj.child_full_name,
                 "Speaker_name": speaker,
                 "Speaker_designation":des,
@@ -619,7 +622,7 @@ def send_zoom_invite_email(student, zoom_link, admin_link, meeting_id, password)
                 "header_image_url":"https://storage.googleapis.com/gcc_prod_static_files_backend/static/images/gcc_dlf_logo.jpg"
             },
         )
-    send_email_async_multiple(subject, "", settings.DEFAULT_FROM_EMAIL, [send_to], html_message, cc_list=['akshay.jangra@gccschool.com','vironika.takkar@kcglobed.com','kamal.chhabra@kcglobed.com','nitish.khatri@kcglobed.com'])
-    send_email_async_multiple(subject_admin, "", settings.DEFAULT_FROM_EMAIL, [send_admin], html_msg, cc_list=['akshay.jangra@gccschool.com','vironika.takkar@kcglobed.com','kamal.chhabra@kcglobed.com','nitish.khatri@kcglobed.com'])
+    send_email_async_multiple(subject, "", settings.DEFAULT_FROM_EMAIL, [send_to, support_email], html_message, cc_list=['akshay.jangra@gccschool.com','vironika.takkar@kcglobed.com','kamal.chhabra@kcglobed.com','nitish.khatri@kcglobed.com'])
+    send_email_async_multiple(subject_admin, "", settings.DEFAULT_FROM_EMAIL, [send_admin, support_email], html_msg, cc_list=['akshay.jangra@gccschool.com','vironika.takkar@kcglobed.com','kamal.chhabra@kcglobed.com','nitish.khatri@kcglobed.com'])
 
     return "success"

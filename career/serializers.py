@@ -740,7 +740,7 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
         #     User.objects.filter(email=instance.email).update(city=instance.city, state=instance.state, fee_waiver_category="Free of cost (FOC)")
         #     # DossierLog.objects.create(dossier=instance, message=response.text, status=int(response.status_code), activity="creating", datas=validated_data)
         # except Exception as e:
-        #     print("API Error:", str(e))    
+        #     print("API Error:", str(e))
 
         return instance
 

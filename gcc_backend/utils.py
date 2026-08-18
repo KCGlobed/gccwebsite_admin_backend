@@ -311,6 +311,12 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
                         meet,
                         session_str_date,
                         instance.slot_time,
+                        instance.fbc_id,
+                        instance.utm_source,
+                        instance.utm_medium,
+                        instance.utm_content,
+                        instance.utm_campaign,
+                        instance.fbclid,
                         create_times
                     ]
                     print("data inster",row)

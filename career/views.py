@@ -3427,6 +3427,7 @@ def generate_time_slots(date_str, speak_with):
 
     now = timezone.localtime()
     today_str = now.strftime("%Y-%m-%d")
+    cutoff_time = now + timedelta(minutes=90)
 
     slots = []
 
@@ -3439,7 +3440,7 @@ def generate_time_slots(date_str, speak_with):
         # Skip past slots if selected date is today
         if date_str == today_str:
             slot_datetime = timezone.make_aware(start)
-            if slot_datetime <= now:
+            if slot_datetime <= cutoff_time:
                 start = slot_end
                 continue
 

@@ -3511,7 +3511,7 @@ def generate_time_slots(date_str, speak_with):
         slots.append({
             "start_time": time_str,
             "end_time": slot_end.strftime("%I:%M %p"),
-            "book_status": 1 if time_str in booked_slots else 0
+            "book_status": 1 if (time_str in booked_slots) or (time_str == "02:15 PM") else 0
         })
 
         start = slot_end

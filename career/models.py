@@ -154,7 +154,7 @@ class DossierData(models.Model):
     child_phone = models.CharField(max_length=200, blank=True, null=True)
     slot_time = models.CharField(max_length=250, blank=True, null=True)
     speak_with = models.IntegerField(choices=MeetingWith.choices, null=True, blank=True)
-    
+    social_url = models.TextField(max_length=200, null=True, blank=True)
 
 class DossierDocument(models.Model):
     dossier = models.ForeignKey('DossierData',on_delete=models.CASCADE,null=True,blank=True,related_name='documents')

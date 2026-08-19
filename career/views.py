@@ -3536,3 +3536,41 @@ class DossierTimeSlotAPIView(APIView):
             "date": date,
             "slots": slots
         })
+
+
+
+class RescheduleInviteView(APIView):
+    def post(self, request):
+        id= request.data.get("lead_id")
+        int_date = request.data.get("selected_date")
+        int_time = request.data.get("selected_time")
+        obj = DossierData.objects.get(id=id)
+        obj.slot_time = int_time
+        obj.interview_date = int_date
+        obj.save()
+        if settings.EXCEL_INPUT == "True":
+            print("email sending start")
+
+            resend_email_invite(obj.id)
+
+        return Response({
+            "date": id
+        })
+    
+    def get(self, request):
+        from datetime import datetime
+        from utils.google_meet import create_google_meet
+        start = datetime.fromisoformat("2026-08-20T11:00:00")
+
+        meeting = create_google_meet(
+            topic="GCC Session",
+            start_time=start,
+            duration=45,
+            attendees=["mukulsoft@gmail.com","vkd2695@gmail.com"]
+        )
+        print(meeting)
+        return Response({
+                    "date": ""
+            })
+
+

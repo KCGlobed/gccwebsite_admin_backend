@@ -155,6 +155,41 @@ def send_email_invite(std_id):
     return "success"
 
 
+
+
+def resend_email_invite(std_id):
+    std = std_id
+    obj = DossierData.objects.get(id=std)
+    topic = "GCC School | Admission Counselling Session"
+    # start_time = request.data.get("start_time")
+    interview_date = obj.interview_date      # date object
+    slot_time = obj.slot_time                # "09:45 AM"
+
+    # Combine date + time in IST
+    dt_ist = datetime.strptime(
+        f"{interview_date} {slot_time}",
+        "%Y-%m-%d %I:%M %p"
+    ).replace(tzinfo=ZoneInfo("Asia/Kolkata"))
+
+    # Convert to UTC ISO format
+    zoom_start_time = dt_ist.astimezone(ZoneInfo("UTC")).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    print(zoom_start_time)
+    duration = 45
+    meeting = zoom.create_zoom_meeting(
+        topic=topic,
+        start_time=zoom_start_time,
+        duration=duration
+    )
+    join_link = meeting["join_url"]
+    admin_link = meeting["start_url"]
+    meeting_id = meeting["id"]
+    password = meeting["password"]
+    reschedule_invite(std,join_link,admin_link,meeting_id,password)
+
+    return "success"
+
+
 def create_affliate_seven_services_async(instance, src_type, validated_data):
     print("affliate seven call...",instance, src_type)
     trigger = False
@@ -312,6 +347,7 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
                         meet,
                         session_str_date,
                         instance.slot_time,
+                        instance.social_url,
                         instance.fbc_id,
                         instance.utm_source,
                         instance.utm_medium,
@@ -556,9 +592,10 @@ def ordinal(n):
 
 
 def send_zoom_invite_email(student, zoom_link, admin_link, meeting_id, password):
-
     obj = DossierData.objects.get(id=student)
     send_to = obj.email
+    # send_to = "vishal.dubey@kcglobed.com"
+    # send_to = "techboost89@gmail.com"
     support_email = "placement.support@kcglobed.com"
     # support_email = "vkd2695@gmail.com"
     if obj.speak_with == 1:
@@ -620,7 +657,7 @@ def send_zoom_invite_email(student, zoom_link, admin_link, meeting_id, password)
                 "session_time": obj.slot_time,
                 "child_qualification": obj.degree,
                 "lead_id": obj.id,
-                "admin_link": admin_link,
+                "admin_link": zoom_link,
                 "calendar_google_url": "",
                 "calendar_ics_url": "",
                 "reschedule_url": "",
@@ -630,9 +667,97 @@ def send_zoom_invite_email(student, zoom_link, admin_link, meeting_id, password)
                 "header_image_url":"https://storage.googleapis.com/gcc_prod_static_files_backend/static/images/gcc_dlf_logo.jpg"
             },
         )
-    send_email_async_multiple(subject, "", settings.DEFAULT_FROM_EMAIL, [send_to, support_email], html_message, cc_list=['akshay.jangra@gccschool.com','vironika.takkar@kcglobed.com'], bcc_list=['kamal.chhabra@kcglobed.com','nitish.khatri@kcglobed.com'])
-    send_email_async_multiple(subject_admin, "", settings.DEFAULT_FROM_EMAIL, [send_admin, support_email], html_msg, cc_list=['akshay.jangra@gccschool.com','vironika.takkar@kcglobed.com'], bcc_list=['kamal.chhabra@kcglobed.com','nitish.khatri@kcglobed.com'])
-    # send_email_async_multiple(subject, "", settings.DEFAULT_FROM_EMAIL, [send_to], html_message, cc_list=['vishal.dubey@kcglobed.com'], bcc_list=['vkd2695@gmail.com'])
-    # send_email_async_multiple(subject_admin, "", settings.DEFAULT_FROM_EMAIL, [send_admin], html_msg, cc_list=['vishal.dubey@kcglobed.com'], bcc_list=['vkd2695@gmail.com'])
+    send_email_async_multiple(subject, "", settings.DEFAULT_FROM_EMAIL, [send_to], html_message, cc_list=['akshay.jangra@gccschool.com','placement.support@kcglobed.com'])
+    send_email_async_multiple(subject_admin, "", settings.DEFAULT_FROM_EMAIL, [send_admin, support_email], html_msg, cc_list=['akshay.jangra@gccschool.com'], bcc_list=['kamal.chhabra@kcglobed.com','nitish.khatri@kcglobed.com'])
+    # send_email_async_multiple(subject, "", settings.DEFAULT_FROM_EMAIL, [send_to], html_message, cc_list=['vkd2695@gmail.com'], bcc_list=['vkd2695@gmail.com'])
+    # send_email_async_multiple(subject_admin, "", settings.DEFAULT_FROM_EMAIL, [send_admin], html_msg, cc_list=['vkd2695@gmail.com'], bcc_list=['vkd2695@gmail.com'])
 
     return "success"
+
+
+
+def reschedule_invite(student, zoom_link, admin_link, meeting_id, password):
+    obj = DossierData.objects.get(id=student)
+    try:
+        sheet = get_google_sheet_affliate_eight()
+        selected_date = obj.interview_date.strftime("%Y-%m-%d")
+        slot_time = obj.slot_time
+        row_data = [
+            selected_date,
+            slot_time
+        ]
+
+        # find email in column B
+        cell = sheet.find(obj.phone)
+
+        if cell:
+            row_number = cell.row
+            sheet.update(f"K{row_number}:L{row_number}", [row_data])
+            print(f"Row {row_number} updated successfully")
+
+            print("row updated successfully")
+        else:
+            print("row not found, new row inserted")
+    except Exception as e:
+        print("google sheet error", str(e))
+
+    send_to = obj.email
+    # send_to = "vishal.dubey@kcglobed.com"
+    # send_to = "techboost89@gmail.com"
+    # support_email = "placement.support@kcglobed.com"
+    support_email = "vkd2695@gmail.com"
+    if obj.speak_with == 1:
+        speaker = "Kamal Chhabra"
+        des = "Founder & CEO - KC GlobEd & GCC School"
+        # send_admin = "kamal.chhabra@kcglobed.com"
+        send_admin = "vishal.dubey@kcglobed.com"
+    else:
+        speaker = "Nitish Khatri"
+        des = "Vice President, KC GlobEd & GCC School"
+        # send_admin = "nitish.khatri@kcglobed.com"
+        send_admin = "vishal.dubey@kcglobed.com"
+
+    subject = f"Your GCC School 1:1 Session Has Been Rescheduled"
+
+    # Values for email template
+    session_day = obj.interview_date.strftime("%A")  # Sunday
+    session_date = (
+            f"{ordinal(obj.interview_date.day)} "
+            f"{obj.interview_date.strftime('%B %Y')}"
+        )  # 16th August 2026
+
+    html_message = render_to_string(
+        "reschedule_invite.html",
+        {
+            "parent_name": obj.full_name,
+            "child_name": obj.child_full_name,
+            "Speaker_name": speaker,
+            "Speaker_designation":des,
+            "session_day": session_day,
+            "session_date": session_date,
+            "session_time": obj.slot_time,
+            "child_qualification": obj.degree,
+            "lead_id": obj.id,
+            "zoom_link": zoom_link,
+            "meeting_id": meeting_id,
+            "password": password,
+            "calendar_google_url": "",
+            "calendar_ics_url": "",
+            "reschedule_url": "",
+            "whatsapp_url": "https://web.whatsapp.com/send?phone=918796880189",
+            "support_phone": "8796880189",
+            "support_email": "info@gccschool.com",
+            "header_image_url":"https://storage.googleapis.com/gcc_prod_static_files_backend/static/images/gcc_dlf_logo.jpg"
+        },
+    )
+    # send_email_async_multiple(subject, "", settings.DEFAULT_FROM_EMAIL, [send_to, support_email], html_message, cc_list=['akshay.jangra@gccschool.com','kamal.chhabra@kcglobed.com','nitish.khatri@kcglobed.com'])
+    # send_email_async_multiple(subject_admin, "", settings.DEFAULT_FROM_EMAIL, [send_admin, support_email], html_msg, cc_list=['akshay.jangra@gccschool.com','vironika.takkar@kcglobed.com'], bcc_list=['kamal.chhabra@kcglobed.com','nitish.khatri@kcglobed.com'])
+    send_email_async_multiple(subject, "", settings.DEFAULT_FROM_EMAIL, [send_to], html_message, cc_list=['vkd2695@gmail.com'], bcc_list=['vkd2695@gmail.com'])
+    # send_email_async_multiple(subject_admin, "", settings.DEFAULT_FROM_EMAIL, [send_admin], html_msg, cc_list=['vkd2695@gmail.com'], bcc_list=['vkd2695@gmail.com'])
+    
+    
+    return "success"
+
+
+
+

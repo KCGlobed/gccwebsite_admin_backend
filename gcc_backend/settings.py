@@ -162,6 +162,12 @@ GOOGLE_CREDENTIAL_FILE = os.path.join(
     BASE_DIR, os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 )
 
+# GOOGLE_SERVICE_ACCOUNT_FILE = os.path.join(
+#     BASE_DIR, os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+# )
+# # GOOGLE_CALENDAR_ID = "cloud@kcglobed.com"
+# GOOGLE_CALENDAR_ID = "kcglobed@gmail.com"
+
 STORAGES = {
     "default": {
         "BACKEND": 'gcc_backend.gcloud.Media',

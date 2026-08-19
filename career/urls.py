@@ -61,6 +61,7 @@ urlpatterns = [
     path("interview_affliateseven_report-excel/", GetDossierInterviewAffliateSevenReportExcelView.as_view(), name="interview_affliateseven_report_excel"),
     
     path("get-dossier-time-slot/", DossierTimeSlotAPIView.as_view()),
+    path("reschedule_invite/", RescheduleInviteView.as_view()),
 
 ]
 

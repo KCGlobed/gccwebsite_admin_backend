@@ -3475,8 +3475,8 @@ from .models import DossierData
 from django.utils import timezone
 
 def generate_time_slots(date_str, speak_with):
-    start = datetime.strptime(f"{date_str} 09:00", "%Y-%m-%d %H:%M")
-    end = datetime.strptime(f"{date_str} 21:00", "%Y-%m-%d %H:%M")
+    start = datetime.strptime(f"{date_str} 10:00", "%Y-%m-%d %H:%M")
+    end = datetime.strptime(f"{date_str} 22:00", "%Y-%m-%d %H:%M")
 
     # Booked slots
     booked_slots = set(

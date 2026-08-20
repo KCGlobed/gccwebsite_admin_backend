@@ -650,7 +650,11 @@ def send_zoom_invite_email(student, zoom_link, admin_link, meeting_id, password)
                 "parent_name": obj.full_name,
                 "parent_email": obj.email,
                 "parent_phone": obj.phone,
+                "parent_linkdin": obj.social_url if obj.social_url else "N/A",
                 "child_name": obj.child_full_name,
+                "child_email": obj.child_email,
+                "child_phone": obj.child_phone,
+                "child_age": obj.age_range,
                 "Speaker_name": speaker,
                 "Speaker_designation":des,
                 "session_day": session_day,
@@ -658,6 +662,7 @@ def send_zoom_invite_email(student, zoom_link, admin_link, meeting_id, password)
                 "session_time": obj.slot_time,
                 "child_qualification": obj.degree,
                 "lead_id": obj.id,
+                "meeting_id": meeting_id,
                 "admin_link": zoom_link,
                 "calendar_google_url": "",
                 "calendar_ics_url": "",
@@ -705,18 +710,18 @@ def reschedule_invite(student, zoom_link, admin_link, meeting_id, password):
     send_to = obj.email
     # send_to = "vishal.dubey@kcglobed.com"
     # send_to = "techboost89@gmail.com"
-    # support_email = "placement.support@kcglobed.com"
-    support_email = "vkd2695@gmail.com"
+    support_email = "placement.support@kcglobed.com"
+    # support_email = "vkd2695@gmail.com"
     if obj.speak_with == 1:
         speaker = "Kamal Chhabra"
         des = "Founder & CEO - KC GlobEd & GCC School"
-        # send_admin = "kamal.chhabra@kcglobed.com"
-        send_admin = "vishal.dubey@kcglobed.com"
+        send_admin = "kamal.chhabra@kcglobed.com"
+        # send_admin = "vishal.dubey@kcglobed.com"
     else:
         speaker = "Nitish Khatri"
         des = "Vice President, KC GlobEd & GCC School"
-        # send_admin = "nitish.khatri@kcglobed.com"
-        send_admin = "vishal.dubey@kcglobed.com"
+        send_admin = "nitish.khatri@kcglobed.com"
+        # send_admin = "vishal.dubey@kcglobed.com"
 
     subject = f"Your GCC School 1:1 Session Has Been Rescheduled"
 
@@ -751,9 +756,9 @@ def reschedule_invite(student, zoom_link, admin_link, meeting_id, password):
             "header_image_url":"https://storage.googleapis.com/gcc_prod_static_files_backend/static/images/gcc_dlf_logo.jpg"
         },
     )
-    # send_email_async_multiple(subject, "", settings.DEFAULT_FROM_EMAIL, [send_to, support_email], html_message, cc_list=['akshay.jangra@gccschool.com','kamal.chhabra@kcglobed.com','nitish.khatri@kcglobed.com'])
+    send_email_async_multiple(subject, "", settings.DEFAULT_FROM_EMAIL, [send_to, support_email], html_message, cc_list=['akshay.jangra@gccschool.com','kamal.chhabra@kcglobed.com','nitish.khatri@kcglobed.com'])
     # send_email_async_multiple(subject_admin, "", settings.DEFAULT_FROM_EMAIL, [send_admin, support_email], html_msg, cc_list=['akshay.jangra@gccschool.com','vironika.takkar@kcglobed.com'], bcc_list=['kamal.chhabra@kcglobed.com','nitish.khatri@kcglobed.com'])
-    send_email_async_multiple(subject, "", settings.DEFAULT_FROM_EMAIL, [send_to], html_message, cc_list=['vkd2695@gmail.com'], bcc_list=['vkd2695@gmail.com'])
+    # send_email_async_multiple(subject, "", settings.DEFAULT_FROM_EMAIL, [send_to], html_message, cc_list=['vkd2695@gmail.com'], bcc_list=['vkd2695@gmail.com'])
     # send_email_async_multiple(subject_admin, "", settings.DEFAULT_FROM_EMAIL, [send_admin], html_msg, cc_list=['vkd2695@gmail.com'], bcc_list=['vkd2695@gmail.com'])
     
     

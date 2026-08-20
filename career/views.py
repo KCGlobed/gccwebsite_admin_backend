@@ -3476,7 +3476,7 @@ from django.utils import timezone
 
 def generate_time_slots(date_str, speak_with):
     start = datetime.strptime(f"{date_str} 10:00", "%Y-%m-%d %H:%M")
-    end = datetime.strptime(f"{date_str} 22:00", "%Y-%m-%d %H:%M")
+    end = datetime.strptime(f"{date_str} 20:00", "%Y-%m-%d %H:%M")
 
     # Booked slots
     booked_slots = set(
@@ -3511,7 +3511,7 @@ def generate_time_slots(date_str, speak_with):
         slots.append({
             "start_time": time_str,
             "end_time": slot_end.strftime("%I:%M %p"),
-            "book_status": 1 if (time_str in booked_slots) or (time_str == "02:30 PM") else 0
+            "book_status": 1 if (time_str in booked_slots) or (time_str in ["01:45 PM","02:30 PM"]) else 0
         })
 
         start = slot_end
@@ -3544,9 +3544,11 @@ class RescheduleInviteView(APIView):
         id= request.data.get("lead_id")
         int_date = request.data.get("selected_date")
         int_time = request.data.get("selected_time")
+        speak_with = request.data.get("speak_with")
         obj = DossierData.objects.get(id=id)
         obj.slot_time = int_time
         obj.interview_date = int_date
+        obj.speak_with = speak_with
         obj.save()
         if settings.EXCEL_INPUT == "True":
             print("email sending start")

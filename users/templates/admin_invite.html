@@ -40,7 +40,7 @@ A new counselling interview has been successfully booked. Please review the sess
 
 <!-- Candidate Details -->
 <h3 style="margin:0 0 12px;color:#4F157C;font-size:18px;">
-Candidate Details
+Parents Details
 </h3>
 
 <table width="100%" cellpadding="8" cellspacing="0" style="border:1px solid #ECECEC;border-collapse:collapse;">
@@ -57,18 +57,48 @@ Candidate Details
 <td>{{parent_phone}}</td>
 </tr>
 <tr>
-<td bgcolor="#F8F8FB"><strong>Candidate</strong></td>
+<td width="35%" bgcolor="#F8F8FB"><strong>Linkdin Profile</strong></td>
+<td>{{parent_linkdin}}</td>
+</tr>
+<tr>
+</table>
+
+
+<!-- Counsellor -->
+<h3 style="margin:28px 0 12px;color:#4F157C;font-size:18px;">
+Student Details
+</h3>
+
+<table width="100%" cellpadding="8" cellspacing="0" style="border:1px solid #ECECEC;border-collapse:collapse;">
+<tr>
+<td bgcolor="#F8F8FB"><strong>Name</strong></td>
 <td>{{child_name}}</td>
+</tr>
+<tr>
+<td bgcolor="#F8F8FB"><strong>Email</strong></td>
+<td>{{child_email}}</td>
+</tr>
+<tr>
+<td bgcolor="#F8F8FB"><strong>Phone</strong></td>
+<td>{{child_phone}}</td>
+</tr>
+<tr>
+<td bgcolor="#F8F8FB"><strong>Age</strong></td>
+<td>{{child_age}}</td>
 </tr>
 <tr>
 <td bgcolor="#F8F8FB"><strong>Qualification</strong></td>
 <td>{{child_qualification}}</td>
 </tr>
 <tr>
-<td bgcolor="#F8F8FB"><strong>Lead ID</strong></td>
+<td bgcolor="#F8F8FB"><strong>Lead Id</strong></td>
 <td>{{lead_id}}</td>
 </tr>
+
 </table>
+
+
+
 
 <!-- Counsellor -->
 <h3 style="margin:28px 0 12px;color:#4F157C;font-size:18px;">
@@ -112,6 +142,10 @@ Session Schedule
 <td bgcolor="#F8F8FB"><strong>Mode</strong></td>
 <td>Zoom Meeting</td>
 </tr>
+<tr>
+<td bgcolor="#F8F8FB"><strong>Meeting Id</strong></td>
+<td>{{meeting_id}}</td>
+</tr>
 </table>
 
 <!-- Zoom -->
@@ -121,17 +155,12 @@ ZOOM MEETING
 </p>
 <p style="margin:0;font-size:14px;word-break:break-all;">
 <a href="{{admin_link}}" style="color:#4F157C;text-decoration:none;">
-Join As Admin -
+Join Zoom Meeting -
 </a>
 </p>
 </div>
 
 <!-- Note -->
-<div style="margin-top:25px;padding:15px;background:#FFF8E8;border:1px solid #F1D98A;border-radius:8px;">
-<p style="margin:0;font-size:13px;line-height:20px;color:#7A5A00;">
-Please ensure the assigned counsellor joins the meeting 5–10 minutes before the scheduled time. The candidate has already received their confirmation email.
-</p>
-</div>
 
 </td>
 </tr>

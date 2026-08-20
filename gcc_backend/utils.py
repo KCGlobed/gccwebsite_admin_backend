@@ -363,7 +363,8 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
                     print("google sheet error", str(e))
 
     if instance.source == 23:
-        send_email_invite(instance.id)
+        if settings.EXCEL_INPUT == "True":
+            send_email_invite(instance.id)
     else:
         url = settings.CSRF_TRUSTED_ORIGINS[0]+"/api/users/create_student/"
 

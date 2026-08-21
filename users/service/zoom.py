@@ -44,3 +44,32 @@ def create_zoom_meeting(topic, start_time, duration=30, timezone="Asia/Kolkata")
     response = requests.post(url, headers=headers, json=payload)
     response.raise_for_status()
     return response.json()
+
+
+
+
+def cancel_zoom_meeting(meeting_id, cancel_meeting_reminder=True):
+    token = get_zoom_access_token()
+    url = f"https://api.zoom.us/v2/meetings/{meeting_id}"
+    print("ddd",url)
+    headers = {
+        "Authorization": f"Bearer {token}",
+    }
+    params = {
+        "schedule_for_reminder": cancel_meeting_reminder,  # notifies host/registrants
+    }
+    response = requests.delete(url, headers=headers, params=params)
+    if response.status_code == 204:
+        return True  # success, no content returned
+
+    response.raise_for_status()
+    return False
+
+
+
+
+
+
+
+
+

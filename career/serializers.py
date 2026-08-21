@@ -389,6 +389,39 @@ class ListDossierDataSerializer(serializers.ModelSerializer):
     def get_document_status(self, obj):
         return obj.get_document_status_display()
 
+class AdminListMeetingDossierDataSerializer(serializers.ModelSerializer):
+    # created_at = serializers.DateTimeField(read_only=True, format="%Y-%m-%d %H:%M:%S")
+    created_at = serializers.SerializerMethodField()
+    user_document_url = serializers.SerializerMethodField()
+    document_status = serializers.SerializerMethodField('get_document_status')
+    meeting_cancel_status = serializers.SerializerMethodField('get_meeting_cancel_status')
+    class Meta:
+        model = DossierData
+        fields = "__all__"
+        
+    def get_created_at(self, obj):
+        if obj.created_at:
+            local_time = timezone.localtime(obj.created_at)
+            return local_time.strftime("%Y-%m-%d %H:%M:%S")
+        return None
+
+    def get_user_document_url(self, obj):
+        user_obj = DossierDocument.objects.filter(dossier=obj.id)
+        user_ser = DossierDocumentSerializer(user_obj, many=True).data
+        return user_ser
+    
+    def get_document_status(self, obj):
+        return obj.get_document_status_display()
+    
+    def get_meeting_cancel_status(self, obj):
+        objs = ManageDossierMeeting.objects.filter(dossier=obj)
+        status = False
+        if objs:
+            objs = objs.first()
+            status = objs.cancel_status
+        
+        return status
+
 class ListDossierDataAffliateSixReportSerializer(serializers.ModelSerializer):
     # created_at = serializers.DateTimeField(read_only=True, format="%Y-%m-%d %H:%M:%S")
     created_at = serializers.SerializerMethodField()

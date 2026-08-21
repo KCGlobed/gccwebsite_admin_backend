@@ -151,6 +151,8 @@ def send_email_invite(std_id):
     meeting_id = meeting["id"]
     password = meeting["password"]
     send_zoom_invite_email(std,join_link,admin_link,meeting_id,password)
+    ManageDossierMeeting.objects.create(dossier_id=std, topic=topic, start_time=zoom_start_time, meeting_id=meeting_id, password=password, join_url=join_link, host_url=admin_link)
+    DossierMeetingLog.objects.create(dossier_id=std, topic=topic, start_time=zoom_start_time, meeting_id=meeting_id, password=password, join_url=join_link, host_url=admin_link)
 
     return "success"
 
@@ -187,6 +189,18 @@ def resend_email_invite(std_id):
     password = meeting["password"]
     reschedule_invite(std,join_link,admin_link,meeting_id,password)
 
+    objs = ManageDossierMeeting.objects.filter(dossier_id=std)
+    if objs:
+        objs = objs.last()
+        objs.start_time = str(zoom_start_time)
+        objs.meeting_id = meeting_id
+        objs.password = password
+        objs.join_url = join_link
+        objs.host_url = admin_link
+        objs.reschedule_status = True
+        objs.save()
+
+    DossierMeetingLog.objects.create(dossier_id=std, topic=topic, start_time=str(zoom_start_time), meeting_id=meeting_id, password=password, join_url=join_link, host_url=admin_link)
     return "success"
 
 
@@ -348,6 +362,7 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
                         session_str_date,
                         instance.slot_time,
                         instance.social_url,
+                        instance.preffer_time,
                         instance.fbc_id,
                         instance.utm_source,
                         instance.utm_medium,
@@ -757,9 +772,8 @@ def reschedule_invite(student, zoom_link, admin_link, meeting_id, password):
         },
     )
     send_email_async_multiple(subject, "", settings.DEFAULT_FROM_EMAIL, [send_to, support_email], html_message, cc_list=['akshay.jangra@gccschool.com','kamal.chhabra@kcglobed.com','nitish.khatri@kcglobed.com'])
-    # send_email_async_multiple(subject_admin, "", settings.DEFAULT_FROM_EMAIL, [send_admin, support_email], html_msg, cc_list=['akshay.jangra@gccschool.com','vironika.takkar@kcglobed.com'], bcc_list=['kamal.chhabra@kcglobed.com','nitish.khatri@kcglobed.com'])
-    # send_email_async_multiple(subject, "", settings.DEFAULT_FROM_EMAIL, [send_to], html_message, cc_list=['vkd2695@gmail.com'], bcc_list=['vkd2695@gmail.com'])
-    # send_email_async_multiple(subject_admin, "", settings.DEFAULT_FROM_EMAIL, [send_admin], html_msg, cc_list=['vkd2695@gmail.com'], bcc_list=['vkd2695@gmail.com'])
+    # send_email_async_multiple(subject, "", settings.DEFAULT_FROM_EMAIL, [send_to], html_message, cc_list=['vkd2695@gmail.com'])
+
     
     
     return "success"

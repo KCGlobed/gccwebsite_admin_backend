@@ -155,6 +155,7 @@ class DossierData(models.Model):
     slot_time = models.CharField(max_length=250, blank=True, null=True)
     speak_with = models.IntegerField(choices=MeetingWith.choices, null=True, blank=True)
     social_url = models.TextField(max_length=200, null=True, blank=True)
+    preffer_time = models.CharField(max_length=250, blank=True, null=True)
 
 class DossierDocument(models.Model):
     dossier = models.ForeignKey('DossierData',on_delete=models.CASCADE,null=True,blank=True,related_name='documents')
@@ -212,3 +213,35 @@ class DossierLog(models.Model):
     updated_at = models.DateTimeField(auto_now = True)
 
 
+
+class ManageDossierMeeting(models.Model):
+    dossier = models.ForeignKey('DossierData',on_delete=models.CASCADE,null=True,blank=True,related_name='meeting')
+    topic = models.CharField(max_length=200, blank=True, null=True)
+    start_time = models.CharField(max_length=200, blank=True, null=True)
+    meeting_id = models.CharField(max_length=200, blank=True, null=True)
+    password = models.CharField(max_length=200, blank=True, null=True)
+    join_url = models.TextField(blank=True, null=True)
+    host_url = models.TextField(blank=True, null=True)
+    reschedule_status = models.BooleanField(default=False)
+    cancel_status = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Meeting {self.id} - {self.dossier}"
+
+
+
+class DossierMeetingLog(models.Model):
+    dossier = models.ForeignKey('DossierData',on_delete=models.CASCADE,null=True,blank=True,related_name='meetinglog')
+    topic = models.CharField(max_length=200, blank=True, null=True)
+    start_time = models.CharField(max_length=200, blank=True, null=True)
+    meeting_id = models.CharField(max_length=200, blank=True, null=True)
+    password = models.CharField(max_length=200, blank=True, null=True)
+    join_url = models.TextField(blank=True, null=True)
+    host_url = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Meeting log {self.id} - {self.dossier}"

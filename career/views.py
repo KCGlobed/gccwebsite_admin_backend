@@ -31,9 +31,13 @@ from openpyxl import load_workbook
 from openpyxl.styles import Font, Alignment
 
 from students.models import *
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from django.db.models import Count
 from django.db.models.functions import TruncDate
+from users.service import zoom
+
+from .models import DossierData
+from django.utils import timezone
 
 
 class CareerApplication_list(APIView):
@@ -682,8 +686,12 @@ class DossierDataSourceForm_List(APIView):
 
         paginator = self.pagination_class()
         page = paginator.paginate_queryset(datas, request, view=self)
-        serializers = ListDossierDataSerializer(page, many=True)
-        
+
+        if source_type == "23":
+            serializers = AdminListMeetingDossierDataSerializer(page, many=True)
+        else:
+            serializers = ListDossierDataSerializer(page, many=True)
+        print(serializers.data[0])
         return paginator.get_paginated_response(serializers.data)
     
 
@@ -3470,13 +3478,9 @@ class GetAffliateSevenLeadAllReportExcelView(APIView):
 
 
 
-from datetime import datetime, timedelta
-from .models import DossierData
-from django.utils import timezone
-
 def generate_time_slots(date_str, speak_with):
     start = datetime.strptime(f"{date_str} 10:00", "%Y-%m-%d %H:%M")
-    end = datetime.strptime(f"{date_str} 20:00", "%Y-%m-%d %H:%M")
+    end = datetime.strptime(f"{date_str} 21:00", "%Y-%m-%d %H:%M")
 
     # Booked slots
     booked_slots = set(
@@ -3492,6 +3496,7 @@ def generate_time_slots(date_str, speak_with):
     cutoff_time = now + timedelta(minutes=90)
 
     slots = []
+    all_slots = []
 
     while start < end:
         slot_end = start + timedelta(minutes=45)
@@ -3513,10 +3518,15 @@ def generate_time_slots(date_str, speak_with):
             "end_time": slot_end.strftime("%I:%M %p"),
             "book_status": 1 if (time_str in booked_slots) or (time_str in ["01:45 PM","02:30 PM"]) else 0
         })
+        all_slots.append({
+            "start_time": time_str,
+            "end_time": slot_end.strftime("%I:%M %p"),
+            # "book_status": 1 if (time_str in booked_slots) or (time_str in ["01:45 PM","02:30 PM"]) else 0
+        })
 
         start = slot_end
 
-    return slots
+    return slots, all_slots
 
 
 
@@ -3530,11 +3540,12 @@ class DossierTimeSlotAPIView(APIView):
         if not speak_with:
             return Response({"error": "speak_with is required"}, status=400)
 
-        slots = generate_time_slots(date, speak_with)
+        slots, all_slots = generate_time_slots(date, speak_with)
 
         return Response({
             "date": date,
-            "slots": slots
+            "slots": slots,
+            "all_slots": all_slots
         })
 
 
@@ -3550,14 +3561,29 @@ class RescheduleInviteView(APIView):
         obj.interview_date = int_date
         obj.speak_with = speak_with
         obj.save()
+        objs = ManageDossierMeeting.objects.filter(dossier_id=obj.id)
+        if objs:
+            objs = objs.last()
+            try:
+                zoom.cancel_zoom_meeting(objs.meeting_id)
+            except:
+                pass
         if settings.EXCEL_INPUT == "True":
             print("email sending start")
 
-            resend_email_invite(obj.id)
+            # resend_email_invite(obj.id)
 
-        return Response({
-            "date": id
-        })
+            threading.Thread(
+                target=resend_email_invite,
+                args=(str(obj.id),),
+                daemon=True,
+            ).start()
+
+        return success_response(
+            message="Success",
+            data={},
+            status_code=status.HTTP_200_OK
+        )
     
     def get(self, request):
         from datetime import datetime
@@ -3574,5 +3600,42 @@ class RescheduleInviteView(APIView):
         return Response({
                     "date": ""
             })
+    
+    def delete(self, request):
+        id= request.data.get("lead_id")
+        DossierData.objects.filter(id=id).update(slot_time="")
+        obj = ManageDossierMeeting.objects.filter(dossier_id=id)
+        if obj:
+            if settings.EXCEL_INPUT == "True":
+                datas = obj.last()
+                meeting_id = datas.meeting_id
+                print("email sending start")
+                try:
+                    statuss = zoom.cancel_zoom_meeting(meeting_id)
+                    print("cancel response....",statuss)
+                    datas.cancel_status = True
+                    datas.save()
+                except requests.exceptions.HTTPError as e:
+                    status_code = e.response.status_code if e.response else 502
+                    if status_code == 404:
+                        return Response(
+                            {"error": "Meeting not found or already deleted."},
+                            status=status.HTTP_404_NOT_FOUND,
+                        )
+                    return Response(
+                        {"error": f"Failed to cancel meeting: {str(e)}"},
+                        status=status.HTTP_502_BAD_GATEWAY,
+                    )
+            return success_response(
+                message="Success",
+                data={},
+                status_code=status.HTTP_200_OK
+            )
+        return Response({
+            "message":"No Data Found",
+            "data":{},
+            "status":400,
+        })
+
 
 

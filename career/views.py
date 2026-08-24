@@ -544,6 +544,13 @@ class DossierDataForm_List(APIView):
             if end_date:
                 datas = datas.filter(created_at__date__lte=end_date)
 
+        program = request.GET.get('program')
+        if program:
+            program_list = [1,2]
+            if program in program_list:
+                datas = datas.filter(program=program)
+            else:
+                datas = datas.exclude(program__in=program_list)
 
         search_filter = filters.SearchFilter()
         datas = search_filter.filter_queryset(request, datas, self)
@@ -1059,6 +1066,14 @@ class GetDossierReportExcelView(APIView):
             if end_date:
                 datas = datas.filter(created_at__date__lte=end_date)
 
+        program = request.GET.get('program')
+        if program:
+            program_list = [1,2]
+            if program in program_list:
+                datas = datas.filter(program=program)
+            else:
+                datas = datas.exclude(program__in=program_list)
+        
 
         search_filter = filters.SearchFilter()
         datas = search_filter.filter_queryset(request, datas, self)

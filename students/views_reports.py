@@ -706,6 +706,14 @@ class GetStudentProfileReportExcelView(APIView):
             if end_date:
                 datas = datas.filter(created_at__date__lte=end_date)
 
+        program = request.GET.get('program')
+        if program:
+            program_list = [1,2]
+            if program in program_list:
+                dossier_program_email = list(DossierData.objects.filter(program=program).values_list("email", flat=True))
+            else:
+                dossier_program_email = list(DossierData.objects.exclude(program__in=program_list).values_list("email", flat=True))
+            datas = datas.filter(email__in=dossier_program_email)
 
         # slot_date range filter
         start_slot_date = request.GET.get('start_slot_date')

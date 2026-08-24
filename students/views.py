@@ -1738,6 +1738,15 @@ class GetStudentProfileListingView(APIView):
         if city:
             datas = datas.filter(city__icontains=city)
 
+        program = request.GET.get('program')
+        if program:
+            program_list = [1,2]
+            if program in program_list:
+                dossier_program_email = list(DossierData.objects.filter(program=program).values_list("email", flat=True))
+            else:
+                dossier_program_email = list(DossierData.objects.exclude(program__in=program_list).values_list("email", flat=True))
+            datas = datas.filter(email__in=dossier_program_email)
+
         is_result = request.GET.get('is_result')
 
         # print(is_result)

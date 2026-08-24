@@ -63,5 +63,6 @@ urlpatterns = [
     path("get-dossier-time-slot/", DossierTimeSlotAPIView.as_view()),
     path("reschedule_invite/", RescheduleInviteView.as_view()),
 
+    path("excel_upload/", AffliateExcelUpdateView.as_view()),
 ]
 

@@ -272,6 +272,8 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
                         instance.attend_from,
                         "No",
                         "",
+                        instance.utm_source,
+                        instance.utm_medium,
                         create_times
                     ]
                     print("data inster",row)

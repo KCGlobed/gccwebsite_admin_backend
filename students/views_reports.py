@@ -708,9 +708,9 @@ class GetStudentProfileReportExcelView(APIView):
 
         program = request.GET.get('program')
         if program:
-            program_list = [1,2]
-            if program in program_list:
-                dossier_program_email = list(DossierData.objects.filter(program=program).values_list("email", flat=True))
+            program_list = ['1','2']
+            if str(program) in program_list:
+                dossier_program_email = list(DossierData.objects.filter(program=str(program)).values_list("email", flat=True))
             else:
                 dossier_program_email = list(DossierData.objects.exclude(program__in=program_list).values_list("email", flat=True))
             datas = datas.filter(email__in=dossier_program_email)

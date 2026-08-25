@@ -1275,6 +1275,7 @@ class StudentProfileListSerializer(serializers.ModelSerializer):
         if objs:
             program = objs.first().get_program_display()
         return program
+    
     def get_final_program(self, obj):
         program = "N/A"
         objs = DossierData.objects.filter(email=obj.email).order_by('-id')

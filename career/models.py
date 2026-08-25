@@ -101,6 +101,7 @@ class DocumentStatusType(models.IntegerChoices):
 class ProgramType(models.IntegerChoices):
     CPA = 1, 'CPA'
     EA = 2, 'EA'
+    ACCA = 3, 'ACCA'
 
 class MeetingWith(models.IntegerChoices):
     Kamal = 1, 'Kamal'

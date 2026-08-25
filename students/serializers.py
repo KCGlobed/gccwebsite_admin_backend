@@ -1266,7 +1266,22 @@ class StudentProfileListSerializer(serializers.ModelSerializer):
     exam_url = serializers.SerializerMethodField("get_exam_url")
     guardian_dropdown = serializers.SerializerMethodField("get_guardian_dropdown")
     interview_detail = serializers.SerializerMethodField("get_interview_detail")
+    initial_program = serializers.SerializerMethodField("get_initial_program")
+    final_program = serializers.SerializerMethodField("get_final_program")
 
+    def get_initial_program(self, obj):
+        program = "N/A"
+        objs = DossierData.objects.filter(email=obj.email).order_by('id')
+        if objs:
+            program = objs.first().get_program_display()
+        return program
+    def get_final_program(self, obj):
+        program = "N/A"
+        objs = DossierData.objects.filter(email=obj.email).order_by('-id')
+        if objs:
+            program = objs.first().get_program_display()
+        return program
+    
     def get_guardian_dropdown(self, obj):
         return obj.get_guardian_dropdown_display()
 

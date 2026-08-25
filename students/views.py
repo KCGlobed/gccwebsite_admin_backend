@@ -1694,7 +1694,7 @@ class GetStudentProfileListingView(APIView):
         # Date range filter
         
         start_date = request.GET.get('start_date')
-        end_date = request.GET.get('end_date')
+        end_date   = request.GET.get('end_date')
         if start_date:
             start_date = parse_date(start_date)
             if start_date:
@@ -1740,9 +1740,10 @@ class GetStudentProfileListingView(APIView):
 
         program = request.GET.get('program')
         if program:
-            program_list = [1,2]
-            if program in program_list:
-                dossier_program_email = list(DossierData.objects.filter(program=program).values_list("email", flat=True))
+            # print("type program...",program, type(program))
+            program_list = ['1','2']
+            if str(program) in program_list:
+                dossier_program_email = list(DossierData.objects.filter(program=str(program)).values_list("email", flat=True))
             else:
                 dossier_program_email = list(DossierData.objects.exclude(program__in=program_list).values_list("email", flat=True))
             datas = datas.filter(email__in=dossier_program_email)

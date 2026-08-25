@@ -132,11 +132,28 @@ class ListStudentProfileExcelReportSerializer(serializers.ModelSerializer) :
     student_result = serializers.SerializerMethodField("get_student_result")
     guardian_dropdown = serializers.SerializerMethodField("get_guardian_dropdown")
     resume = serializers.SerializerMethodField("get_resume")
+    initial_program = serializers.SerializerMethodField("get_initial_program")
+    final_program = serializers.SerializerMethodField("get_final_program")
+
     
     class Meta:
         model = StudentProfile
         fields = "__all__"
 
+    def get_initial_program(self, obj):
+        program = "N/A"
+        objs = DossierData.objects.filter(email=obj.email).order_by('id')
+        if objs:
+            program = objs.first().get_program_display()
+        return program
+    
+    def get_final_program(self, obj):
+        program = "N/A"
+        objs = DossierData.objects.filter(email=obj.email).order_by('-id')
+        if objs:
+            program = objs.first().get_program_display()
+        return program
+    
     # def to_representation(self, instance):
     #     data = super().to_representation(instance)
 

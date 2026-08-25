@@ -825,7 +825,9 @@ class GetStudentProfileReportExcelView(APIView):
             "guardian_phone": "Guardian Phone",
             "guardian_email": "Guardian Email",
             "guardian_dropdown": "Guardian Relationship",
-            "resume":"Resume"
+            "resume":"Resume",
+            "initial_program":"Initial Program",
+            "final_program":"Final Program"
             }
         # print(data_list)
         # return Response({"message":"success", "data":data_list})

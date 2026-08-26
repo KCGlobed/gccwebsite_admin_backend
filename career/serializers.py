@@ -34,10 +34,10 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
         fields = "__all__"
         
     def create(self, validated_data):
-        print("leads data...",validated_data)
         if str(validated_data.get("source")) == "7":
             validated_data["fee_waiver_category"] = "Free of cost (FOC)"
         # if str(validated_data.get("source")) in ["","","","","",""]:
+        print("leads data...",validated_data)
         instance = super().create(validated_data)
         src_type = instance.source
         if settings.MERITO_STATUS == "True":

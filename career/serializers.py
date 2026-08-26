@@ -36,7 +36,13 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         if str(validated_data.get("source")) == "7":
             validated_data["fee_waiver_category"] = "Free of cost (FOC)"
-        # if str(validated_data.get("source")) in ["","","","","",""]:
+        if str(validated_data.get("source")) in ["16","19","22"]:
+            validated_data["program"] = 1
+        elif str(validated_data.get("source")) in ["17","18","20","22"]:
+            validated_data["program"] = 2
+        else:
+            validated_data["program"] = 3
+
         print("leads data...",validated_data)
         instance = super().create(validated_data)
         src_type = instance.source
@@ -683,6 +689,14 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data["fee_waiver_category"] = "Free of cost (FOC)"
+        if str(validated_data.get("source")) in ["16","19","21"]:
+            validated_data["program"] = 1
+        elif str(validated_data.get("source")) in ["17","18","20","22"]:
+            validated_data["program"] = 2
+        elif str(validated_data.get("source")) in ["23"]:
+            pass
+        else:
+            validated_data["program"] = 3
         instance = super().create(validated_data)
         src_type = instance.source
         if src_type in [15,20,21,22,23]:

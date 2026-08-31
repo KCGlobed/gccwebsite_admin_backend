@@ -702,7 +702,7 @@ class DossierDataSourceForm_List(APIView):
             serializers = AdminListMeetingDossierDataSerializer(page, many=True)
         else:
             serializers = ListDossierDataSerializer(page, many=True)
-        print(serializers.data[0])
+        # print(serializers.data[0])
         return paginator.get_paginated_response(serializers.data)
     
 

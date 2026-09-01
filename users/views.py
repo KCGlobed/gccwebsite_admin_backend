@@ -315,3 +315,133 @@ class Mail_test(APIView):
 
 
 from gcc_backend.utils import send_zoom_invite_email
+
+
+
+
+
+
+
+from .models import User, ServerTest
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+
+class ServerTestAPIView(APIView):
+
+    # CREATE
+    def post(self, request):
+        request.data["user"] = 1
+        print(request.data)
+        serializer = ServerTestSerializer(
+            data=request.data
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED
+            )
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
+        # return Response({"msg":"success"})
+
+    # READ
+    def get(self, request):
+        obj_id = request.query_params.get("id")
+
+        if obj_id:
+            try:
+                obj = ServerTest.objects.get(
+                    id=obj_id
+                )
+            except ServerTest.DoesNotExist:
+                return Response(
+                    {"message": "Record not found"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            serializer = ServerTestSerializer(obj)
+            return Response(serializer.data)
+
+        queryset = ServerTest.objects.all(
+        ).order_by("-id")
+
+        serializer = ServerTestSerializer(
+            queryset,
+            many=True
+        )
+
+        return Response(serializer.data)
+
+    # UPDATE
+    def put(self, request):
+        obj_id = request.data.get("id")
+
+        if not obj_id:
+            return Response(
+                {"message": "id is required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            obj = ServerTest.objects.get(
+                id=obj_id
+            )
+        except ServerTest.DoesNotExist:
+            return Response(
+                {"message": "Record not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = ServerTestSerializer(
+            obj,
+            data=request.data,
+            partial=True
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(serializer.data)
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    # DELETE
+    def delete(self, request):
+        obj_id = request.query_params.get("id")
+
+        if not obj_id:
+            return Response(
+                {"message": "id is required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            obj = ServerTest.objects.get(
+                id=obj_id
+            )
+        except ServerTest.DoesNotExist:
+            return Response(
+                {"message": "Record not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        obj.delete()
+
+        return Response(
+            {"message": "Record deleted successfully"},
+            status=status.HTTP_200_OK
+        )
+
+
+
+

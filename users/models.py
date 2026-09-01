@@ -307,3 +307,11 @@ class ManageStudentExtraDetail(models.Model):
 
 
 
+class ServerTest(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    cred = models.FileField(upload_to='server_test/')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+
+

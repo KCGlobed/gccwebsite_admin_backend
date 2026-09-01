@@ -738,3 +738,11 @@ class AdminProfileDetailSerializer(serializers.ModelSerializer):
 
     def get_role(get, data):
         return data.get_role_display()
+
+
+
+class ServerTestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ServerTest
+        fields = "__all__"
+

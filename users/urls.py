@@ -43,5 +43,10 @@ urlpatterns = [
     path('lead_dashboard/', DashboardLeadAnalytics.as_view()),
     path('profile_dashboard/', DashboardProfileAnalytics.as_view()),
     path('lead_profile_dashboard/', DashboardLeadProfileAnalytics.as_view()),
+
+
+
+
+    path("server-test/",ServerTestAPIView.as_view(),name="server-test")
     
 ]

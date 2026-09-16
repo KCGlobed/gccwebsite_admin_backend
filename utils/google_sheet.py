@@ -158,3 +158,37 @@ def get_google_sheet_affliate_eight():
     return worksheet
 
 
+
+def get_google_sheet_rudrapur():
+
+    for i in range(5):
+        try:
+            # sheet = client.open_by_key(SHEET_ID)
+            scopes = [
+                    "https://www.googleapis.com/auth/spreadsheets",
+                    "https://www.googleapis.com/auth/drive"
+                ]
+
+            credentials = Credentials.from_service_account_file(
+                settings.GOOGLE_CREDENTIAL_FILE,
+                scopes=scopes
+            )
+
+            client = gspread.authorize(credentials)
+
+            spreadsheet = client.open(
+                settings.GOOGLE_SHEET_NAME
+            )
+
+            worksheet = spreadsheet.worksheet(
+                settings.GOOGLE_WORKSHEET_NAME6
+            )
+
+            break
+        except Exception as e:
+            print(e)
+            time.sleep(2)
+
+    return worksheet
+
+

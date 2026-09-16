@@ -282,6 +282,31 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
                 except Exception as e:
                     print("google sheet error", str(e))
 
+        elif src_type == 22:
+            if not DossierData.objects.filter(phone=instance.phone, source=src_type).exclude(id=instance.id).exists():
+                try:
+                    sheet = get_google_sheet_rudrapur()
+                    local_time = timezone.localtime(instance.created_at)
+                    create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
+                    row = [
+                        instance.full_name,
+                        instance.email,
+                        instance.phone,
+                        instance.city,
+                        instance.state,
+                        instance.degree,
+                        instance.degree_stage,
+                        instance.attend_from,
+                        instance.utm_source,
+                        instance.utm_medium,
+                        create_times
+                    ]
+                    print("data inster",row)
+                    sheet.append_row(row)
+                    print("completed")
+                except Exception as e:
+                    print("google sheet error", str(e))
+
         elif src_type == 20:
             if not DossierData.objects.filter(phone=instance.phone, source=src_type).exclude(id=instance.id).exists():
                 try:
@@ -382,6 +407,8 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
     if instance.source == 23:
         if settings.EXCEL_INPUT == "True":
             send_email_invite(instance.id)
+    elif instance.source == 22:
+        pass
     else:
         url = settings.CSRF_TRUSTED_ORIGINS[0]+"/api/users/create_student/"
 

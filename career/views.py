@@ -1536,7 +1536,7 @@ class GetVSLAdvisorReportPDFView(APIView):
 
 
 class GetDossierSourceReportExcelView(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['id',"full_name","email","phone","city","state"]
     ordering_fields = ['id',"full_name","email","phone","city","state","created_at"]
@@ -1545,7 +1545,7 @@ class GetDossierSourceReportExcelView(APIView):
         
         source_type = request.GET.get('source')
         if source_type:
-            datas = DossierData.objects.filter(source=source_type).order_by('-id')
+            datas = DossierData.objects.filter(source=source_type).order_by('id')
             if str(source_type) == str(SourceType.EAWebsite):
                 access_data = settings.EAUTMSOURCE
                 if str(request.user.first_name).lower() in access_data:
@@ -1678,20 +1678,10 @@ class GetDossierSourceReportExcelView(APIView):
                     "adset_id":'Adset Id',
                     "fbclid":'Fbclid',
                     "ad_source":'Ad Source',
-                    "ad_id":'Ad Id',
-                    "university":'University',
-                    "remarks":'Remarks',
-                    "remarks_timestamp":'Remarks Timestamp',
-                    "fee_waiver_category":'Fee Waiver Category',
-                    "total_questions":'Created At',
-                    "document_status":'Document Status',
-                    "referral_code":'Referral Code',
-                    "referred_code":'Referred Code',
-                    "program":'Program',
-                    "reffered_by":'Referred By',
-                    "interview_date":'Interview Date',
-                    "age_range":'Age Range',
-                    "fund_mode":'Fund Mode'
+                    "attend_from":'Number Of Student',
+                    "degree":'Highest Qualification',
+                    "degree_stage":'Work',
+                    "total_questions":'Created At'
                 })
             for chapter_data in serializers.data:
                 lis.append({
@@ -1711,19 +1701,11 @@ class GetDossierSourceReportExcelView(APIView):
                     "fbclid":chapter_data['fbclid'],
                     "ad_source":chapter_data['ad_source'],
                     "ad_id":chapter_data['ad_id'],
-                    "university":chapter_data['university'],
-                    "remarks":chapter_data['remarks'],
-                    "remarks_timestamp":chapter_data['remarks_timestamp'],
-                    "fee_waiver_category":chapter_data['fee_waiver_category'],
-                    "total_questions":chapter_data['created_at'],
-                    "document_status":chapter_data['document_status'],
-                    "referral_code":chapter_data['referral_code'],
-                    "referred_code":chapter_data['referred_code'],
-                    "program":chapter_data['program'],
-                    "reffered_by":chapter_data['reffered_by'],
-                    "interview_date":chapter_data['interview_date'],
-                    "age_range":chapter_data['age_range'],
-                    "fund_mode":chapter_data['fund_mode']
+                    "attend_from":chapter_data['attend_from'],
+                    "degree":chapter_data['degree'],
+                    "degree_stage":chapter_data['degree_stage'],
+                    "total_questions":chapter_data['created_at']
+
                 })
         elif str(source_type) == "23":
             lis.append({

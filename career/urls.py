@@ -38,7 +38,7 @@ urlpatterns = [
     path('get-dossier-vsl-source-report-excel/', GetDossierVSLSourceReportExcelView.as_view(), name="get-dossier-vsl-source-report-excel"),  ##last update -  not working in admin
 
 
-    path('get-amendment-source-report-excel/', GetAmendmentSourceReportExcelView.as_view(), name="get-dossier-source-report-excel"),
+    path('get-amendment-source-report-excel/', GetAmendmentSourceReportExcelView.as_view(), name="get-amendment-source-report-excel"),
 
     path("get-vsl-advisor-report-excel/", GetVSLAdvisorReportExcelView.as_view()),
     path("get-vsl-advisor-report-pdf/", GetVSLAdvisorReportPDFView.as_view()),

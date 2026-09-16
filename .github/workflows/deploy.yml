@@ -3,7 +3,7 @@ name: Deploy Application
 on:
   push:
     branches:
-      - dev
+      - main
 
 jobs:
 
@@ -27,7 +27,7 @@ jobs:
             set -e
 
             echo "=============================================="
-            echo "Deploying gcc-backend-dev"
+            echo "Deploying gcc-backend-prod"
             echo "=============================================="
 
-            sudo /opt/deploy-platform/scripts/deploy.sh "gcc-backend-dev"
+            sudo /opt/deploy-platform/scripts/deploy.sh "gcc-backend-prod"

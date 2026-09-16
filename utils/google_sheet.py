@@ -77,7 +77,7 @@ def get_google_sheet_new_affliate_seven():
             client = gspread.authorize(credentials)
 
             spreadsheet = client.open(
-                settings.GOOGLE_SHEET_NAME
+                settings.GOOGLE_SHEET_NAME2
             )
 
             worksheet = spreadsheet.worksheet(

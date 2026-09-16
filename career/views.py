@@ -1536,7 +1536,7 @@ class GetVSLAdvisorReportPDFView(APIView):
 
 
 class GetDossierSourceReportExcelView(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['id',"full_name","email","phone","city","state"]
     ordering_fields = ['id',"full_name","email","phone","city","state","created_at"]
@@ -1545,7 +1545,7 @@ class GetDossierSourceReportExcelView(APIView):
         
         source_type = request.GET.get('source')
         if source_type:
-            datas = DossierData.objects.filter(source=source_type).order_by('-id')
+            datas = DossierData.objects.filter(source=source_type).order_by('id')
             if str(source_type) == str(SourceType.EAWebsite):
                 access_data = settings.EAUTMSOURCE
                 if str(request.user.first_name).lower() in access_data:
@@ -1771,61 +1771,6 @@ class GetDossierSourceReportExcelView(APIView):
                 })
         else:
             lis.append({
-                    "name":"Dossier Report",
-                    "email":'',
-                    "subject":'',
-                    "Chapter":'',
-                    "Topic":'',
-                    "fbc_id":'',
-                    "utm_source":'',
-                    "utm_medium":'',
-                    "utm_content":'',
-                    "utm_campaign":'',
-                    "campaign_id":'',
-                    "utm_adname":'',
-                    "adset_id":'',
-                    "fbclid":'',
-                    "ad_source":'',
-                    "ad_id":'',
-                    "university":'',
-                    "remarks":'',
-                    "remarks_timestamp":'',
-                    "fee_waiver_category":'',
-                    "total_questions":'',
-                    "document_status":'',
-                    "referral_code":'',
-                    "referred_code":''
-                })
-            
-        
-            lis.append({
-                    "name":"",
-                    "email":'',
-                    "subject":'',
-                    "Chapter":'',
-                    "Topic":'',
-                    "fbc_id":'',
-                    "utm_source":'',
-                    "utm_medium":'',
-                    "utm_content":'',
-                    "utm_campaign":'',
-                    "campaign_id":'',
-                    "utm_adname":'',
-                    "adset_id":'',
-                    "fbclid":'',
-                    "ad_source":'',
-                    "ad_id":'',
-                    "university":'',
-                    "remarks":'',
-                    "remarks_timestamp":'',
-                    "fee_waiver_category":'',
-                    "total_questions":'',
-                    "document_status":'',
-                    "referral_code":'',
-                    "referred_code":''
-                })
-            
-            lis.append({
                     "name":"Full Name",
                     "email":'Email',
                     "subject":'Phone Number',
@@ -1849,7 +1794,13 @@ class GetDossierSourceReportExcelView(APIView):
                     "total_questions":'Created At',
                     "document_status":'Document Status',
                     "referral_code":'Referral Code',
-                    "referred_code":'Referred Code'
+                    "referred_code":'Referred Code',
+                    # "degree":'degree',
+                    # "degree_stage":'degree_stage',
+                    # "age_range":'age_range',
+                    # "fund_mode":'fund_mode',
+                    # "interview_date":'interview_date',
+                    # "attend_from":'attend_from',
                 })
         
         
@@ -1878,7 +1829,13 @@ class GetDossierSourceReportExcelView(APIView):
                     "total_questions":chapter_data['created_at'],
                     "document_status":chapter_data['document_status'],
                     "referral_code":chapter_data['referral_code'],
-                    "referred_code":chapter_data['referred_code']
+                    "referred_code":chapter_data['referred_code'],
+                    # "degree":chapter_data['degree'],
+                    # "degree_stage":chapter_data['degree_stage'],
+                    # "age_range":chapter_data['age_range'],
+                    # "fund_mode":chapter_data['fund_mode'],
+                    # "interview_date":chapter_data['interview_date'],
+                    # "attend_from":chapter_data['attend_from'],
                 })
 
 

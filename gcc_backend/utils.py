@@ -269,8 +269,6 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
                     instance.degree_stage,
                     instance.fund_mode,
                     instance.attend_from,
-                    "No",
-                    "",
                     instance.utm_source,
                     instance.utm_medium,
                     create_times

@@ -1536,7 +1536,7 @@ class GetVSLAdvisorReportPDFView(APIView):
 
 
 class GetDossierSourceReportExcelView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['id',"full_name","email","phone","city","state"]
     ordering_fields = ['id',"full_name","email","phone","city","state","created_at"]
@@ -1545,7 +1545,7 @@ class GetDossierSourceReportExcelView(APIView):
         
         source_type = request.GET.get('source')
         if source_type:
-            datas = DossierData.objects.filter(source=source_type).order_by('id')
+            datas = DossierData.objects.filter(source=source_type).order_by('-id')
             if str(source_type) == str(SourceType.EAWebsite):
                 access_data = settings.EAUTMSOURCE
                 if str(request.user.first_name).lower() in access_data:

@@ -253,7 +253,7 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
 
     if settings.EXCEL_INPUT == "True":
         if src_type == 15:
-            trigger = True
+            trigger = False
             try:
                 sheet = get_google_sheet_new_affliate_seven()
                 local_time = timezone.localtime(instance.created_at)
@@ -262,8 +262,8 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
                     instance.full_name,
                     instance.email,
                     instance.phone,
-                    instance.city,
                     instance.state,
+                    instance.city,
                     instance.degree,
                     instance.age_range,
                     instance.degree_stage,
@@ -271,6 +271,7 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
                     instance.attend_from,
                     instance.utm_source,
                     instance.utm_medium,
+                    instance.utm_campaign,
                     create_times
                 ]
                 print("data inster",row)
@@ -438,31 +439,32 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
 def update_affliate_seven_services_async(lobj, src_type):
     if settings.EXCEL_INPUT == "True":
         if src_type == 15:
-            try:
-                sheet = get_google_sheet_new_affliate_seven()
-                # local_time = timezone.localtime(lobj.interview_date)
-                # create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
-                # lobj.interview_date
-                selected_date = lobj.interview_date.strftime("%Y-%m-%d")
-                row_data = [
-                    "Yes",
-                    selected_date
-                ]
+            pass
+            # try:
+            #     sheet = get_google_sheet_new_affliate_seven()
+            #     # local_time = timezone.localtime(lobj.interview_date)
+            #     # create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
+            #     # lobj.interview_date
+            #     selected_date = lobj.interview_date.strftime("%Y-%m-%d")
+            #     row_data = [
+            #         "Yes",
+            #         selected_date
+            #     ]
 
-                # find email in column B
-                cell = sheet.find(lobj.phone)
+            #     # find email in column B
+            #     cell = sheet.find(lobj.phone)
 
-                if cell:
-                    row_number = cell.row
-                    sheet.update(f"K{row_number}:L{row_number}", [row_data])
-                    print(f"Row {row_number} updated successfully")
+            #     if cell:
+            #         row_number = cell.row
+            #         sheet.update(f"K{row_number}:L{row_number}", [row_data])
+            #         print(f"Row {row_number} updated successfully")
 
-                    print("row updated successfully")
+            #         print("row updated successfully")
 
-                else:
-                    print("row not found, new row inserted")
-            except Exception as e:
-                print("google sheet error", str(e))
+            #     else:
+            #         print("row not found, new row inserted")
+            # except Exception as e:
+            #     print("google sheet error", str(e))
         elif src_type == 20:
             try:
                 sheet = get_google_sheet_aeutplp()

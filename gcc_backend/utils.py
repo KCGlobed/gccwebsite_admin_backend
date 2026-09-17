@@ -253,7 +253,7 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
 
     if settings.EXCEL_INPUT == "True":
         if src_type == 15:
-            trigger = False
+            trigger = True
             try:
                 sheet = get_google_sheet_new_affliate_seven()
                 local_time = timezone.localtime(instance.created_at)

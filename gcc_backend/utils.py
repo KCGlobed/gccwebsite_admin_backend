@@ -253,32 +253,33 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
 
     if settings.EXCEL_INPUT == "True":
         if src_type == 15:
-            trigger = True
-            try:
-                sheet = get_google_sheet_new_affliate_seven()
-                local_time = timezone.localtime(instance.created_at)
-                create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
-                row = [
-                    instance.full_name,
-                    instance.email,
-                    instance.phone,
-                    instance.state,
-                    instance.city,
-                    instance.degree,
-                    instance.age_range,
-                    instance.degree_stage,
-                    instance.fund_mode,
-                    instance.attend_from,
-                    instance.utm_source,
-                    instance.utm_medium,
-                    instance.utm_campaign,
-                    create_times
-                ]
-                print("data inster",row)
-                sheet.append_row(row)
-                print("completed")
-            except Exception as e:
-                print("google sheet error", str(e))
+            if not DossierData.objects.filter(phone=instance.phone, source=src_type, created_at__date=timezone.localdate()).exclude(id=instance.id).exists():
+                trigger = True
+                try:
+                    sheet = get_google_sheet_new_affliate_seven()
+                    local_time = timezone.localtime(instance.created_at)
+                    create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
+                    row = [
+                        instance.full_name,
+                        instance.email,
+                        instance.phone,
+                        instance.state,
+                        instance.city,
+                        instance.degree,
+                        instance.age_range,
+                        instance.degree_stage,
+                        instance.fund_mode,
+                        instance.attend_from,
+                        instance.utm_source,
+                        instance.utm_medium,
+                        instance.utm_campaign,
+                        create_times
+                    ]
+                    print("data inster",row)
+                    sheet.append_row(row)
+                    print("completed")
+                except Exception as e:
+                    print("google sheet error", str(e))
 
         elif src_type == 22:
             if not DossierData.objects.filter(phone=instance.phone, source=src_type).exclude(id=instance.id).exists():

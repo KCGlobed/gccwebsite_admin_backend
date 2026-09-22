@@ -499,12 +499,12 @@ class GetSourcePaymentReportExcelView(APIView):
             data_objs = Payments.objects.filter(source=source_type).order_by('-id')
             if str(source_type) == str(SourceType.EAWebsite):
                 access_data = settings.EAUTMSOURCE
-                if str(request.user.first_name).lower() in access_data:
-                    data_objs = Payments.objects.filter(source=source_type, dossier_form__utm_source__iexact=str(request.user.first_name).lower()).order_by('-id')
+                if str(request.user.first_name) in access_data:
+                    data_objs = Payments.objects.filter(source=source_type, dossier_form__utm_source__iexact=str(request.user.first_name)).order_by('-id')
             if str(source_type) == str(SourceType.CPAWebsite):
                 access_data = settings.CPAUTMSOURCE
-                if str(request.user.first_name).lower() in access_data:
-                    data_objs = Payments.objects.filter(source=source_type, dossier_form__utm_source__iexact=str(request.user.first_name).lower()).order_by('-id')
+                if str(request.user.first_name) in access_data:
+                    data_objs = Payments.objects.filter(source=source_type, dossier_form__utm_source__iexact=str(request.user.first_name)).order_by('-id')
 
         else:
             data_objs = Payments.objects.filter(source=SourceType.Website).order_by('-id')

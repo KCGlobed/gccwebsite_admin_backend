@@ -1603,6 +1603,58 @@ class GetDossierSourceReportExcelView(APIView):
         serializers = ListDossierDataSerializer(datas, many=True)
 
         lis = []
+        if str(source_type) == "24":
+            lis.append({
+                    "name":"Full Name",
+                    "email":'Email',
+                    "subject":'Phone Number',
+                    "Chapter":'City',
+                    "Topic":'State',
+                    "organization":'Organization',
+                    "experience":'Experience',
+                    "student_category":'Student Category',
+                    "annual_enrollments":'Annual Enrollments',
+                    "promotes_certifications":'Promotes Certifications',
+                    "business_setup":'Business Setup',
+                    "fbc_id":'Fbc Id',
+                    "utm_source":'UTM Source',
+                    "utm_medium":'UTM Medium',
+                    "utm_content":'UTM Content',
+                    "utm_campaign":'UTM Campaign',
+                    "campaign_id":'Campaign Id',
+                    "utm_adname":'UTM Adname',
+                    "adset_id":'Adset Id',
+                    "fbclid":'Fbclid',
+                    "ad_source":'Ad Source',
+                    "ad_id":'Ad Id',
+                    "total_questions":'Created At'
+                })
+            for chapter_data in serializers.data:
+                lis.append({
+                    "name":chapter_data['full_name'],
+                    "email":chapter_data['email'],
+                    "subject":chapter_data['phone'],
+                    "Chapter":chapter_data['city'],
+                    "Topic":chapter_data['state'],
+                    "organization":chapter_data['organization'],
+                    "experience":chapter_data['experience'],
+                    "student_category":chapter_data['student_category'],
+                    "annual_enrollments":chapter_data['annual_enrollments'],
+                    "promotes_certifications":chapter_data['promotes_certifications'],
+                    "business_setup":chapter_data['business_setup'],
+                    "fbc_id":chapter_data['fbc_id'],
+                    "utm_source":chapter_data['utm_source'],
+                    "utm_medium":chapter_data['utm_medium'],
+                    "utm_content":chapter_data['utm_content'],
+                    "utm_campaign":chapter_data['utm_campaign'],
+                    "campaign_id":chapter_data['campaign_id'],
+                    "utm_adname":chapter_data['utm_adname'],
+                    "adset_id":chapter_data['adset_id'],
+                    "fbclid":chapter_data['fbclid'],
+                    "ad_source":chapter_data['ad_source'],
+                    "ad_id":chapter_data['ad_id'],
+                    "total_questions":chapter_data['created_at'],
+                })
         if str(source_type) == "18":
             lis.append({
                     "name":"Full Name",

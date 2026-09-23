@@ -218,6 +218,8 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
             m_source = "gccealpRudrapur"
         elif src_type == 23:
             m_source = "gccaffliateEight"
+        elif src_type == 24:
+            m_source = "gccadmissionPartner"
         else:
             m_source = "gcc"
         print("m_source...",m_source)
@@ -407,6 +409,8 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
         if settings.EXCEL_INPUT == "True":
             send_email_invite(instance.id)
     elif instance.source == 22:
+        pass
+    elif instance.source == 24:
         pass
     else:
         url = settings.CSRF_TRUSTED_ORIGINS[0]+"/api/users/create_student/"

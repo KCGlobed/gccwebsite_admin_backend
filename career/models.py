@@ -85,6 +85,7 @@ class SourceType(models.IntegerChoices):
     CPALPCampaign = 21, 'CPALPCampaign'
     EALPRudrapur = 22, 'EALPRudrapur'
     Affliate8 = 23, 'Affliate8'    ## New NFET Page
+    Partner = 24, 'Partner'
     
 
 class SourceFormType(models.IntegerChoices):
@@ -157,6 +158,15 @@ class DossierData(models.Model):
     speak_with = models.IntegerField(choices=MeetingWith.choices, null=True, blank=True)
     social_url = models.TextField(max_length=200, null=True, blank=True)
     preffer_time = models.CharField(max_length=250, blank=True, null=True)
+    # for partners
+    organization = models.CharField(max_length=250, blank=True, null=True)
+    experience = models.CharField(max_length=250, blank=True, null=True)
+    student_category = models.CharField(max_length=250, blank=True, null=True)
+    annual_enrollments = models.CharField(max_length=250, blank=True, null=True)
+    promotes_certifications = models.CharField(max_length=250, blank=True, null=True)
+    business_setup = models.CharField(max_length=250, blank=True, null=True)
+
+
 
 class DossierDocument(models.Model):
     dossier = models.ForeignKey('DossierData',on_delete=models.CASCADE,null=True,blank=True,related_name='documents')

@@ -693,13 +693,13 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
             validated_data["program"] = 1
         elif str(validated_data.get("source")) in ["17","18","20","22"]:
             validated_data["program"] = 2
-        elif str(validated_data.get("source")) in ["23"]:
+        elif str(validated_data.get("source")) in ["23","24"]:
             pass
         else:
             validated_data["program"] = 3
         instance = super().create(validated_data)
         src_type = instance.source
-        if src_type in [15,20,21,22,23]:
+        if src_type in [15,20,21,22,23,24]:
             threading.Thread(
                 target=create_affliate_seven_services_async,
                 args=(instance, src_type, validated_data),

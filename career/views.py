@@ -1655,7 +1655,7 @@ class GetDossierSourceReportExcelView(APIView):
                     "ad_id":chapter_data['ad_id'],
                     "total_questions":chapter_data['created_at'],
                 })
-        if str(source_type) == "18":
+        elif str(source_type) == "18":
             lis.append({
                     "name":"Full Name",
                     "email":'Email',

@@ -162,9 +162,12 @@ class DossierData(models.Model):
     organization = models.CharField(max_length=250, blank=True, null=True)
     experience = models.CharField(max_length=250, blank=True, null=True)
     student_category = models.CharField(max_length=250, blank=True, null=True)
+    other_category_input = models.TextField(blank=True, null=True)
     annual_enrollments = models.CharField(max_length=250, blank=True, null=True)
     promotes_certifications = models.CharField(max_length=250, blank=True, null=True)
+    other_certificate_input = models.TextField(blank=True, null=True)
     business_setup = models.CharField(max_length=250, blank=True, null=True)
+    doc_file = models.FileField(upload_to="career/file/",null=True,blank=True)
 
 
 

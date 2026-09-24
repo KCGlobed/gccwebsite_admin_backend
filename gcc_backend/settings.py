@@ -153,6 +153,7 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.join(
 )
 GOOGLE_SHEET_NAME = "AffliateSix Report"
 GOOGLE_SHEET_NAME2 = "AffliateSeven Report"
+GOOGLE_SHEET_NAME3 = "Admission Partners"
 GOOGLE_WORKSHEET_NAME = "Sheet1"
 GOOGLE_WORKSHEET_NAME2 = "Affliate Seven"
 GOOGLE_WORKSHEET_NAME3 = "aeutplp"
@@ -160,6 +161,7 @@ GOOGLE_WORKSHEET_NAME4 = "aeuaplp"
 GOOGLE_WORKSHEET_NAME5 = "Affliate Eight"
 GOOGLE_WORKSHEET_NAME6 = "Rudrapur"
 GOOGLE_WORKSHEET_NAME7 = "New Affliate Seven"
+GOOGLE_WORKSHEET_NAME8 = "Admission Partner Lead"
 
 GOOGLE_CREDENTIAL_FILE = os.path.join(
     BASE_DIR, os.getenv("GOOGLE_APPLICATION_CREDENTIALS")

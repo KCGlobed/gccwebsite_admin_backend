@@ -254,7 +254,35 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
             print("API Error:", str(e))
 
     if settings.EXCEL_INPUT == "True":
-        if src_type == 15:
+        if src_type == 24:
+            trigger = False
+            try:
+                sheet = get_google_sheet_admission_partner()
+                local_time = timezone.localtime(instance.created_at)
+                create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
+                row = [
+                    instance.full_name,
+                    instance.email,
+                    instance.phone,
+                    instance.state,
+                    instance.city,
+                    instance.degree,
+                    instance.age_range,
+                    instance.degree_stage,
+                    instance.fund_mode,
+                    instance.attend_from,
+                    instance.utm_source,
+                    instance.utm_medium,
+                    instance.utm_campaign,
+                    create_times
+                ]
+                print("data inster",row)
+                sheet.append_row(row)
+                print("completed")
+            except Exception as e:
+                print("google sheet error", str(e))
+        
+        elif src_type == 15:
             if not DossierData.objects.filter(phone=instance.phone, source=src_type, created_at__date=timezone.localdate()).exclude(id=instance.id).exists():
                 trigger = True
                 try:

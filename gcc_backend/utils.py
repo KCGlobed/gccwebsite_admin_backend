@@ -258,6 +258,7 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
             trigger = False
             try:
                 sheet = get_google_sheet_admission_partner()
+                print("open excel..",sheet)
                 local_time = timezone.localtime(instance.created_at)
                 create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
                 row = [
@@ -266,17 +267,21 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
                     instance.phone,
                     instance.state,
                     instance.city,
-                    instance.degree,
-                    instance.age_range,
-                    instance.degree_stage,
-                    instance.fund_mode,
-                    instance.attend_from,
+                    instance.organization,
+                    instance.social_url,
+                    instance.doc_file.url if instance.doc_file else "",
+                    instance.experience,
+                    instance.student_category,
+                    instance.other_category_input,
+                    instance.annual_enrollments,
+                    instance.promotes_certifications,
+                    instance.other_certificate_input,
+                    instance.business_setup,
                     instance.utm_source,
                     instance.utm_medium,
-                    instance.utm_campaign,
                     create_times
                 ]
-                print("data inster",row)
+                print("data excel insert",row)
                 sheet.append_row(row)
                 print("completed")
             except Exception as e:

@@ -168,6 +168,7 @@ class DossierData(models.Model):
     other_certificate_input = models.TextField(blank=True, null=True)
     business_setup = models.CharField(max_length=250, blank=True, null=True)
     doc_file = models.FileField(upload_to="career/file/",null=True,blank=True)
+    
 
 
 

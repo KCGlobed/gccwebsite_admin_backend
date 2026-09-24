@@ -261,6 +261,11 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
                 print("open excel..",sheet)
                 local_time = timezone.localtime(instance.created_at)
                 create_times = local_time.strftime("%Y-%m-%d %H:%M:%S")
+                urls = ""
+                if instance.doc_file:
+                    doc_url = str(instance.doc_file.url).split("?")[0]
+                    urls = f'=HYPERLINK("{doc_url}", "View Document")'
+
                 row = [
                     instance.full_name,
                     instance.email,
@@ -269,7 +274,7 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
                     instance.city,
                     instance.organization,
                     instance.social_url,
-                    instance.doc_file.url if instance.doc_file else "",
+                    urls,
                     instance.experience,
                     instance.student_category,
                     instance.other_category_input,
@@ -282,7 +287,7 @@ def create_affliate_seven_services_async(instance, src_type, validated_data):
                     create_times
                 ]
                 print("data excel insert",row)
-                sheet.append_row(row)
+                sheet.append_row(row, value_input_option="USER_ENTERED")
                 print("completed")
             except Exception as e:
                 print("google sheet error", str(e))

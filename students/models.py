@@ -324,6 +324,10 @@ class StudentProfileDraft(models.Model):
     guardian_dropdown = models.IntegerField(choices=Guardian.choices, blank=True, null=True)
     guardian_other_reason = models.CharField(max_length=100, blank=True, null=True)
     guardian_key_status = models.BooleanField(default=False)
+    # Added for crm
+    pancard = models.FileField(blank=True, null=True)
+    twelveth_marksheet = models.FileField(blank=True, null=True)
+    graduation_certificate = models.FileField(blank=True, null=True)
 
 
     class Meta:

@@ -209,7 +209,8 @@ def _upload_documents(p, mobile):
 def sync_now(p) -> None:
     """Pushes one saved profile (StudentProfile or StudentProfileDraft) to the CRM."""
     if not os.getenv('CRM_CAPTURE_KEY', ''):
-        log.info('CRM sync skipped: CRM_CAPTURE_KEY is not set')
+        # warning, not info: without LOGGING config only WARNING+ reaches docker logs
+        log.warning('CRM sync skipped: CRM_CAPTURE_KEY is not set in the environment')
         return
     mobile = (p.phone or '').strip()
     if not mobile:

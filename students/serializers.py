@@ -1986,6 +1986,9 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
             datas.guardian_email = validate_data.get('guardian_email',datas.guardian_email)
             datas.guardian_dropdown = validate_data.get('guardian_dropdown',datas.guardian_dropdown)
             datas.guardian_other_reason = validate_data.get('guardian_other_reason',datas.guardian_other_reason)
+            datas.twelveth_marksheet = validate_data.get('twelveth_marksheet',datas.twelveth_marksheet)
+            datas.pancard = validate_data.get('pancard',datas.pancard)
+            datas.graduation_certificate = validate_data.get('graduation_certificate',datas.graduation_certificate)
             datas.save()
             query = datas
             if len(validate_data.get('user_experience')) > 0:
@@ -2072,7 +2075,10 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                 guardian_phone = validate_data.get('guardian_phone'),
                 guardian_email = validate_data.get('guardian_email'),
                 guardian_dropdown = validate_data.get('guardian_dropdown'),
-                guardian_other_reason = validate_data.get('guardian_other_reason')
+                guardian_other_reason = validate_data.get('guardian_other_reason'),
+                twelveth_marksheet = validate_data.get('twelveth_marksheet'),
+                pancard = validate_data.get('pancard'),
+                graduation_certificate = validate_data.get('graduation_certificate'),
             )
             query.save()
             print(validate_data)

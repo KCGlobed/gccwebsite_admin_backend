@@ -11,6 +11,7 @@ from xhtml2pdf import pisa
 from io import BytesIO
 from django.template.loader import get_template
 from google.cloud import storage
+import logging
 import os
 from gcc_backend.utils import *
 import pandas as pd
@@ -1425,6 +1426,11 @@ class CreateStudentProfileView(APIView):
         serializer = CompleteStudentSerializer(data = request.data)
         if serializer.is_valid(raise_exception = True):
             user  = serializer.save()
+            try:
+                from .crm_sync import sync_profile_async
+                sync_profile_async(type(user), user.pk)  # background: CRM must never block the website
+            except Exception:
+                logging.getLogger('crm_sync').exception('CRM sync scheduling failed')
             return Response({'message':'Message sent Successfully','data':[]})
         return Response(serializer.errors)
 
@@ -1451,7 +1457,12 @@ class CreateStudentProfileDraftView(APIView):
                     lname = " ".join(name[1:])
                     StudentProfileDraft.objects.filter(id=user.id).update(first_name = fname,last_name=lname)
             else:
-                StudentProfileDraft.objects.filter(id=user.id).update(first_name = fname)        
+                StudentProfileDraft.objects.filter(id=user.id).update(first_name = fname)
+            try:
+                from .crm_sync import sync_profile_async
+                sync_profile_async(StudentProfileDraft, user.id)  # background: CRM must never block the website
+            except Exception:
+                logging.getLogger('crm_sync').exception('CRM sync scheduling failed')
             return Response({'message':'Message sent Successfully','data':[]})
         return Response(serializer.errors)
 

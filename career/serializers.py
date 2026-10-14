@@ -9,6 +9,7 @@ from django.utils import timezone
 from utils.google_sheet import get_google_sheet, get_google_sheet_affliate_seven
 import threading
 from gcc_backend.utils import create_affliate_seven_services_async, create_affliate_six_services_async
+from utils.crm_connect import send_lead_to_crm
 
 class ListCareerApplicationSerializer(serializers.ModelSerializer):
     resume_path = serializers.SerializerMethodField('get_resume_path')
@@ -46,97 +47,117 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
         print("leads data...",validated_data)
         instance = super().create(validated_data)
         src_type = instance.source
-        if settings.MERITO_STATUS == "True":
-            if src_type == 1:
-                m_source = "gccwebsite"
-            elif src_type == 2:
-                m_source = "gccefos"
-            elif src_type == 3:
-                m_source = "gccaffiliateOne"
-            elif src_type == 4:
-                m_source = "gccaffiliateTwo"
-            elif src_type == 5:
-                m_source = "gccaffiliateThree"
-            elif src_type == 6:
-                m_source = "gccaffiliateFour"
-            elif src_type == 7:
-                m_source = "gccaffiliateFive"
-            elif src_type == 8:
-                m_source = "gccipuniversity"
-            elif src_type == 9:
-                m_source = "gccdelhiuniversity"
-            elif src_type == 10:
-                m_source = "gccccs"
-            elif src_type == 11:
-                m_source = "gcckuk"
-            elif src_type == 14:
-                m_source = "gccaffiliateSix"
-            elif src_type == 15:
-                m_source = "gccaffiliateSeven"
-            elif src_type == 16:
-                m_source = "gcccpa"
-            elif src_type == 17:
-                m_source = "gccea"
-            elif src_type == 18:
-                m_source = "gcceaWebsite"
-            elif src_type == 19:
-                m_source = "gcccpaWebsite"
-            elif src_type == 20:
-                m_source = "gccealpCampaign"
-            elif src_type == 21:
-                m_source = "gcccpalpCampaign"
-            else:
-                m_source = "gcc"
-            # API URL
-            url = settings.MERITO_BASE_URL+"/lead/v1/createOrUpdate"
+        if settings.CRM_STATUS=='True':
+            ok, result = send_lead_to_crm(
+                full_name=instance.full_name,
+                phone=instance.phone,
+                email=instance.email,
+                city=instance.city,
+                state=instance.state,
+            )
+            print("final...",result)
+            if not ok:
+                # CRM down ho to bhi user ko error mat do — log ho chuka hai,
+                # lead locally saved hai, baad mein retry kar sakte ho
+                pass
 
-            headers = {
-                "Content-Type": "application/json",
-                "secret-key": settings.MERITO_SECRETE_KEY,
-                "access-key": settings.MERITO_ACCESS_KEY
-            }
-
-            payload = {
-                "name": instance.full_name,
-                "email": instance.email,
-                "mobile": instance.phone,
-                # "lead_stage": "hot",
-                "search_criteria": "email",
-                "city": instance.city,
-                "state": instance.state,
-                "country": "India",
-                "source":m_source,
-                "cf_source":m_source,
-                # "cf_utmsource1":instance.utm_source,
-                # "medium":instance.utm_medium,
-                # "campaign":instance.utm_campaign,
-                # "cf_utmsource1": str(instance.utm_source).encode("ascii", "ignore").decode().strip(),
-                "medium": str(instance.utm_medium).encode("ascii", "ignore").decode().strip(),
-                "campaign": str(instance.utm_campaign).encode("ascii", "ignore").decode().strip(),
-                "cf_payment_status":"Pending",
-                "cf_fee_waiver_category":instance.fee_waiver_category,
-                "cf_institution_university":instance.university,
-                # "cf_refferal_code":instance.get('referred_code')
-            }
-
-            user_obj = User.objects.filter(email=instance.email).exists()
-            if user_obj:
-                payload.pop('cf_payment_status')
-                payload.pop('cf_fee_waiver_category')
-            try:
-                print("mer..",payload)
-                response = requests.post(url, headers=headers, json=payload)
-                print(response.status_code)
-                print(response.text)
-                DossierLog.objects.create(dossier=instance, message=response.text, status=int(response.status_code), activity="creating", datas=validated_data)
-            except Exception as e:
-                print("API Error:", str(e))
 
         threading.Thread(
                 target=create_affliate_six_services_async,
                 args=(instance, src_type),
                 daemon=True,
             ).start()
+
+
+
+
+        # if settings.MERITO_STATUS == "True":
+        #     if src_type == 1:
+        #         m_source = "gccwebsite"
+        #     elif src_type == 2:
+        #         m_source = "gccefos"
+        #     elif src_type == 3:
+        #         m_source = "gccaffiliateOne"
+        #     elif src_type == 4:
+        #         m_source = "gccaffiliateTwo"
+        #     elif src_type == 5:
+        #         m_source = "gccaffiliateThree"
+        #     elif src_type == 6:
+        #         m_source = "gccaffiliateFour"
+        #     elif src_type == 7:
+        #         m_source = "gccaffiliateFive"
+        #     elif src_type == 8:
+        #         m_source = "gccipuniversity"
+        #     elif src_type == 9:
+        #         m_source = "gccdelhiuniversity"
+        #     elif src_type == 10:
+        #         m_source = "gccccs"
+        #     elif src_type == 11:
+        #         m_source = "gcckuk"
+        #     elif src_type == 14:
+        #         m_source = "gccaffiliateSix"
+        #     elif src_type == 15:
+        #         m_source = "gccaffiliateSeven"
+        #     elif src_type == 16:
+        #         m_source = "gcccpa"
+        #     elif src_type == 17:
+        #         m_source = "gccea"
+        #     elif src_type == 18:
+        #         m_source = "gcceaWebsite"
+        #     elif src_type == 19:
+        #         m_source = "gcccpaWebsite"
+        #     elif src_type == 20:
+        #         m_source = "gccealpCampaign"
+        #     elif src_type == 21:
+        #         m_source = "gcccpalpCampaign"
+        #     else:
+        #         m_source = "gcc"
+        #     API URL
+        #     url = settings.MERITO_BASE_URL+"/lead/v1/createOrUpdate"
+
+        #     headers = {
+        #         "Content-Type": "application/json",
+        #         "secret-key": settings.MERITO_SECRETE_KEY,
+        #         "access-key": settings.MERITO_ACCESS_KEY
+        #     }
+
+        #     payload = {
+        #         "name": instance.full_name,
+        #         "email": instance.email,
+        #         "mobile": instance.phone,
+        #         # "lead_stage": "hot",
+        #         "search_criteria": "email",
+        #         "city": instance.city,
+        #         "state": instance.state,
+        #         "country": "India",
+        #         "source":m_source,
+        #         "cf_source":m_source,
+        #         # "cf_utmsource1":instance.utm_source,
+        #         # "medium":instance.utm_medium,
+        #         # "campaign":instance.utm_campaign,
+        #         # "cf_utmsource1": str(instance.utm_source).encode("ascii", "ignore").decode().strip(),
+        #         "medium": str(instance.utm_medium).encode("ascii", "ignore").decode().strip(),
+        #         "campaign": str(instance.utm_campaign).encode("ascii", "ignore").decode().strip(),
+        #         "cf_payment_status":"Pending",
+        #         "cf_fee_waiver_category":instance.fee_waiver_category,
+        #         "cf_institution_university":instance.university,
+        #         # "cf_refferal_code":instance.get('referred_code')
+        #     }
+
+        #     user_obj = User.objects.filter(email=instance.email).exists()
+        #     if user_obj:
+        #         payload.pop('cf_payment_status')
+        #         payload.pop('cf_fee_waiver_category')
+        #     try:
+        #         print("mer..",payload)
+        #         response = requests.post(url, headers=headers, json=payload)
+        #         print(response.status_code)
+        #         print(response.text)
+        #         DossierLog.objects.create(dossier=instance, message=response.text, status=int(response.status_code), activity="creating", datas=validated_data)
+        #     except Exception as e:
+        #         print("API Error:", str(e))
+
+        
         
         # ### for sheet 
         # if settings.EXCEL_INPUT == "True":

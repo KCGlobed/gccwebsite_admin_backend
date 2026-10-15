@@ -138,8 +138,13 @@ def _experiences(p):
         }
         if getattr(r, 'area', None):
             entry['functionalArea'] = r.area[:100]
-        months = _months_between(getattr(r, 'start_date', None), getattr(r, 'end_date', None))
-        if months is not None:
+        start, end = getattr(r, 'start_date', None), getattr(r, 'end_date', None)
+        if start:
+            entry['fromDate'] = start.isoformat()
+        if end:
+            entry['toDate'] = end.isoformat()
+        months = _months_between(start, end)
+        if months is not None:  # legacy duration, kept alongside the dates
             entry['experienceYears'] = min(months // 12, 30)
             entry['experienceMonths'] = months % 12
         out.append(entry)
@@ -413,6 +418,9 @@ def sync_now(p, partial: bool = False) -> None:
         _post_section(mobile, {'academic': academic}, 'academic')
     _post_section(mobile, {'work': _work(p)}, 'work')
     _upload_documents(p, mobile)
+    # final submit means the student accepted the declaration — lock it in the CRM too
+    # (documents go first: the CRM only accepts a declaration once everything is complete)
+    _post_section(mobile, {'declaration': True}, 'declaration')
     log.info('CRM sync done for %s (profile %s)', mobile, getattr(p, 'pk', '?'))
 
 

@@ -485,6 +485,48 @@ def crm_overrides(crm):
     return out
 
 
+def fetch_or_create_lead_no(full_name, email, phone):
+    """
+    Signup (create_student) ke liye CRM ka lead number — application_id yahi banta
+    hai, taaki student ka ek hi ID dono systems me chale (Counter sirf CRM ke paas).
+    1) lead already hai -> uska leadNo (profile-fetch, READ key)
+    2) nahi hai -> capture se bana do (source Website) -> naye lead ka leadNo
+    Koi bhi dikkat (CRM down, keys missing, phone nahi) -> None; caller NFET
+    fallback use karega — signup kabhi block nahi hota.
+    """
+    mobile = (phone or '').strip()
+    if not mobile:
+        return None
+    read_key = os.getenv('CRM_READ_KEY', '')
+    if read_key:
+        try:
+            response = requests.post(f'{_base_url()}/api/v1/leads/profile-fetch',
+                                     json={'mobile': mobile}, headers={'x-api-key': read_key}, timeout=6)
+            if response.status_code < 300:
+                lead_no = ((response.json() or {}).get('data') or {}).get('leadNo')
+                if lead_no:
+                    return lead_no
+        except Exception:  # noqa: BLE001
+            log.warning('CRM lead-no fetch failed for %s', mobile)
+    if not os.getenv('CRM_CAPTURE_KEY', ''):
+        return None
+    try:
+        payload = {'name': (full_name or '').strip() or 'Website Signup', 'mobile': mobile, 'source': 'Website'}
+        if email:
+            payload['email'] = email
+        response = requests.post(f'{_base_url()}/api/v1/leads/capture',
+                                 json=payload, headers=_headers(), timeout=8)
+        if response.status_code >= 300:
+            log.warning('CRM lead capture (signup) failed for %s: %s %s',
+                        mobile, response.status_code, response.text[:200])
+            return None
+        lead = ((response.json() or {}).get('data') or {}).get('lead') or {}
+        return lead.get('leadNo')
+    except Exception:  # noqa: BLE001
+        log.warning('CRM lead capture (signup) errored for %s', mobile)
+        return None
+
+
 # ------------------------------------------------------------------ entry points
 
 

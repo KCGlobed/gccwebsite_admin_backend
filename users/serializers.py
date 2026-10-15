@@ -269,7 +269,14 @@ class CreateStudentSerializer(serializers.ModelSerializer):
         formatted_emp = str(user.id).zfill(4)
         formatted_month = str(datetime.now().date().month).zfill(2)
         formatted_year = str(datetime.now().date().year)
-        generate_application_id = f"NFET-{formatted_year}-{formatted_month}{formatted_emp}"  # 000001
+        # application_id = CRM ka lead number (ek student = ek ID dono systems me).
+        # CRM na mile / phone na ho / number kisi aur user pe already ho -> purana NFET fallback.
+        from students.crm_sync import fetch_or_create_lead_no
+        crm_lead_no = fetch_or_create_lead_no(validate_data.get('full_name'),
+                                              validate_data.get('email'), validate_data.get('phone1'))
+        if crm_lead_no and User.objects.filter(application_id=crm_lead_no).exists():
+            crm_lead_no = None  # do accounts same phone se — duplicate application_id mat banao
+        generate_application_id = crm_lead_no or f"NFET-{formatted_year}-{formatted_month}{formatted_emp}"
         user.role = User.Student
         user.email_verified = 1
         user.is_active = True

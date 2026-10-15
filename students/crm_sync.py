@@ -374,6 +374,117 @@ def _upload_documents(p, mobile):
             log.exception('CRM document %s errored for %s', doc_type, mobile)
 
 
+# --------------------------------------------- CRM -> website (live read overlay)
+
+GENDER_BACK = {'Male': 1, 'Female': 2, 'Other': 3}
+RELATION_BACK = {'Mother': 1, 'Father': 2, 'Other': 3}  # CRM 'Guardian' bhi 3 (Other) ban jata hai
+UG_STATUS_BACK = {'Completed': 1, 'Pursuing': 2}
+EMPLOYMENT_BACK = {'Fresher': 1, 'Experienced': 2}
+
+
+def _medium_back(block):
+    """CRM medium/mediumOther -> (gcc int, other_text)."""
+    medium = (block or {}).get('medium')
+    other = ((block or {}).get('mediumOther') or '').strip()
+    if medium == 'English':
+        return 1, None
+    if medium == 'Other':
+        if other.lower() == 'hindi':
+            return 2, None
+        return 3, other or None
+    return None, None
+
+
+def fetch_crm_profile(mobile):
+    """CRM ka live profile (5s timeout). Koi bhi dikkat -> None, caller apna data dikhaye."""
+    key = os.getenv('CRM_READ_KEY', '')
+    if not key or not mobile:
+        return None
+    try:
+        response = requests.post(f'{_base_url()}/api/v1/leads/profile-fetch',
+                                 json={'mobile': mobile}, headers={'x-api-key': key}, timeout=5)
+        if response.status_code >= 300:
+            return None
+        data = (response.json() or {}).get('data') or {}
+        return data if data.get('exists') else None
+    except Exception:  # noqa: BLE001 — CRM down must never break the student's page
+        log.warning('CRM profile fetch failed for %s', mobile)
+        return None
+
+
+def crm_overrides(crm):
+    """CRM profile -> gcc field names/values, sirf bhari hui values. Identity fields
+    (email/phone) kabhi override nahi hote — wo website account ke hain."""
+    out = {}
+    per = crm.get('personal') or {}
+    for src, dst in (('firstName', 'first_name'), ('lastName', 'last_name'), ('state', 'state'),
+                     ('city', 'city'), ('pinCode', 'pincode'), ('address', 'address'), ('dob', 'date_of_birth')):
+        if per.get(src):
+            out[dst] = per[src]
+    if per.get('gender') in GENDER_BACK:
+        out['gender'] = GENDER_BACK[per['gender']]
+    g = crm.get('guardian') or {}
+    if g.get('name'):
+        out['guardian_name'] = g['name']
+    if g.get('mobile'):
+        out['guardian_phone'] = g['mobile']
+    if g.get('email'):
+        out['guardian_email'] = g['email']
+    if g.get('relationship'):
+        out['guardian_dropdown'] = RELATION_BACK.get(g['relationship'], 3)
+        if g.get('relationshipOther'):
+            out['guardian_other_reason'] = g['relationshipOther']
+        elif g['relationship'] == 'Guardian':
+            out['guardian_other_reason'] = 'Guardian'
+    a = crm.get('academic') or {}
+    for block_name, prefix in (('class10', 'tenth'), ('class12', 'twelveth')):
+        b = a.get(block_name) or {}
+        if b.get('yearOfPassing'):
+            out[f'{prefix}_passing_year'] = str(b['yearOfPassing'])
+        if b.get('score') is not None:
+            out[f'{prefix}_passing_percentage'] = str(b['score'])
+        if b.get('gradeType'):
+            out[f'{prefix}_score_type'] = b['gradeType']
+        code, other = _medium_back(b)
+        if code:
+            out[f'{prefix}_medium'] = code
+        if other:
+            out[f'{prefix}_medium_other'] = other
+    ug = a.get('ug') or {}
+    if ug.get('status') in UG_STATUS_BACK:
+        out['pg_status'] = UG_STATUS_BACK[ug['status']]
+    if ug.get('score') is not None:
+        out['pg_percentage'] = str(ug['score'])
+    if ug.get('gradeType'):
+        out['ug_score_type'] = ug['gradeType']
+    if ug.get('institution'):
+        out['institution'] = ug['institution']
+    if ug.get('qualification'):
+        out['ug_qualification'] = ug['qualification']
+    if ug.get('qualificationOther'):
+        out['ug_qualification_other'] = ug['qualificationOther']
+    code, other = _medium_back(ug)
+    if code:
+        out['medium_instruction'] = code
+    if other:
+        out['other_instruction'] = other
+    hq = a.get('higherQualification') or {}
+    if 'has' in hq:
+        out['higher_education_status'] = 1 if hq.get('has') else 2
+        if hq.get('details'):
+            out['higher_qualification'] = hq['details']
+    w = crm.get('work') or {}
+    if w.get('employmentStatus') in EMPLOYMENT_BACK:
+        out['employement_status'] = EMPLOYMENT_BACK[w['employmentStatus']]
+    experiences = w.get('experiences') or []
+    if experiences:
+        out['user_experience'] = [{
+            'company_name': e.get('organization'), 'position': e.get('designation'),
+            'area': e.get('functionalArea'), 'start_date': e.get('fromDate'), 'end_date': e.get('toDate'),
+        } for e in experiences]
+    return out
+
+
 # ------------------------------------------------------------------ entry points
 
 

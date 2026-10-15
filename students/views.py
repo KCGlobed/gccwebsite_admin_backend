@@ -1663,7 +1663,18 @@ class GetStudentProfileDraftView(APIView):
         datas = StudentProfileDraft.objects.filter(user = request.user).first()
         if datas is not None:
             serializers = StudentProfileDraftSerializer(datas)
-            return Response({'message':'success',"status":200,'data':serializers.data})
+            data = dict(serializers.data)
+            # CRM ka live data overlay karo (counsellor ke updates student ko dikhen);
+            # CRM na mile / slow ho to apna hi data chala jata hai (fallback)
+            try:
+                from .crm_sync import crm_overrides, fetch_crm_profile
+                crm = fetch_crm_profile((data.get('phone') or '').strip())
+                if crm:
+                    data.update(crm_overrides(crm))
+                    data['crm_synced'] = True
+            except Exception:
+                logging.getLogger('crm_sync').exception('CRM overlay failed')
+            return Response({'message':'success',"status":200,'data':data})
 
         return Response({'message':'failed',"status":400,'data':[]})
     

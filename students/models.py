@@ -333,6 +333,8 @@ class StudentProfileDraft(models.Model):
     twelveth_medium_other = models.CharField(max_length=100, blank=True, null=True)
     ug_qualification = models.CharField(max_length=100, blank=True, null=True)
     ug_qualification_other = models.CharField(max_length=150, blank=True, null=True)
+    # student ne declaration checkbox accept kiya (final submit) — CRM ke saath sync hota hai
+    declaration = models.BooleanField(default=False)
 
 
     class Meta:
@@ -434,6 +436,8 @@ class StudentProfile(models.Model):
     twelveth_medium_other = models.CharField(max_length=100, blank=True, null=True)
     ug_qualification = models.CharField(max_length=100, blank=True, null=True)
     ug_qualification_other = models.CharField(max_length=150, blank=True, null=True)
+    # student ne declaration checkbox accept kiya (final submit) — CRM ke saath sync hota hai
+    declaration = models.BooleanField(default=False)
 
 
     class Meta:

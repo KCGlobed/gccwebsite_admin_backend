@@ -1657,6 +1657,8 @@ def overlay_crm_profile(data):
             data['crm_synced'] = True
             data['crm_declaration'] = bool(crm.get('declarationAccepted'))
             data['crm_locked'] = bool(crm.get('locked'))
+            if crm.get('declarationAccepted'):
+                data['declaration'] = True  # checkbox state dono side ek jaisi rahe
     except Exception:
         logging.getLogger('crm_sync').exception('CRM overlay failed')
     return data

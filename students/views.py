@@ -1646,13 +1646,29 @@ class GetStudentAdmitCardAdminView(APIView):
 
 
 
+def overlay_crm_profile(data):
+    """CRM ka live profile response pe overlay — sections, documents (signed URLs)
+    aur declaration state. Koi bhi failure -> apna data hi chala jata hai."""
+    try:
+        from .crm_sync import crm_overrides, fetch_crm_profile
+        crm = fetch_crm_profile((data.get('phone') or '').strip())
+        if crm:
+            data.update(crm_overrides(crm))
+            data['crm_synced'] = True
+            data['crm_declaration'] = bool(crm.get('declarationAccepted'))
+            data['crm_locked'] = bool(crm.get('locked'))
+    except Exception:
+        logging.getLogger('crm_sync').exception('CRM overlay failed')
+    return data
+
+
 class GetStudentProfileView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
         datas = StudentProfile.objects.filter(user = request.user).first()
         if datas is not None:
             serializers = StudentProfileSerializer(datas)
-            return Response({'message':'success',"status":200,'data':serializers.data})
+            return Response({'message':'success',"status":200,'data':overlay_crm_profile(dict(serializers.data))})
 
         return Response({'message':'failed',"status":400,'data':[]})
     
@@ -1663,18 +1679,9 @@ class GetStudentProfileDraftView(APIView):
         datas = StudentProfileDraft.objects.filter(user = request.user).first()
         if datas is not None:
             serializers = StudentProfileDraftSerializer(datas)
-            data = dict(serializers.data)
-            # CRM ka live data overlay karo (counsellor ke updates student ko dikhen);
+            # CRM ka live data overlay (sections + documents + declaration);
             # CRM na mile / slow ho to apna hi data chala jata hai (fallback)
-            try:
-                from .crm_sync import crm_overrides, fetch_crm_profile
-                crm = fetch_crm_profile((data.get('phone') or '').strip())
-                if crm:
-                    data.update(crm_overrides(crm))
-                    data['crm_synced'] = True
-            except Exception:
-                logging.getLogger('crm_sync').exception('CRM overlay failed')
-            return Response({'message':'success',"status":200,'data':data})
+            return Response({'message':'success',"status":200,'data':overlay_crm_profile(dict(serializers.data))})
 
         return Response({'message':'failed',"status":400,'data':[]})
     

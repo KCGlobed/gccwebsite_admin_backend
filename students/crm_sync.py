@@ -482,6 +482,14 @@ def crm_overrides(crm):
             'company_name': e.get('organization'), 'position': e.get('designation'),
             'area': e.get('functionalArea'), 'start_date': e.get('fromDate'), 'end_date': e.get('toDate'),
         } for e in experiences]
+    # CRM ke current documents (signed URLs) -> gcc ke field names, taaki website ke
+    # "View Current Document" links CRM ki latest files dikhayen
+    docs = crm.get('documents') or {}
+    crm_to_gcc_doc = {v: k for k, v in DOC_FIELDS.items()}  # pan->pancard, class10_marksheet->dob_certificate, ...
+    for crm_type, meta in docs.items():
+        field = crm_to_gcc_doc.get(crm_type)
+        if field and (meta or {}).get('url'):
+            out[field] = meta['url']
     return out
 
 

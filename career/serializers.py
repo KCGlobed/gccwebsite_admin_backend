@@ -49,16 +49,17 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
         src_type = instance.source
         if settings.CRM_STATUS=='True':
             # raw payload me wo tracking fields bhi hain jo model store nahi karta
-            # (drive, page_url, referrer, utm_term) — wahan se utha lo
+            # (page_url, referrer, utm_term) — wahan se utha lo.
+            # source GCC ka internal concept hai — CRM apna source utm_source se
+            # khud decide karta hai (facebook->Meta Ads, google->Google Ads,
+            # khaali+no-referrer->Direct, ...), isliye yahan se source nahi bhejte.
             raw = getattr(self, 'initial_data', None) or {}
-            source_name = str(raw.get('drive') or '').strip() or instance.get_source_display()
             ok, result = send_lead_to_crm(
                 full_name=instance.full_name,
                 phone=instance.phone,
                 email=instance.email,
                 city=instance.city,
                 state=instance.state,
-                source=source_name,
                 utm={
                     'source': instance.utm_source,
                     'medium': instance.utm_medium,

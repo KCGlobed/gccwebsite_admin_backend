@@ -85,6 +85,77 @@ def _grade(score_type):
 # ------------------------------------------------------------- section builders
 
 
+def _personal_partial(p):
+    """Draft mode: whatever is filled, nothing required, no fabricated defaults."""
+    out = {}
+    for attr, key in (('first_name', 'firstName'), ('last_name', 'lastName'), ('email', 'email'),
+                      ('phone', 'mobile'), ('state', 'state'), ('city', 'city')):
+        value = getattr(p, attr, None)
+        if value:
+            out[key] = value
+    if p.date_of_birth:
+        out['dob'] = p.date_of_birth.isoformat()
+    if p.gender:
+        out['gender'] = GENDER.get(p.gender, 'Other')
+    if p.pincode:
+        out['pinCode'] = str(p.pincode).strip()
+    if p.address:
+        out['address'] = p.address[:250]
+    return out
+
+
+def _guardian_partial(p):
+    out = {}
+    if p.guardian_name or p.contact_name:
+        out['name'] = p.guardian_name or p.contact_name
+    if p.guardian_phone or p.contact_phone:
+        out['mobile'] = p.guardian_phone or p.contact_phone
+    if p.guardian_email:
+        out['email'] = p.guardian_email
+    if p.guardian_dropdown:
+        out['relationship'] = RELATION.get(p.guardian_dropdown, 'Guardian')
+    return out
+
+
+def _school_partial(p, prefix):
+    out = {}
+    year = _int(getattr(p, f'{prefix}_passing_year', None))
+    score = _float(getattr(p, f'{prefix}_passing_percentage', None))
+    if year:
+        out['yearOfPassing'] = year
+    if score is not None:
+        out['score'] = score
+        out['gradeType'] = _grade(getattr(p, f'{prefix}_score_type', None))
+    medium = getattr(p, f'{prefix}_medium', None)
+    if medium:
+        out['medium'] = MEDIUM.get(medium, 'English')
+    return out
+
+
+def _academic_partial(p):
+    out = {}
+    for prefix, name in (('tenth', 'class10'), ('twelveth', 'class12')):
+        block = _school_partial(p, prefix)
+        if block:
+            out[name] = block
+    ug = {}
+    if p.pg_status:
+        ug['status'] = UG_STATUS.get(p.pg_status, 'Completed')
+    if p.institution:
+        ug['institution'] = p.institution[:150]
+    score = _float(p.pg_percentage)
+    if score is not None:
+        ug['score'] = score
+        ug['gradeType'] = _grade(p.ug_score_type)
+    if ug:
+        out['ug'] = ug
+    if p.higher_education_status:
+        has = p.higher_education_status == 1
+        out['higherQualification'] = ({'has': True, 'details': (p.higher_qualification or 'Not provided')[:150]}
+                                      if has else {'has': False})
+    return out
+
+
 def _personal(p):
     required = (p.first_name, p.last_name, p.email, p.phone, p.date_of_birth, p.state, p.city, p.pincode)
     if not all(required):
@@ -206,8 +277,14 @@ def _upload_documents(p, mobile):
 # ------------------------------------------------------------------ entry points
 
 
-def sync_now(p) -> None:
-    """Pushes one saved profile (StudentProfile or StudentProfileDraft) to the CRM."""
+def sync_now(p, partial: bool = False) -> None:
+    """
+    Pushes one saved profile to the CRM.
+    partial=True (drafts): sends exactly the fields that are filled, in one
+    request with {"partial": true} — the CRM validates field-by-field, drops
+    invalid values and merges over what it already has.
+    partial=False (final submit): complete sections with strict validation.
+    """
     if not os.getenv('CRM_CAPTURE_KEY', ''):
         # warning, not info: without LOGGING config only WARNING+ reaches docker logs
         log.warning('CRM sync skipped: CRM_CAPTURE_KEY is not set in the environment')
@@ -216,6 +293,19 @@ def sync_now(p) -> None:
     if not mobile:
         log.info('CRM sync skipped: profile %s has no phone', getattr(p, 'pk', '?'))
         return
+
+    if partial:
+        body = {'partial': True}
+        work = _work(p) if getattr(p, 'employement_status', None) else {}  # no default on an unfilled draft
+        for key, value in (('personal', _personal_partial(p)), ('guardian', _guardian_partial(p)),
+                           ('academic', _academic_partial(p)), ('work', work)):
+            if value:
+                body[key] = value
+        _post_section(mobile, body, 'draft')  # 404 -> capture -> retry handled inside
+        _upload_documents(p, mobile)
+        log.info('CRM draft sync done for %s (draft %s)', mobile, getattr(p, 'pk', '?'))
+        return
+
     personal, guardian = _personal(p), _guardian(p)
     if personal and guardian:  # the CRM saves these as one step and needs both
         _post_section(mobile, {'personal': personal, 'guardian': guardian}, 'personal')
@@ -232,13 +322,14 @@ def sync_now(p) -> None:
 
 
 def sync_profile_async(model, pk) -> None:
-    """Fire-and-forget: re-fetches the row on the thread and syncs it."""
+    """Fire-and-forget: re-fetches the row on the thread and syncs it.
+    Drafts (StudentProfileDraft) sync in partial mode — whatever is filled goes."""
 
     def run():
         try:
             instance = model.objects.filter(pk=pk).first()
             if instance:
-                sync_now(instance)
+                sync_now(instance, partial=model.__name__ == 'StudentProfileDraft')
         except Exception:  # noqa: BLE001
             log.exception('CRM sync failed for %s %s', model.__name__, pk)
 

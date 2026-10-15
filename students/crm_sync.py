@@ -82,6 +82,55 @@ def _grade(score_type):
     return 'Percentage'
 
 
+def _medium_pair(code, other_text=None):
+    """gcc medium int -> (CRM medium, mediumOther). The CRM knows English/Other, so
+    Hindi (2) becomes Other/'Hindi' and OTHER (3) carries the typed text if any."""
+    if code == 2:
+        return 'Other', 'Hindi'
+    if code == 3:
+        return 'Other', (str(other_text).strip()[:100] or None) if other_text else None
+    return 'English', None
+
+
+def _months_between(start, end):
+    if not start:
+        return None
+    end = end or date.today()
+    months = (end.year - start.year) * 12 + (end.month - start.month)
+    return max(months, 0)
+
+
+def _experiences(p):
+    """StudentExperience / StudentExperienceDraft rows -> CRM work.experiences entries."""
+    rows = []
+    for rel in ('studentexperience_set', 'studentexperiencedraft_set'):
+        manager = getattr(p, rel, None)
+        if manager is None:
+            continue
+        try:
+            rows = list(manager.all())
+        except Exception:  # noqa: BLE001 — unsaved/fake instances have no manager
+            rows = []
+        if rows:
+            break
+    out = []
+    for r in rows:
+        if not (getattr(r, 'company_name', None) or getattr(r, 'position', None)):
+            continue
+        entry = {
+            'organization': (r.company_name or 'Not provided')[:100],
+            'designation': (r.position or 'Not provided')[:100],
+        }
+        if getattr(r, 'area', None):
+            entry['functionalArea'] = r.area[:100]
+        months = _months_between(getattr(r, 'start_date', None), getattr(r, 'end_date', None))
+        if months is not None:
+            entry['experienceYears'] = min(months // 12, 30)
+            entry['experienceMonths'] = months % 12
+        out.append(entry)
+    return out
+
+
 # ------------------------------------------------------------- section builders
 
 
@@ -114,6 +163,8 @@ def _guardian_partial(p):
         out['email'] = p.guardian_email
     if p.guardian_dropdown:
         out['relationship'] = RELATION.get(p.guardian_dropdown, 'Guardian')
+        if out['relationship'] == 'Other' and getattr(p, 'guardian_other_reason', None):
+            out['relationshipOther'] = p.guardian_other_reason[:100]
     return out
 
 
@@ -126,9 +177,11 @@ def _school_partial(p, prefix):
     if score is not None:
         out['score'] = score
         out['gradeType'] = _grade(getattr(p, f'{prefix}_score_type', None))
-    medium = getattr(p, f'{prefix}_medium', None)
-    if medium:
-        out['medium'] = MEDIUM.get(medium, 'English')
+    code = getattr(p, f'{prefix}_medium', None)
+    if code:
+        out['medium'], medium_other = _medium_pair(code)
+        if medium_other:
+            out['mediumOther'] = medium_other
     return out
 
 
@@ -143,6 +196,10 @@ def _academic_partial(p):
         ug['status'] = UG_STATUS.get(p.pg_status, 'Completed')
     if p.institution:
         ug['institution'] = p.institution[:150]
+    if p.medium_instruction:
+        ug['medium'], medium_other = _medium_pair(p.medium_instruction, p.other_instruction)
+        if medium_other:
+            ug['mediumOther'] = medium_other
     score = _float(p.pg_percentage)
     if score is not None:
         ug['score'] = score
@@ -176,6 +233,8 @@ def _guardian(p):
     if not (name and phone):
         return None
     out = {'name': name, 'relationship': RELATION.get(p.guardian_dropdown, 'Guardian'), 'mobile': phone}
+    if out['relationship'] == 'Other' and getattr(p, 'guardian_other_reason', None):
+        out['relationshipOther'] = p.guardian_other_reason[:100]
     if p.guardian_email:
         out['email'] = p.guardian_email
     return out
@@ -193,30 +252,44 @@ def _academic(p):
     ug_year = y12 + 3  # the website doesn't ask the UG passing year: standard 3-year degree
     if status == 'Completed':
         ug_year = min(ug_year, date.today().year)
+    ug_medium, ug_medium_other = _medium_pair(p.medium_instruction, p.other_instruction)
     ug = {
         'qualification': 'B.Com',  # agreed default — the website doesn't ask it
         'status': status,
         'institution': (p.institution or 'Not provided')[:150],
         'yearOfPassing': ug_year,
-        'medium': MEDIUM.get(p.medium_instruction, 'English'),
+        'medium': ug_medium,
     }
+    if ug_medium_other:
+        ug['mediumOther'] = ug_medium_other
     if ug_score is not None:
         ug['score'] = ug_score
         ug['gradeType'] = _grade(p.ug_score_type)
     has_higher = p.higher_education_status == 1
     higher = {'has': True, 'details': (p.higher_qualification or 'Not provided')[:150]} if has_higher else {'has': False}
+
+    def school(year, score, score_type, medium_code):
+        medium, medium_other = _medium_pair(medium_code)
+        block = {'yearOfPassing': year, 'gradeType': _grade(score_type), 'score': score, 'medium': medium}
+        if medium_other:
+            block['mediumOther'] = medium_other
+        return block
+
     return {
-        'class10': {'yearOfPassing': y10, 'gradeType': _grade(p.tenth_score_type), 'score': s10,
-                    'medium': MEDIUM.get(p.tenth_medium, 'English')},
-        'class12': {'yearOfPassing': y12, 'gradeType': _grade(p.twelveth_score_type), 'score': s12,
-                    'medium': MEDIUM.get(p.twelveth_medium, 'English')},
+        'class10': school(y10, s10, p.tenth_score_type, p.tenth_medium),
+        'class12': school(y12, s12, p.twelveth_score_type, p.twelveth_medium),
         'ug': ug,
         'higherQualification': higher,
     }
 
 
 def _work(p):
-    return {'employmentStatus': EMPLOYMENT.get(p.employement_status, 'Fresher')}
+    out = {'employmentStatus': EMPLOYMENT.get(p.employement_status, 'Fresher')}
+    if out['employmentStatus'] == 'Experienced':
+        entries = _experiences(p)
+        if entries:
+            out['experiences'] = entries
+    return out
 
 
 # ------------------------------------------------------------------- transport

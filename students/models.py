@@ -328,6 +328,11 @@ class StudentProfileDraft(models.Model):
     pancard = models.FileField(blank=True, null=True)
     twelveth_marksheet = models.FileField(blank=True, null=True)
     graduation_certificate = models.FileField(blank=True, null=True)
+    # Added for crm: Medium "Other" text per class + UG qualification dropdown
+    tenth_medium_other = models.CharField(max_length=100, blank=True, null=True)
+    twelveth_medium_other = models.CharField(max_length=100, blank=True, null=True)
+    ug_qualification = models.CharField(max_length=100, blank=True, null=True)
+    ug_qualification_other = models.CharField(max_length=150, blank=True, null=True)
 
 
     class Meta:
@@ -424,6 +429,11 @@ class StudentProfile(models.Model):
     pancard = models.FileField(blank=True, null=True)
     twelveth_marksheet = models.FileField(blank=True, null=True)
     graduation_certificate = models.FileField(blank=True, null=True)
+    # Added for crm: Medium "Other" text per class + UG qualification dropdown
+    tenth_medium_other = models.CharField(max_length=100, blank=True, null=True)
+    twelveth_medium_other = models.CharField(max_length=100, blank=True, null=True)
+    ug_qualification = models.CharField(max_length=100, blank=True, null=True)
+    ug_qualification_other = models.CharField(max_length=150, blank=True, null=True)
 
 
     class Meta:

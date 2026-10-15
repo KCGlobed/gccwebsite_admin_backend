@@ -1912,11 +1912,15 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
     pancard = serializers.FileField(required=False,allow_null=True)
     twelveth_marksheet = serializers.FileField(required=False,allow_null=True)
     graduation_certificate = serializers.FileField(required=False,allow_null=True)
+    tenth_medium_other = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    twelveth_medium_other = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    ug_qualification = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    ug_qualification_other = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     
 
     class Meta:
         model = StudentProfile
-        fields = ["user",'first_name','last_name','email','phone',"state","city","contact_name","contact_phone","date_of_birth","gender","nationality","pincode","address","tenth_passing_year","tenth_passing_percentage","tenth_score_type","tenth_medium","twelveth_passing_year","twelveth_passing_percentage","twelveth_score_type","twelveth_medium","medium_instruction","other_instruction","pg_status","pg_percentage","ug_score_type","institution","higher_education_status","higher_qualification","higher_qualification_institution","employement_status","aadhaar","dob_certificate","photo","signature","user_experience","resume","guardian_name","guardian_phone","guardian_email","guardian_dropdown","guardian_other_reason","pancard","twelveth_marksheet","graduation_certificate"]
+        fields = ["user",'first_name','last_name','email','phone',"state","city","contact_name","contact_phone","date_of_birth","gender","nationality","pincode","address","tenth_passing_year","tenth_passing_percentage","tenth_score_type","tenth_medium","twelveth_passing_year","twelveth_passing_percentage","twelveth_score_type","twelveth_medium","medium_instruction","other_instruction","pg_status","pg_percentage","ug_score_type","institution","higher_education_status","higher_qualification","higher_qualification_institution","employement_status","aadhaar","dob_certificate","photo","signature","user_experience","resume","guardian_name","guardian_phone","guardian_email","guardian_dropdown","guardian_other_reason","pancard","twelveth_marksheet","graduation_certificate","tenth_medium_other","twelveth_medium_other","ug_qualification","ug_qualification_other"]
         
 
     def validate(self, data):
@@ -1991,6 +1995,10 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
             datas.guardian_other_reason = validate_data.get('guardian_other_reason',datas.guardian_other_reason)
             datas.twelveth_marksheet = validate_data.get('twelveth_marksheet',datas.twelveth_marksheet)
             datas.pancard = validate_data.get('pancard',datas.pancard)
+            datas.tenth_medium_other = validate_data.get('tenth_medium_other',datas.tenth_medium_other)
+            datas.twelveth_medium_other = validate_data.get('twelveth_medium_other',datas.twelveth_medium_other)
+            datas.ug_qualification = validate_data.get('ug_qualification',datas.ug_qualification)
+            datas.ug_qualification_other = validate_data.get('ug_qualification_other',datas.ug_qualification_other)
             datas.graduation_certificate = validate_data.get('graduation_certificate',datas.graduation_certificate)
             datas.save()
             query = datas
@@ -2081,6 +2089,10 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                 guardian_other_reason = validate_data.get('guardian_other_reason'),
                 twelveth_marksheet = validate_data.get('twelveth_marksheet'),
                 pancard = validate_data.get('pancard'),
+                tenth_medium_other = validate_data.get('tenth_medium_other'),
+                twelveth_medium_other = validate_data.get('twelveth_medium_other'),
+                ug_qualification = validate_data.get('ug_qualification'),
+                ug_qualification_other = validate_data.get('ug_qualification_other'),
                 graduation_certificate = validate_data.get('graduation_certificate'),
             )
             query.save()
@@ -2332,10 +2344,14 @@ class CompleteStudentDraftSerializer(serializers.ModelSerializer) :
     pancard = models.FileField(blank=True, null=True)
     twelveth_marksheet = models.FileField(blank=True, null=True)
     graduation_certificate = models.FileField(blank=True, null=True)
+    tenth_medium_other = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    twelveth_medium_other = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    ug_qualification = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    ug_qualification_other = serializers.CharField(required=False, allow_blank=True, allow_null=True)
 
     class Meta:
         model = StudentProfileDraft
-        fields = ["user",'first_name','last_name','email','phone',"state","city","contact_name","contact_phone","date_of_birth","gender","nationality","pincode","address","tenth_passing_year","tenth_passing_percentage","tenth_score_type","tenth_medium","twelveth_passing_year","twelveth_passing_percentage","twelveth_score_type","twelveth_medium","medium_instruction","other_instruction","pg_status","pg_percentage","ug_score_type","institution","higher_education_status","higher_qualification","higher_qualification_institution","employement_status","aadhaar","dob_certificate","photo","signature","user_experience","resume","guardian_name","guardian_phone","guardian_email","guardian_dropdown","guardian_other_reason","pancard","twelveth_marksheet","graduation_certificate"]
+        fields = ["user",'first_name','last_name','email','phone',"state","city","contact_name","contact_phone","date_of_birth","gender","nationality","pincode","address","tenth_passing_year","tenth_passing_percentage","tenth_score_type","tenth_medium","twelveth_passing_year","twelveth_passing_percentage","twelveth_score_type","twelveth_medium","medium_instruction","other_instruction","pg_status","pg_percentage","ug_score_type","institution","higher_education_status","higher_qualification","higher_qualification_institution","employement_status","aadhaar","dob_certificate","photo","signature","user_experience","resume","guardian_name","guardian_phone","guardian_email","guardian_dropdown","guardian_other_reason","pancard","twelveth_marksheet","graduation_certificate","tenth_medium_other","twelveth_medium_other","ug_qualification","ug_qualification_other"]
         
 
     def validate(self, data):
@@ -2411,6 +2427,10 @@ class CompleteStudentDraftSerializer(serializers.ModelSerializer) :
             datas.guardian_dropdown = validate_data.get('guardian_dropdown',datas.guardian_dropdown)
             datas.guardian_other_reason = validate_data.get('guardian_other_reason',datas.guardian_other_reason)
             datas.pancard = validate_data.get('pancard',datas.pancard)
+            datas.tenth_medium_other = validate_data.get('tenth_medium_other',datas.tenth_medium_other)
+            datas.twelveth_medium_other = validate_data.get('twelveth_medium_other',datas.twelveth_medium_other)
+            datas.ug_qualification = validate_data.get('ug_qualification',datas.ug_qualification)
+            datas.ug_qualification_other = validate_data.get('ug_qualification_other',datas.ug_qualification_other)
             datas.twelveth_marksheet = validate_data.get('twelveth_marksheet',datas.twelveth_marksheet)
             datas.graduation_certificate = validate_data.get('graduation_certificate',datas.graduation_certificate)
             datas.save()
@@ -2483,6 +2503,10 @@ class CompleteStudentDraftSerializer(serializers.ModelSerializer) :
                 guardian_dropdown = validate_data.get('guardian_dropdown'),
                 guardian_other_reason = validate_data.get('guardian_other_reason'),
                 pancard = validate_data.get('pancard'),
+                tenth_medium_other = validate_data.get('tenth_medium_other'),
+                twelveth_medium_other = validate_data.get('twelveth_medium_other'),
+                ug_qualification = validate_data.get('ug_qualification'),
+                ug_qualification_other = validate_data.get('ug_qualification_other'),
                 twelveth_marksheet = validate_data.get('twelveth_marksheet'),
                 graduation_certificate = validate_data.get('graduation_certificate')
             )

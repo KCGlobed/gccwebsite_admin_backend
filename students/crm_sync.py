@@ -92,6 +92,21 @@ def _medium_pair(code, other_text=None):
     return 'English', None
 
 
+def _ug_qualification(p):
+    """ug_qualification dropdown -> CRM (qualification, qualificationOther).
+    'Other' carries the typed text; an unknown value becomes Other/<value>;
+    missing (old records) keeps the agreed 'B.Com' default."""
+    value = (getattr(p, 'ug_qualification', '') or '').strip()
+    other = (getattr(p, 'ug_qualification_other', '') or '').strip()
+    if value in ('B.Com', 'BBA', 'BMS'):
+        return value, None
+    if value == 'Other' or other:
+        return 'Other', (other or None) and other[:150]
+    if value:
+        return 'Other', value[:150]
+    return 'B.Com', None
+
+
 def _months_between(start, end):
     if not start:
         return None
@@ -179,7 +194,7 @@ def _school_partial(p, prefix):
         out['gradeType'] = _grade(getattr(p, f'{prefix}_score_type', None))
     code = getattr(p, f'{prefix}_medium', None)
     if code:
-        out['medium'], medium_other = _medium_pair(code)
+        out['medium'], medium_other = _medium_pair(code, getattr(p, f'{prefix}_medium_other', None))
         if medium_other:
             out['mediumOther'] = medium_other
     return out
@@ -192,6 +207,10 @@ def _academic_partial(p):
         if block:
             out[name] = block
     ug = {}
+    if getattr(p, 'ug_qualification', None):
+        ug['qualification'], q_other = _ug_qualification(p)
+        if q_other:
+            ug['qualificationOther'] = q_other
     if p.pg_status:
         ug['status'] = UG_STATUS.get(p.pg_status, 'Completed')
     if p.institution:
@@ -253,13 +272,16 @@ def _academic(p):
     if status == 'Completed':
         ug_year = min(ug_year, date.today().year)
     ug_medium, ug_medium_other = _medium_pair(p.medium_instruction, p.other_instruction)
+    qualification, qualification_other = _ug_qualification(p)
     ug = {
-        'qualification': 'B.Com',  # agreed default — the website doesn't ask it
+        'qualification': qualification,
         'status': status,
         'institution': (p.institution or 'Not provided')[:150],
         'yearOfPassing': ug_year,
         'medium': ug_medium,
     }
+    if qualification_other:
+        ug['qualificationOther'] = qualification_other
     if ug_medium_other:
         ug['mediumOther'] = ug_medium_other
     if ug_score is not None:
@@ -268,16 +290,16 @@ def _academic(p):
     has_higher = p.higher_education_status == 1
     higher = {'has': True, 'details': (p.higher_qualification or 'Not provided')[:150]} if has_higher else {'has': False}
 
-    def school(year, score, score_type, medium_code):
-        medium, medium_other = _medium_pair(medium_code)
+    def school(year, score, score_type, medium_code, other_text):
+        medium, medium_other = _medium_pair(medium_code, other_text)
         block = {'yearOfPassing': year, 'gradeType': _grade(score_type), 'score': score, 'medium': medium}
         if medium_other:
             block['mediumOther'] = medium_other
         return block
 
     return {
-        'class10': school(y10, s10, p.tenth_score_type, p.tenth_medium),
-        'class12': school(y12, s12, p.twelveth_score_type, p.twelveth_medium),
+        'class10': school(y10, s10, p.tenth_score_type, p.tenth_medium, getattr(p, 'tenth_medium_other', None)),
+        'class12': school(y12, s12, p.twelveth_score_type, p.twelveth_medium, getattr(p, 'twelveth_medium_other', None)),
         'ug': ug,
         'higherQualification': higher,
     }

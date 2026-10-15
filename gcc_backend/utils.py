@@ -630,6 +630,25 @@ def send_interview_trigger_email(student):
 
 
 def create_affliate_six_services_async(instance, src_type):
+
+    try:
+        # try ke andar: env/URL ki koi bhi gadbad neeche ke six-services flow ko na roke
+        url = (settings.CSRF_TRUSTED_ORIGINS[0] or "") + "/api/users/create_student/"
+        payload = {
+            "full_name": instance.full_name,
+            "email": instance.email,
+            "phone1": instance.phone
+        }
+        print("user....",payload)
+        response = requests.post(url, json=payload, timeout=20)
+        print(response.status_code)
+        print(response.text)
+        User.objects.filter(email=instance.email).update(city=instance.city, state=instance.state, fee_waiver_category="Free of cost (FOC)")
+        # DossierLog.objects.create(dossier=instance, message=response.text, status=int(response.status_code), activity="creating", datas=validated_data)
+    except Exception as e:
+        print("API Error:", str(e))
+
+        
     if settings.EXCEL_INPUT == "True":
         if src_type == 14:
             if not DossierData.objects.filter(phone=instance.phone, source=src_type).exclude(id=instance.id).exists():

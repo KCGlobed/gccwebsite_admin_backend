@@ -48,14 +48,27 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
         instance = super().create(validated_data)
         src_type = instance.source
         if settings.CRM_STATUS=='True':
+            # raw payload me wo tracking fields bhi hain jo model store nahi karta
+            # (drive, page_url, referrer, utm_term) — wahan se utha lo
+            raw = getattr(self, 'initial_data', None) or {}
+            source_name = str(raw.get('drive') or '').strip() or instance.get_source_display()
             ok, result = send_lead_to_crm(
                 full_name=instance.full_name,
                 phone=instance.phone,
                 email=instance.email,
                 city=instance.city,
                 state=instance.state,
+                source=source_name,
+                utm={
+                    'source': instance.utm_source,
+                    'medium': instance.utm_medium,
+                    'campaign': instance.utm_campaign,
+                    'content': instance.utm_content,
+                    'term': raw.get('utm_term'),
+                },
+                landing_page=raw.get('page_url'),
+                referrer=raw.get('referrer'),
             )
-            print("final...",result)
             if not ok:
                 # CRM down ho to bhi user ko error mat do — log ho chuka hai,
                 # lead locally saved hai, baad mein retry kar sakte ho

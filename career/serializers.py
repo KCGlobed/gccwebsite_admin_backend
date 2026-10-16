@@ -734,6 +734,32 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
             validated_data["program"] = 3
         instance = super().create(validated_data)
         src_type = instance.source
+
+        # CRM capture — createdossierform jaisa hi: CRM apna source utm_source se
+        # decide karta hai; raw payload se page_url/referrer/utm_term bhi jate hain
+        if settings.CRM_STATUS=='True':
+            raw = getattr(self, 'initial_data', None) or {}
+            ok, result = send_lead_to_crm(
+                full_name=instance.full_name,
+                phone=instance.phone,
+                email=instance.email,
+                city=instance.city,
+                state=instance.state,
+                utm={
+                    'source': instance.utm_source,
+                    'medium': instance.utm_medium,
+                    'campaign': instance.utm_campaign,
+                    'content': instance.utm_content,
+                    'term': raw.get('utm_term'),
+                },
+                landing_page=raw.get('page_url'),
+                referrer=raw.get('referrer'),
+            )
+            if not ok:
+                # CRM down ho to bhi user ko error mat do — log ho chuka hai,
+                # lead locally saved hai, baad mein retry kar sakte ho
+                pass
+
         if src_type in [15,20,21,22,23,24]:
             threading.Thread(
                 target=create_affliate_seven_services_async,

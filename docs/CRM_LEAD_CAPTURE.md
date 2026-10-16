@@ -47,7 +47,7 @@ Only two things are truly required. Everything else improves tracking and profil
 | `utm_source` | tracking | **Drives the Source** when no explicit `source` is sent — see §4. |
 | `utm_medium` `utm_campaign` `utm_term` `utm_content` | tracking | Stored in the lead's UTM block; visible on the lead detail page and filterable. |
 | `landing_page` | tracking | Which page the form was on (path or full URL). |
-| `referrer` | tracking | `document.referrer`. **Send it even when empty** — empty string means the visitor came directly (typed the URL), which classifies the lead as *Direct*. |
+| `referrer` | tracking | `document.referrer`. Stored in the lead's UTM block for tracking; it does not change the Source. |
 | `source` | optional | Explicit Source name. **Overrides the UTM logic** — lead files under exactly this Source (auto-created if new). Use for partners and named integrations. |
 | `referral_code` `partner_name` `partner_link` | partner | Partner attribution, stored in the lead's referral block (example F). |
 | `track` | optional | `ads` \| `partner` \| `other` — lead category. |
@@ -77,9 +77,8 @@ The decision runs top-down — **the first rule that matches wins**:
 4. **`utm_source` is some other value** → lead files under **"Other"**.
    The raw utm value still shows in the lead's UTM block, so campaign reporting survives.
 
-5. **No UTM at all** → the `referrer` decides:
-   - empty string `""` → **Direct** (visitor typed the URL)
-   - anything else, or referrer not sent → **Website** (organic)
+5. **No UTM at all** → **Website** (organic). The `referrer` is stored on the lead for
+   tracking but never changes the Source — there is no "Direct" classification.
 
 ### First Source vs Latest Source
 
@@ -113,7 +112,7 @@ The decision runs top-down — **the first rule that matches wins**:
 }
 ```
 
-### C — Visitor typed the URL directly → Source: Direct
+### C — Visitor typed the URL directly → Source: Website
 
 ```json
 {
@@ -122,7 +121,7 @@ The decision runs top-down — **the first rule that matches wins**:
 }
 ```
 
-Note: `referrer` khaali string bhejna zaroori hai — yahi Direct ka signal hai.
+Bina UTM ki har lead Website me jati hai — khaali referrer bhi sirf tracking me store hota hai.
 
 ### D — Came via another site / organic → Source: Website
 
@@ -207,7 +206,7 @@ lead detail's UTM block · timeline entry "Lead created via …" · exports.
    - **UTM-driven** — send no `source`; ads classify themselves via §4 (a partner link
      can use `?utm_source=<source master name>`, e.g. `rudrapur`)
    - **Named** — send `source` for the whole site / per partner
-4. Always send `referrer`, even when it is `""`.
+4. Send `referrer` too — it shows on the lead's Source & Tracking card (Source pe asar nahi karta).
 5. Test one submit per scenario you use, then open the lead in the CRM: check Source,
    the UTM block, and the timeline's "created" entry.
 
@@ -250,4 +249,4 @@ The gcc_backend already implements this integration. Entry points:
 
 ---
 
-*Source priority ek line me: explicit `source` → utm fixed map → utm == Source master name → "Other" → Direct ("" referrer) / Website.*
+*Source priority ek line me: explicit `source` → utm fixed map → utm == Source master name → "Other" → Website (no UTM).*

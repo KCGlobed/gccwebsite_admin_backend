@@ -23,8 +23,8 @@ def send_lead_to_crm(full_name, phone, email=None, city=None, state=None, *,
       program       -> CRM Program master ka naam ya code (gcc choice ke liye crm_program() use karo)
       utm           -> {'source','medium','campaign','term','content'} jo bhare hon
       landing_page  -> kis page se form bhara (CRM lead ke utm.landingPage me)
-      referrer      -> document.referrer; KHAALI string bhi bhejo — CRM uske
-                       'Direct' classification ke liye use karta hai
+      referrer      -> document.referrer; sirf tracking ke liye store hota hai,
+                       Source pe asar nahi karta (Direct classification hat chuki hai)
     Duplicate mobile/email par CRM khud re-enquiry handle karta hai.
     Returns (ok, data).
     """
@@ -40,10 +40,9 @@ def send_lead_to_crm(full_name, phone, email=None, city=None, state=None, *,
     }
     for key, value in (utm or {}).items():
         payload[f'utm_{key}'] = value
-    # khali fields mat bhejo…
+    # khali fields mat bhejo; referrer bhara ho to tracking ke liye saath jaye
     payload = {k: v for k, v in payload.items() if v}
-    # …siwaye referrer ke: '' ka matlab hai "seedha aaya" (Direct), wo bhi signal hai
-    if referrer is not None:
+    if referrer:
         payload['referrer'] = referrer
 
     try:

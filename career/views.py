@@ -1,3 +1,4 @@
+from gcc_backend.career.serializers import ListPartnerWithUsSerializer
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response

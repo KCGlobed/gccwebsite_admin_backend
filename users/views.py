@@ -256,12 +256,12 @@ class CheckEmail(APIView):
                 status_code=status.HTTP_400_BAD_REQUEST
             )
 
-        if User.objects.filter(email=email).exists():
-            return success_response(
-                message="Email exists",
-                data={"isExist":True},
-                status_code=status.HTTP_200_OK
-            )
+        # if User.objects.filter(email=email).exists():
+        #     return success_response(
+        #         message="Email exists",
+        #         data={"isExist":True},
+        #         status_code=status.HTTP_200_OK
+        #     )
 
         return success_response(
             message="Email not found",

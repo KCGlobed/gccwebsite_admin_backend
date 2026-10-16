@@ -10,7 +10,7 @@ from django.utils import timezone
 from utils.google_sheet import get_google_sheet, get_google_sheet_affliate_seven
 import threading
 from gcc_backend.utils import create_affliate_seven_services_async, create_affliate_six_services_async
-from utils.crm_connect import send_lead_to_crm
+from utils.crm_connect import crm_program, send_lead_to_crm
 
 class ListCareerApplicationSerializer(serializers.ModelSerializer):
     resume_path = serializers.SerializerMethodField('get_resume_path')
@@ -61,6 +61,7 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 email=instance.email,
                 city=instance.city,
                 state=instance.state,
+                program=crm_program(instance.program),
                 utm={
                     'source': instance.utm_source,
                     'medium': instance.utm_medium,
@@ -75,7 +76,7 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 # CRM down ho to bhi user ko error mat do — log ho chuka hai,
                 # lead locally saved hai, baad mein retry kar sakte ho
                 pass
-        
+
 
         threading.Thread(
                 target=create_affliate_six_services_async,
@@ -746,6 +747,7 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
                 email=instance.email,
                 city=instance.city,
                 state=instance.state,
+                program=crm_program(instance.program),
                 utm={
                     'source': instance.utm_source,
                     'medium': instance.utm_medium,

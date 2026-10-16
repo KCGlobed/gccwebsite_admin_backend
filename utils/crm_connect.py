@@ -5,12 +5,22 @@ from django.conf import settings
 
 log = logging.getLogger('crm_sync')
 
+# gcc ProgramType (career.models) -> CRM Program master ka naam:
+# CPA = US Accounting -> AEUAP, EA = US Taxation -> AEUTP, ACCA -> AEIAP
+GCC_PROGRAM_TO_CRM = {1: 'AEUAP', 2: 'AEUTP', 3: 'AEIAP'}
+
+
+def crm_program(program_id):
+    """gcc ka program choice (1=CPA/2=EA/3=ACCA) -> CRM Program master ka naam, warna None."""
+    return GCC_PROGRAM_TO_CRM.get(program_id)
+
 
 def send_lead_to_crm(full_name, phone, email=None, city=None, state=None, *,
-                     source=None, utm=None, landing_page=None, referrer=None):
+                     source=None, program=None, utm=None, landing_page=None, referrer=None):
     """
     Pushes one lead to the CRM capture API — tracking ke saath:
       source        -> CRM Source master ka naam (naya ho to auto-create)
+      program       -> CRM Program master ka naam ya code (gcc choice ke liye crm_program() use karo)
       utm           -> {'source','medium','campaign','term','content'} jo bhare hon
       landing_page  -> kis page se form bhara (CRM lead ke utm.landingPage me)
       referrer      -> document.referrer; KHAALI string bhi bhejo — CRM uske
@@ -25,6 +35,7 @@ def send_lead_to_crm(full_name, phone, email=None, city=None, state=None, *,
         'city': city,
         'state': state,
         'source': source,
+        'program': program,
         'landing_page': landing_page,
     }
     for key, value in (utm or {}).items():

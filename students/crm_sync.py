@@ -232,8 +232,10 @@ def _academic_partial(p):
         out['ug'] = ug
     if p.higher_education_status:
         has = p.higher_education_status == 1
-        out['higherQualification'] = ({'has': True, 'details': (p.higher_qualification or 'Not provided')[:150]}
-                                      if has else {'has': False})
+        hq = {'has': True, 'details': (p.higher_qualification or 'Not provided')[:150]} if has else {'has': False}
+        if has and getattr(p, 'higher_qualification_institution', None):
+            hq['institution'] = p.higher_qualification_institution[:150]
+        out['higherQualification'] = hq
     return out
 
 
@@ -294,6 +296,8 @@ def _academic(p):
         ug['gradeType'] = _grade(p.ug_score_type)
     has_higher = p.higher_education_status == 1
     higher = {'has': True, 'details': (p.higher_qualification or 'Not provided')[:150]} if has_higher else {'has': False}
+    if has_higher and getattr(p, 'higher_qualification_institution', None):
+        higher['institution'] = p.higher_qualification_institution[:150]
 
     def school(year, score, score_type, medium_code, other_text):
         medium, medium_other = _medium_pair(medium_code, other_text)

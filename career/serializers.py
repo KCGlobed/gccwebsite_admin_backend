@@ -51,10 +51,10 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
         if settings.CRM_STATUS=='True':
             # raw payload me wo tracking fields bhi hain jo model store nahi karta
             # (page_url/landing_page, referrer, utm_term) — wahan se utha lo.
-            # Source ka rule: ad leads (utm_source bhara) me source NAHI bhejte —
-            # CRM utm_source se khud decide karta hai (facebook->Meta Ads, ...).
-            # Bina UTM ki website leads 'Direct' me na bikhrein, isliye tab
-            # explicit 'Website' bhejte hain (explicit source priority #1 hai).
+            # Source hum nahi bhejte — CRM khud decide karta hai: utm_source se
+            # (facebook->Meta Ads, master-naam match -> wahi source), aur bina UTM
+            # pe referrer se (search engine -> Search Engine, social -> Social
+            # Media, warna Website). Direct classification hat chuki hai.
             raw = getattr(self, 'initial_data', None) or {}
             ok, result = send_lead_to_crm(
                 full_name=instance.full_name,
@@ -62,7 +62,6 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 email=instance.email,
                 city=instance.city,
                 state=instance.state,
-                source=None if instance.utm_source else 'Website',
                 program=crm_program(instance.program),
                 utm={
                     'source': instance.utm_source,
@@ -739,9 +738,9 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
         instance = super().create(validated_data)
         src_type = instance.source
 
-        # CRM capture — createdossierform jaisa hi: ad leads me CRM utm_source se
-        # source decide karta hai; bina-UTM leads explicit 'Website' me file hoti
-        # hain; raw payload se page_url/landing_page, referrer, utm_term bhi jate hain
+        # CRM capture — createdossierform jaisa hi: source CRM khud decide karta hai
+        # (utm_source / master-naam match / referrer se Search Engine-Social-Website);
+        # raw payload se page_url/landing_page, referrer, utm_term bhi jate hain
         if settings.CRM_STATUS=='True':
             raw = getattr(self, 'initial_data', None) or {}
             ok, result = send_lead_to_crm(
@@ -750,7 +749,6 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
                 email=instance.email,
                 city=instance.city,
                 state=instance.state,
-                source=None if instance.utm_source else 'Website',
                 program=crm_program(instance.program),
                 utm={
                     'source': instance.utm_source,

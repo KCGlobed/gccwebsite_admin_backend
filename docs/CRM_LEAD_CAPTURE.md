@@ -47,7 +47,7 @@ Only two things are truly required. Everything else improves tracking and profil
 | `utm_source` | tracking | **Drives the Source** when no explicit `source` is sent — see §4. |
 | `utm_medium` `utm_campaign` `utm_term` `utm_content` | tracking | Stored in the lead's UTM block; visible on the lead detail page and filterable. |
 | `landing_page` | tracking | Which page the form was on (path or full URL). |
-| `referrer` | tracking | `document.referrer`. Stored in the lead's UTM block for tracking; it does not change the Source. |
+| `referrer` | tracking | `document.referrer`. Stored in the lead's UTM block; on a no-UTM lead its host also picks Search Engine / Social Media / Website (§4 rule 5). |
 | `source` | optional | Explicit Source name. **Overrides the UTM logic** — lead files under exactly this Source (auto-created if new). Use for partners and named integrations. |
 | `referral_code` `partner_name` `partner_link` | partner | Partner attribution, stored in the lead's referral block (example F). |
 | `track` | optional | `ads` \| `partner` \| `other` — lead category. |
@@ -77,8 +77,12 @@ The decision runs top-down — **the first rule that matches wins**:
 4. **`utm_source` is some other value** → lead files under **"Other"**.
    The raw utm value still shows in the lead's UTM block, so campaign reporting survives.
 
-5. **No UTM at all** → **Website** (organic). The `referrer` is stored on the lead for
-   tracking but never changes the Source — there is no "Direct" classification.
+5. **No UTM at all** → the `referrer`'s host decides (all organic channel):
+   - search engine (google / bing / yahoo / duckduckgo / yandex / baidu / ecosia) → **Search Engine**
+   - social site (facebook / instagram / twitter·x / linkedin / youtube / whatsapp / pinterest / reddit) → **Social Media**
+   - anything else, empty or missing → **Website**
+
+   There is no "Direct" classification — the referrer is also stored on the lead for tracking.
 
 ### First Source vs Latest Source
 
@@ -123,7 +127,7 @@ The decision runs top-down — **the first rule that matches wins**:
 
 Bina UTM ki har lead Website me jati hai — khaali referrer bhi sirf tracking me store hota hai.
 
-### D — Came via another site / organic → Source: Website
+### D — Organic search visitor → Source: Search Engine
 
 ```json
 {
@@ -131,6 +135,8 @@ Bina UTM ki har lead Website me jati hai — khaali referrer bhi sirf tracking m
   "landing_page": "/programs/gmba", "referrer": "https://www.bing.com/"
 }
 ```
+
+(Referrer facebook/instagram jaisa ho to **Social Media**; kisi aur site ka ya khaali ho to **Website**.)
 
 ### E — New website / named integration → its own Source
 
@@ -206,7 +212,7 @@ lead detail's UTM block · timeline entry "Lead created via …" · exports.
    - **UTM-driven** — send no `source`; ads classify themselves via §4 (a partner link
      can use `?utm_source=<source master name>`, e.g. `rudrapur`)
    - **Named** — send `source` for the whole site / per partner
-4. Send `referrer` too — it shows on the lead's Source & Tracking card (Source pe asar nahi karta).
+4. Send `referrer` too — no-UTM leads isi se Search Engine / Social Media / Website me bat-ti hain, aur ye lead ke Source & Tracking card pe bhi dikhta hai.
 5. Test one submit per scenario you use, then open the lead in the CRM: check Source,
    the UTM block, and the timeline's "created" entry.
 
@@ -249,4 +255,4 @@ The gcc_backend already implements this integration. Entry points:
 
 ---
 
-*Source priority ek line me: explicit `source` → utm fixed map → utm == Source master name → "Other" → Website (no UTM).*
+*Source priority ek line me: explicit `source` → utm fixed map → utm == Source master name → "Other" → referrer host (Search Engine / Social Media) → Website.*

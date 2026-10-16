@@ -266,7 +266,7 @@ class CheckEmail(APIView):
 
         return success_response(
             message="Email not found",
-            data={"isExist":True},
+            data={"isExist":False},
             status_code=status.HTTP_200_OK
         )
 

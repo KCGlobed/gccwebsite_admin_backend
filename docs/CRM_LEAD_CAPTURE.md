@@ -70,10 +70,14 @@ The decision runs top-down — **the first rule that matches wins**:
    | `whatsapp` `sms` `email` `outreach` | WhatsApp / SMS / Email / Outreach | Referral |
    | `webinar` `seminar` `event` | Webinar / Seminar / Event | Events |
 
-3. **`utm_source` is some other value** → lead files under **"Other"**.
+3. **`utm_source` matches an existing Source master's name** (case-insensitive) →
+   lead files under **that source**, its channel intact. E.g. `?utm_source=rudrapur` →
+   Rudrapur (Partner). Match only — an unknown utm never auto-creates a master.
+
+4. **`utm_source` is some other value** → lead files under **"Other"**.
    The raw utm value still shows in the lead's UTM block, so campaign reporting survives.
 
-4. **No UTM at all** → the `referrer` decides:
+5. **No UTM at all** → the `referrer` decides:
    - empty string `""` → **Direct** (visitor typed the URL)
    - anything else, or referrer not sent → **Website** (organic)
 
@@ -200,7 +204,8 @@ lead detail's UTM block · timeline entry "Lead created via …" · exports.
 2. On the landing page, capture UTM params from the URL and `document.referrer`
    (snippet below), pass them to your backend with the form.
 3. Decide the source strategy:
-   - **UTM-driven** — send no `source`; ads classify themselves via §4
+   - **UTM-driven** — send no `source`; ads classify themselves via §4 (a partner link
+     can use `?utm_source=<source master name>`, e.g. `rudrapur`)
    - **Named** — send `source` for the whole site / per partner
 4. Always send `referrer`, even when it is `""`.
 5. Test one submit per scenario you use, then open the lead in the CRM: check Source,
@@ -245,4 +250,4 @@ The gcc_backend already implements this integration. Entry points:
 
 ---
 
-*Source priority ek line me: explicit `source` → utm map → "Other" → Direct ("" referrer) / Website.*
+*Source priority ek line me: explicit `source` → utm fixed map → utm == Source master name → "Other" → Direct ("" referrer) / Website.*

@@ -761,29 +761,46 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
         # (utm_source / master-naam match / referrer se Search Engine-Social-Website);
         # raw payload se page_url/landing_page, referrer, utm_term bhi jate hain
         if settings.CRM_STATUS=='True':
-            raw = getattr(self, 'initial_data', None) or {}
-            ok, result = send_lead_to_crm(
-                full_name=instance.full_name,
-                phone=instance.phone,
-                email=instance.email,
-                city=instance.city,
-                state=instance.state,
-                source=_crm_source_from_utm(instance.utm_source),
-                program=crm_program(instance.program),
-                utm={
-                    'source': instance.utm_source,
-                    'medium': instance.utm_medium,
-                    'campaign': instance.utm_campaign,
-                    'content': instance.utm_content,
-                    'term': raw.get('utm_term'),
-                },
-                landing_page=raw.get('page_url') or raw.get('landing_page'),
-                referrer=raw.get('referrer'),
-            )
-            if not ok:
-                # CRM down ho to bhi user ko error mat do — log ho chuka hai,
-                # lead locally saved hai, baad mein retry kar sakte ho
-                pass
+            if src_type == 15:
+                raw = getattr(self, 'initial_data', None) or {}
+                ok, result = send_lead_to_crm(
+                    full_name=instance.full_name,
+                    phone=instance.phone,
+                    email=instance.email,
+                    city=instance.city,
+                    state=instance.state,
+                    source=_crm_source_from_utm(instance.utm_source),
+                    program=crm_program(instance.program),
+                    utm={
+                        'source': instance.utm_source,
+                        'medium': instance.utm_medium,
+                        'campaign': instance.utm_campaign,
+                        'content': instance.utm_content,
+                        'term': raw.get('utm_term'),
+                    },
+                    landing_page=raw.get('page_url') or raw.get('landing_page'),
+                    referrer=raw.get('referrer'),
+                    # AEUAP hiring-drive form ka extra data — CRM me custom fields
+                    # ban kar Additional Lead Information card pe dikhta hai.
+                    # Pehle 5 labels import wale existing custom fields se match
+                    # karte hain, baaki naye text fields auto-create honge.
+                    custom={
+                        'Highest Qualification': instance.degree,
+                        'Age Range': instance.age_range,
+                        'Work': instance.degree_stage,
+                        'Fund Strategy': instance.fund_mode,
+                        'Attending From': instance.attend_from,
+                        'Affiliate Lead ID': raw.get('lead_id'),
+                        'Lead Score': raw.get('lead_score'),
+                        'Lead Grade': raw.get('lead_grade'),
+                        'Tags': raw.get('tags'),
+                        'Hiring Drive': raw.get('drive'),
+                    },
+                )
+                if not ok:
+                    # CRM down ho to bhi user ko error mat do — log ho chuka hai,
+                    # lead locally saved hai, baad mein retry kar sakte ho
+                    pass
 
         if src_type in [15,20,21,22,23,24]:
             threading.Thread(

@@ -107,6 +107,17 @@ def _ug_qualification(p):
     return 'B.Com', None
 
 
+def _higher_qualification(value):
+    """gcc ka merged higher_qualification ('M.Com'/'M.B.A' ya Other ka text)
+    -> CRM (qualification, details)."""
+    v = (value or '').strip()
+    if v in ('M.Com', 'M.B.A'):
+        return v, None
+    if v:
+        return 'Other', v[:150]
+    return None, None
+
+
 def _months_between(start, end):
     if not start:
         return None
@@ -232,7 +243,15 @@ def _academic_partial(p):
         out['ug'] = ug
     if p.higher_education_status:
         has = p.higher_education_status == 1
-        hq = {'has': True, 'details': (p.higher_qualification or 'Not provided')[:150]} if has else {'has': False}
+        if has:
+            hq_qual, hq_details = _higher_qualification(p.higher_qualification)
+            hq = {'has': True}
+            if hq_qual:
+                hq['qualification'] = hq_qual
+            if hq_details:
+                hq['details'] = hq_details
+        else:
+            hq = {'has': False}
         if has and getattr(p, 'higher_qualification_institution', None):
             hq['institution'] = p.higher_qualification_institution[:150]
         out['higherQualification'] = hq
@@ -295,9 +314,15 @@ def _academic(p):
         ug['score'] = ug_score
         ug['gradeType'] = _grade(p.ug_score_type)
     has_higher = p.higher_education_status == 1
-    higher = {'has': True, 'details': (p.higher_qualification or 'Not provided')[:150]} if has_higher else {'has': False}
-    if has_higher and getattr(p, 'higher_qualification_institution', None):
-        higher['institution'] = p.higher_qualification_institution[:150]
+    if has_higher:
+        hq_qual, hq_details = _higher_qualification(p.higher_qualification)
+        higher = {'has': True, 'qualification': hq_qual or 'Other'}
+        higher['details'] = hq_details or ('Not provided' if not hq_qual else None)
+        higher = {k: v for k, v in higher.items() if v is not None}
+        if getattr(p, 'higher_qualification_institution', None):
+            higher['institution'] = p.higher_qualification_institution[:150]
+    else:
+        higher = {'has': False}
 
     def school(year, score, score_type, medium_code, other_text):
         medium, medium_other = _medium_pair(medium_code, other_text)

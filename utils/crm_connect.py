@@ -16,7 +16,8 @@ def crm_program(program_id):
 
 
 def send_lead_to_crm(full_name, phone, email=None, city=None, state=None, *,
-                     source=None, program=None, utm=None, landing_page=None, referrer=None):
+                     source=None, program=None, utm=None, landing_page=None, referrer=None,
+                     custom=None):
     """
     Pushes one lead to the CRM capture API — tracking ke saath:
       source        -> CRM Source master ka naam (naya ho to auto-create)
@@ -25,6 +26,9 @@ def send_lead_to_crm(full_name, phone, email=None, city=None, state=None, *,
       landing_page  -> kis page se form bhara (CRM lead ke utm.landingPage me)
       referrer      -> document.referrer; sirf tracking ke liye store hota hai,
                        Source pe asar nahi karta (Direct classification hat chuki hai)
+      custom        -> {'Label': value} extra form data; CRM me custom field ban kar
+                       lead ke Additional Lead Information card pe dikhta hai
+                       (naya label CRM me text custom-field auto-create karta hai)
     Duplicate mobile/email par CRM khud re-enquiry handle karta hai.
     Returns (ok, data).
     """
@@ -44,6 +48,9 @@ def send_lead_to_crm(full_name, phone, email=None, city=None, state=None, *,
     payload = {k: v for k, v in payload.items() if v}
     if referrer:
         payload['referrer'] = referrer
+    custom = {k: v for k, v in (custom or {}).items() if v not in (None, '')}
+    if custom:
+        payload['custom_fields'] = custom
 
     try:
         response = requests.post(

@@ -5,16 +5,26 @@ from django.conf import settings
 
 log = logging.getLogger('crm_sync')
 
+# gcc ProgramType (career.models) -> CRM Program master ka naam:
+# CPA = US Accounting -> AEUAP, EA = US Taxation -> AEUTP, ACCA -> AEIAP
+GCC_PROGRAM_TO_CRM = {1: 'AEUAP', 2: 'AEUTP', 3: 'AEIAP'}
+
+
+def crm_program(program_id):
+    """gcc ka program choice (1=CPA/2=EA/3=ACCA) -> CRM Program master ka naam, warna None."""
+    return GCC_PROGRAM_TO_CRM.get(program_id)
+
 
 def send_lead_to_crm(full_name, phone, email=None, city=None, state=None, *,
-                     source=None, utm=None, landing_page=None, referrer=None):
+                     source=None, program=None, utm=None, landing_page=None, referrer=None):
     """
     Pushes one lead to the CRM capture API — tracking ke saath:
       source        -> CRM Source master ka naam (naya ho to auto-create)
+      program       -> CRM Program master ka naam ya code (gcc choice ke liye crm_program() use karo)
       utm           -> {'source','medium','campaign','term','content'} jo bhare hon
       landing_page  -> kis page se form bhara (CRM lead ke utm.landingPage me)
-      referrer      -> document.referrer; KHAALI string bhi bhejo — CRM uske
-                       'Direct' classification ke liye use karta hai
+      referrer      -> document.referrer; sirf tracking ke liye store hota hai,
+                       Source pe asar nahi karta (Direct classification hat chuki hai)
     Duplicate mobile/email par CRM khud re-enquiry handle karta hai.
     Returns (ok, data).
     """
@@ -25,14 +35,14 @@ def send_lead_to_crm(full_name, phone, email=None, city=None, state=None, *,
         'city': city,
         'state': state,
         'source': source,
+        'program': program,
         'landing_page': landing_page,
     }
     for key, value in (utm or {}).items():
         payload[f'utm_{key}'] = value
-    # khali fields mat bhejo…
+    # khali fields mat bhejo; referrer bhara ho to tracking ke liye saath jaye
     payload = {k: v for k, v in payload.items() if v}
-    # …siwaye referrer ke: '' ka matlab hai "seedha aaya" (Direct), wo bhi signal hai
-    if referrer is not None:
+    if referrer:
         payload['referrer'] = referrer
 
     try:

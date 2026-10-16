@@ -1,3 +1,4 @@
+from career.models import DossierData
 from rest_framework import serializers
 from .models import *
 from django.conf import settings
@@ -9,7 +10,7 @@ from django.utils import timezone
 from utils.google_sheet import get_google_sheet, get_google_sheet_affliate_seven
 import threading
 from gcc_backend.utils import create_affliate_seven_services_async, create_affliate_six_services_async
-from utils.crm_connect import send_lead_to_crm
+from utils.crm_connect import crm_program, send_lead_to_crm
 
 class ListCareerApplicationSerializer(serializers.ModelSerializer):
     resume_path = serializers.SerializerMethodField('get_resume_path')
@@ -26,6 +27,23 @@ class ListPartnerWithUsSerializer(serializers.ModelSerializer):
         model = PartnerWithUs
         fields = "__all__"
         
+
+
+def _crm_source_from_utm(utm_source):
+    """
+    utm_source agar gcc ke SourceType labels me se koi naam ho (case-insensitive) —
+    Website / Efos / Affiliate1-8 / CPA / EA / EAWebsite / CPAWebsite / EALPCampaign /
+    CPALPCampaign / EALPRudrapur / Partner ... — to wahi naam explicit `source` ban kar
+    CRM capture me jata hai (CRM usi source me file karega, naya ho to auto-create).
+    Baaki utm_source values (facebook/google/...) pe None — CRM khud decide karta hai.
+    """
+    key = (utm_source or '').strip().lower()
+    if not key:
+        return None
+    for choice in SourceType:
+        if choice.label.lower() == key:
+            return choice.label
+    return None
 
 
 class CreateDossierDataSerializer(serializers.ModelSerializer):
@@ -49,10 +67,11 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
         src_type = instance.source
         if settings.CRM_STATUS=='True':
             # raw payload me wo tracking fields bhi hain jo model store nahi karta
-            # (page_url, referrer, utm_term) — wahan se utha lo.
-            # source GCC ka internal concept hai — CRM apna source utm_source se
-            # khud decide karta hai (facebook->Meta Ads, google->Google Ads,
-            # khaali+no-referrer->Direct, ...), isliye yahan se source nahi bhejte.
+            # (page_url/landing_page, referrer, utm_term) — wahan se utha lo.
+            # Source: utm_source agar gcc ke SourceType label se match kare to wahi
+            # explicit source jata hai; warna None — CRM khud decide karta hai
+            # (facebook->Meta Ads, master-naam match -> wahi source, bina UTM pe
+            # referrer se Search Engine / Social Media / Website).
             raw = getattr(self, 'initial_data', None) or {}
             ok, result = send_lead_to_crm(
                 full_name=instance.full_name,
@@ -60,6 +79,8 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 email=instance.email,
                 city=instance.city,
                 state=instance.state,
+                source=_crm_source_from_utm(instance.utm_source),
+                program=crm_program(instance.program),
                 utm={
                     'source': instance.utm_source,
                     'medium': instance.utm_medium,
@@ -67,14 +88,14 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                     'content': instance.utm_content,
                     'term': raw.get('utm_term'),
                 },
-                landing_page=raw.get('page_url'),
+                landing_page=raw.get('page_url') or raw.get('landing_page'),
                 referrer=raw.get('referrer'),
             )
             if not ok:
                 # CRM down ho to bhi user ko error mat do — log ho chuka hai,
                 # lead locally saved hai, baad mein retry kar sakte ho
                 pass
-        
+
 
         threading.Thread(
                 target=create_affliate_six_services_async,
@@ -735,8 +756,10 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
         instance = super().create(validated_data)
         src_type = instance.source
 
-        # CRM capture — createdossierform jaisa hi: CRM apna source utm_source se
-        # decide karta hai; raw payload se page_url/referrer/utm_term bhi jate hain
+        # CRM capture — createdossierform jaisa hi: utm_source SourceType label se
+        # match kare to wahi explicit source, warna CRM khud decide karta hai
+        # (utm_source / master-naam match / referrer se Search Engine-Social-Website);
+        # raw payload se page_url/landing_page, referrer, utm_term bhi jate hain
         if settings.CRM_STATUS=='True':
             raw = getattr(self, 'initial_data', None) or {}
             ok, result = send_lead_to_crm(
@@ -745,6 +768,8 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
                 email=instance.email,
                 city=instance.city,
                 state=instance.state,
+                source=_crm_source_from_utm(instance.utm_source),
+                program=crm_program(instance.program),
                 utm={
                     'source': instance.utm_source,
                     'medium': instance.utm_medium,
@@ -752,7 +777,7 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
                     'content': instance.utm_content,
                     'term': raw.get('utm_term'),
                 },
-                landing_page=raw.get('page_url'),
+                landing_page=raw.get('page_url') or raw.get('landing_page'),
                 referrer=raw.get('referrer'),
             )
             if not ok:

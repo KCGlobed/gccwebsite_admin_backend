@@ -90,6 +90,13 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
                 },
                 landing_page=raw.get('page_url') or raw.get('landing_page'),
                 referrer=raw.get('referrer'),
+                # form ke extra fields — CRM me custom field ban kar Additional
+                # Lead Information card pe dikhte hain; khaali values strip ho jati hain
+                custom={
+                    'University': instance.university,
+                    'Referred By': instance.reffered_by,
+                    'Referral Code': instance.referred_code or raw.get('referral_code'),
+                },
             )
             if not ok:
                 # CRM down ho to bhi user ko error mat do — log ho chuka hai,
@@ -795,6 +802,9 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
                         'Lead Grade': raw.get('lead_grade'),
                         'Tags': raw.get('tags'),
                         'Hiring Drive': raw.get('drive'),
+                        'University': instance.university,
+                        'Referred By': instance.reffered_by,
+                        'Referral Code': instance.referred_code or raw.get('referral_code'),
                     },
                 )
                 if not ok:

@@ -125,6 +125,7 @@ class DossierDataForm_Create(APIView):
             elif str(source)=="17":
                 pdf_url = f"{settings.STATIC_URL}files/EA-STUDENT-DOSSIER.pdf"
             else:
+                pdf_url = f"{settings.STATIC_URL}files/GCC%20SCHOOL%20Dossier.pdf"
                 program = request.data.get("program")
                 if program:
                     if str(program) == "1":

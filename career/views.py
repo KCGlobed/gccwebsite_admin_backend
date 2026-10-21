@@ -121,14 +121,14 @@ class DossierDataForm_Create(APIView):
             obj = serializer.save()
             source = request.data.get("source")
             if str(source)=="16":
-                pdf_url = f"{settings.STATIC_URL}files/CPA-STUDENT-DOSSIER.pdf"
+                pdf_url = f"{settings.STATIC_URL}files/GCC_School_AEUAP_Student_Brochure.pdf"
             elif str(source)=="17":
                 pdf_url = f"{settings.STATIC_URL}files/EA-STUDENT-DOSSIER.pdf"
             else:
                 program = request.data.get("program")
                 if program:
                     if str(program) == "1":
-                        pdf_url = f"{settings.STATIC_URL}files/CPA-STUDENT-DOSSIER.pdf"
+                        pdf_url = f"{settings.STATIC_URL}files/GCC_School_AEUAP_Student_Brochure.pdf"
                     elif str(program) == "2":
                         pdf_url = f"{settings.STATIC_URL}files/EA-STUDENT-DOSSIER.pdf"
                     else:

@@ -1,4 +1,5 @@
 # from gcc_backend.career.serializers import ListPartnerWithUsSerializer
+from career.serializers import ListDossierDataSerializer
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -124,7 +125,14 @@ class DossierDataForm_Create(APIView):
             elif str(source)=="17":
                 pdf_url = f"{settings.STATIC_URL}files/EA-STUDENT-DOSSIER.pdf"
             else:
-                pdf_url = f"{settings.STATIC_URL}files/GCC%20SCHOOL%20Dossier.pdf"
+                program = request.data.get("program")
+                if program:
+                    if str(program) == "1":
+                        pdf_url = f"{settings.STATIC_URL}files/CPA-STUDENT-DOSSIER.pdf"
+                    elif str(program) == "2":
+                        pdf_url = f"{settings.STATIC_URL}files/EA-STUDENT-DOSSIER.pdf"
+                    else:
+                        pdf_url = f"{settings.STATIC_URL}files/GCC%20SCHOOL%20Dossier.pdf"
             return success_response(message="success", data={"url":pdf_url, "id":obj.id, "data":ListDossierDataSerializer(obj).data}, status_code=status.HTTP_200_OK)
         else:
             return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)

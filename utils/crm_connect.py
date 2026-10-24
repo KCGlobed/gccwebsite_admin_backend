@@ -62,7 +62,12 @@ def send_lead_to_crm(full_name, phone, email=None, city=None, state=None, *,
     except requests.RequestException as exc:
         log.warning('CRM capture failed for %s: %s', phone, exc)
         return False, {'error': str(exc)}
-    if response.status_code == 201:
-        return True, response.json()['data']
+    # an error page (nginx 502, Django DisallowedHost, ...) is HTML, not JSON: never let it break the form
+    try:
+        body = response.json() if response.content else {}
+    except ValueError:
+        body = {'error': f'HTTP {response.status_code}, non-JSON response'}
+    if response.status_code == 201 and isinstance(body, dict) and 'data' in body:
+        return True, body['data']
     log.warning('CRM capture rejected for %s: %s %s', phone, response.status_code, response.text[:200])
-    return False, response.json() if response.content else {}
+    return False, body

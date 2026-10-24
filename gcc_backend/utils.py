@@ -7,6 +7,7 @@ import string
 import time
 from django.core.mail import send_mail
 from django.conf import settings
+from gcc_backend.r2 import file_url
 from django.template import loader
 from datetime import datetime
 
@@ -745,7 +746,8 @@ def send_zoom_invite_email(student, zoom_link, admin_link, meeting_id, password)
             "whatsapp_url": "https://web.whatsapp.com/send?phone=918796880189",
             "support_phone": "8796880189",
             "support_email": "info@gccschool.com",
-            "header_image_url":"https://storage.googleapis.com/gcc_prod_static_files_backend/static/images/gcc_dlf_logo.jpg"
+            # GCS: "header_image_url":"https://storage.googleapis.com/gcc_prod_static_files_backend/static/images/gcc_dlf_logo.jpg"
+            "header_image_url": file_url("gcc_prod_static_files_backend", "static/images/gcc_dlf_logo.jpg")
         },
     )
     subject_admin = f"New Interview Scheduled | {obj.child_full_name} | {obj.degree}"
@@ -775,7 +777,8 @@ def send_zoom_invite_email(student, zoom_link, admin_link, meeting_id, password)
                 "whatsapp_url": "https://web.whatsapp.com/send?phone=918796880189",
                 "support_phone": "8796880189",
                 "support_email": "info@gccschool.com",
-                "header_image_url":"https://storage.googleapis.com/gcc_prod_static_files_backend/static/images/gcc_dlf_logo.jpg"
+                # GCS: "header_image_url":"https://storage.googleapis.com/gcc_prod_static_files_backend/static/images/gcc_dlf_logo.jpg"
+                "header_image_url": file_url("gcc_prod_static_files_backend", "static/images/gcc_dlf_logo.jpg")
             },
         )
     send_email_async_multiple(subject, "", settings.DEFAULT_FROM_EMAIL, [send_to], html_message, cc_list=['akshay.jangra@gccschool.com','placement.support@kcglobed.com'])
@@ -858,7 +861,8 @@ def reschedule_invite(student, zoom_link, admin_link, meeting_id, password):
             "whatsapp_url": "https://web.whatsapp.com/send?phone=918796880189",
             "support_phone": "8796880189",
             "support_email": "info@gccschool.com",
-            "header_image_url":"https://storage.googleapis.com/gcc_prod_static_files_backend/static/images/gcc_dlf_logo.jpg"
+            # GCS: "header_image_url":"https://storage.googleapis.com/gcc_prod_static_files_backend/static/images/gcc_dlf_logo.jpg"
+            "header_image_url": file_url("gcc_prod_static_files_backend", "static/images/gcc_dlf_logo.jpg")
         },
     )
     send_email_async_multiple(subject, "", settings.DEFAULT_FROM_EMAIL, [send_to, support_email], html_message, cc_list=['akshay.jangra@gccschool.com','kamal.chhabra@kcglobed.com','nitish.khatri@kcglobed.com'])

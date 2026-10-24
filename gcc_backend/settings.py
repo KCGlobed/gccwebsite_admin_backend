@@ -16,7 +16,7 @@ import environ
 import json
 from datetime import timedelta
 from google.oauth2 import service_account
-from google.cloud import storage
+# from google.cloud import storage  # GCS, kept for rollback (storage is on Cloudflare R2 now)
 
 env = environ.Env()
 environ.Env.read_env()
@@ -181,16 +181,57 @@ STORAGES = {
         "BACKEND": 'gcc_backend.gcloud.Static',
     },
 }
+# Bucket names stay the GCS ones from the env; the code passes these to client.bucket(...)
 GS_PROJECT_ID = os.getenv("GS_PROJECT_ID")
 GS_BUCKET_NAME = os.getenv("GS_BUCKET_NAME")
 GS_BUCKET_NAME_2 = os.getenv("GS_BUCKET_NAME_2")
 GS_STATIC_BUCKET_NAME = os.getenv("GS_STATIC_BUCKET_NAME")
-GS_FILE_OVERWRITE = False
+
+# Storage: Cloudflare R2 (S3 compatible), see gcc_backend/gcloud.py and gcc_backend/r2.py.
+# R2 does not allow '_' in bucket names, so each R2 bucket is the GCS name with '-'
+# (gcc_static_files_backend -> gcc-static-files-backend).
+R2_ACCESS_KEY_ID = os.getenv("R2_ACCESS_KEY_ID")
+R2_SECRET_ACCESS_KEY = os.getenv("R2_SECRET_ACCESS_KEY")
+R2_END_POINT = os.getenv("R2_END_POINT")
+R2_BUCKET_NAME = (GS_BUCKET_NAME or '').replace('_', '-')
+R2_PRIVATE_BUCKET_NAME = (GS_BUCKET_NAME_2 or '').replace('_', '-')
+R2_STATIC_BUCKET_NAME = (GS_STATIC_BUCKET_NAME or '').replace('_', '-')
+# Optional public domain per R2 bucket (custom domain or pub-xxxx.r2.dev) as JSON, e.g.
+# R2_PUBLIC_DOMAINS={"gcc-static-files-backend": "media.gccschool.com"}. Buckets without one get signed links.
+R2_PUBLIC_DOMAINS = json.loads(os.getenv("R2_PUBLIC_DOMAINS") or "{}")
+
+AWS_ACCESS_KEY_ID = R2_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY = R2_SECRET_ACCESS_KEY
+AWS_S3_ENDPOINT_URL = R2_END_POINT
+AWS_STORAGE_BUCKET_NAME = R2_BUCKET_NAME
+AWS_S3_REGION_NAME = 'auto'
+AWS_S3_SIGNATURE_VERSION = 's3v4'
+AWS_S3_ADDRESSING_STYLE = 'path'
+AWS_DEFAULT_ACL = None
+AWS_S3_FILE_OVERWRITE = False
+AWS_QUERYSTRING_AUTH = True
+# Lifetime of the signed media URLs. 7 days is the maximum S3 V4 signing allows.
+AWS_QUERYSTRING_EXPIRE = int(timedelta(days=7).total_seconds())
 MEDIA_ROOT = "media/"
 STATIC_ROOT = "static/"
-STATIC_URL = 'https://storage.googleapis.com/{}/static/'.format(GS_STATIC_BUCKET_NAME)
-MEDIA_URL = 'https://storage.googleapis.com/{}/media/'.format(GS_BUCKET_NAME)
-SECURE_MEDIA_URL = 'https://storage.googleapis.com/{}/media/'.format(GS_BUCKET_NAME_2)
+
+
+def _bucket_url(bucket, folder):
+    domain = R2_PUBLIC_DOMAINS.get(bucket)
+    return f'https://{domain}/{folder}/' if domain else f'{R2_END_POINT}/{bucket}/{folder}/'
+
+
+STATIC_URL = _bucket_url(R2_STATIC_BUCKET_NAME, 'static')
+MEDIA_URL = _bucket_url(R2_BUCKET_NAME, 'media')
+SECURE_MEDIA_URL = _bucket_url(R2_PRIVATE_BUCKET_NAME, 'media')
+
+# GCS setup, kept for rollback (with gcc_backend/gcloud.py's commented block and `from google.cloud import storage`):
+# GS_FILE_OVERWRITE = False
+# MEDIA_ROOT = "media/"
+# STATIC_ROOT = "static/"
+# STATIC_URL = 'https://storage.googleapis.com/{}/static/'.format(GS_STATIC_BUCKET_NAME)
+# MEDIA_URL = 'https://storage.googleapis.com/{}/media/'.format(GS_BUCKET_NAME)
+# SECURE_MEDIA_URL = 'https://storage.googleapis.com/{}/media/'.format(GS_BUCKET_NAME_2)
 
 SIGNED_URL_EXPIRY = int(os.getenv("SIGNED_URL_EXPIRY")) #minutes
 

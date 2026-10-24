@@ -10,14 +10,15 @@ from django.conf import settings
 from xhtml2pdf import pisa
 from io import BytesIO
 from django.template.loader import get_template
-from google.cloud import storage
+# from google.cloud import storage  # GCS, kept for rollback
+from gcc_backend.r2 import client, file_url
 import os
 import pandas as pd
 import tempfile
 import re
 from datetime import datetime, timedelta
 from django.utils.dateparse import parse_date
-client = storage.Client(project=settings.GS_PROJECT_ID)
+# client = storage.Client(project=settings.GS_PROJECT_ID)  # GCS, kept for rollback (client now comes from gcc_backend.r2)
 from django.db.models import F, FloatField, ExpressionWrapper
 from django.db.models.functions import Cast
 
@@ -35,7 +36,8 @@ class GetSessionReportPDFView(APIView):
             "user_id": request.user.id,
             "data_list": data_list,
             "report_date": datetime.now(),
-            "bucket_static_logo":f"https://storage.googleapis.com/{selected_bucket}/static/images/gccschool.jpeg"
+            # GCS: "bucket_static_logo":f"https://storage.googleapis.com/{selected_bucket}/static/images/gccschool.jpeg"
+            "bucket_static_logo":file_url(selected_bucket, "static/images/gccschool.jpeg")
         }
         # return Response({"data":context})
         # Render template
@@ -105,7 +107,8 @@ class GetPaymentReportPDFView(APIView):
             "user_id": request.user.id,
             "data_list": data_list,
             "report_date": datetime.now(),
-            "bucket_static_logo":f"https://storage.googleapis.com/{selected_bucket}/static/images/gccschool.jpeg"
+            # GCS: "bucket_static_logo":f"https://storage.googleapis.com/{selected_bucket}/static/images/gccschool.jpeg"
+            "bucket_static_logo":file_url(selected_bucket, "static/images/gccschool.jpeg")
         }
         # Render template
         template = get_template("pdf/payment_report.html")
@@ -180,7 +183,8 @@ class GetSourcePaymentReportPDFView(APIView):
             "user_id": request.user.id,
             "data_list": data_list,
             "report_date": datetime.now(),
-            "bucket_static_logo":f"https://storage.googleapis.com/{selected_bucket}/static/images/gccschool.jpeg"
+            # GCS: "bucket_static_logo":f"https://storage.googleapis.com/{selected_bucket}/static/images/gccschool.jpeg"
+            "bucket_static_logo":file_url(selected_bucket, "static/images/gccschool.jpeg")
         }
         # Render template
         template = get_template("pdf/payment_report.html")
@@ -251,7 +255,8 @@ class GetCampusFacultyReportPDFView(APIView):
             "user_id": request.user.id,
             "data_list": data_list,
             "report_date": datetime.now(),
-            "bucket_static_logo":f"https://storage.googleapis.com/{selected_bucket}/static/images/gccschool.jpeg"
+            # GCS: "bucket_static_logo":f"https://storage.googleapis.com/{selected_bucket}/static/images/gccschool.jpeg"
+            "bucket_static_logo":file_url(selected_bucket, "static/images/gccschool.jpeg")
         }
         # Render template
         template = get_template("pdf/campusfaculty_report.html")
@@ -995,7 +1000,8 @@ class GetStudentProfileReportPDFView(APIView):
             "user_id": request.user.id,
             "data_list": data_list,
             "report_date": datetime.now(),
-            "bucket_static_logo":f"https://storage.googleapis.com/{selected_bucket}/static/images/gccschool.jpeg"
+            # GCS: "bucket_static_logo":f"https://storage.googleapis.com/{selected_bucket}/static/images/gccschool.jpeg"
+            "bucket_static_logo":file_url(selected_bucket, "static/images/gccschool.jpeg")
         }
         # Render template
         template = get_template("pdf/student_profile_report.html")

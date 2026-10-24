@@ -10,7 +10,8 @@ from django.conf import settings
 from xhtml2pdf import pisa
 from io import BytesIO
 from django.template.loader import get_template
-from google.cloud import storage
+# from google.cloud import storage  # GCS, kept for rollback
+from gcc_backend.r2 import client
 import os
 from gcc_backend.utils import *
 import pandas as pd
@@ -18,7 +19,7 @@ import tempfile
 import re
 from datetime import datetime, timedelta
 from django.utils.dateparse import parse_date
-client = storage.Client(project=settings.GS_PROJECT_ID)
+# client = storage.Client(project=settings.GS_PROJECT_ID)  # GCS, kept for rollback (client now comes from gcc_backend.r2)
 import io
 from openpyxl import Workbook
 from django.core.mail import EmailMessage

@@ -10,14 +10,15 @@ from django.conf import settings
 from xhtml2pdf import pisa
 from io import BytesIO
 from django.template.loader import get_template
-from google.cloud import storage
+# from google.cloud import storage  # GCS, kept for rollback
+from gcc_backend.r2 import client, file_url
 import os
 import pandas as pd
 import tempfile
 import re
 from datetime import datetime, timedelta
 from django.utils.dateparse import parse_date
-client = storage.Client(project=settings.GS_PROJECT_ID)
+# client = storage.Client(project=settings.GS_PROJECT_ID)  # GCS, kept for rollback (client now comes from gcc_backend.r2)
 from django.db.models import F, FloatField, ExpressionWrapper
 from django.db.models.functions import Cast
 
@@ -68,9 +69,11 @@ def get_student_score_card_url(oid):
         "report_date": datetime.now(),
         # "test_link":"https://cocubes.in/gccschool-nfet",
         "test_link":"https://www.gccschool.com/myaccount",
-        "bucket_static_logo":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/gcc-admit-card-logo.jpeg",
+        # GCS: "bucket_static_logo":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/gcc-admit-card-logo.jpeg",
+        "bucket_static_logo":file_url(static_selected_bucket, "static/images/gcc-admit-card-logo.jpeg"),
         # "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/admit_card_signature.png"
-        "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/gcc_admit_card_sign.png"
+        # GCS: "bucket_static_signature":f"https://storage.googleapis.com/{static_selected_bucket}/static/images/gcc_admit_card_sign.png"
+        "bucket_static_signature":file_url(static_selected_bucket, "static/images/gcc_admit_card_sign.png")
     }
     
     # Render template

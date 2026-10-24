@@ -1,3 +1,4 @@
+{% load reports_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -98,7 +99,8 @@
                 <span class="location">DLF Cyber City, Gurugram, Haryana (India)</span>
             </td>
             <td style="text-align: right;">
-                <img src="https://storage.googleapis.com/gcc_static_files_backend/static/images/gcc-admit-card-logo.jpeg" alt="GCC Logo" style="height: 60px;">
+                {# GCS: <img src="https://storage.googleapis.com/gcc_static_files_backend/static/images/gcc-admit-card-logo.jpeg" alt="GCC Logo" style="height: 60px;"> #}
+                <img src="{% bucket_static 'static/images/gcc-admit-card-logo.jpeg' %}" alt="GCC Logo" style="height: 60px;">
             </td>
         </tr>
     </table>
@@ -156,7 +158,8 @@
     </div>
 
     <div class="signature-box">
-        <img src="https://storage.googleapis.com/gcc_static_files_backend/static/images/gcc_admit_card_sign.png" class="signature-img"><br>
+        {# GCS: <img src="https://storage.googleapis.com/gcc_static_files_backend/static/images/gcc_admit_card_sign.png" class="signature-img"><br> #}
+        <img src="{% bucket_static 'static/images/gcc_admit_card_sign.png' %}" class="signature-img"><br>
         <small>Authorized Signatory</small>
     </div>
 

@@ -10,13 +10,14 @@ from django.conf import settings
 from xhtml2pdf import pisa
 from io import BytesIO
 from django.template.loader import get_template
-from google.cloud import storage
+# from google.cloud import storage  # GCS, kept for rollback
+from gcc_backend.r2 import client
 import os
 import pandas as pd
 import tempfile
 import re
 from datetime import datetime, timedelta
-client = storage.Client(project=settings.GS_PROJECT_ID)
+# client = storage.Client(project=settings.GS_PROJECT_ID)  # GCS, kept for rollback (client now comes from gcc_backend.r2)
 from rest_framework import status
 from django.utils.dateparse import parse_date
 

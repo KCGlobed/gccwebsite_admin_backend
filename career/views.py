@@ -11,13 +11,14 @@ from rest_framework.permissions import IsAuthenticated
 from django.utils.dateparse import parse_date
 from gcc_backend.utils import *
 from gcc_backend import settings
-from google.cloud import storage
+# from google.cloud import storage  # GCS, kept for rollback
+from gcc_backend.r2 import client, file_url
 import pandas as pd
 import tempfile
 import re
 from datetime import datetime, timedelta
 from django.utils.dateparse import parse_date
-client = storage.Client(project=settings.GS_PROJECT_ID)
+# client = storage.Client(project=settings.GS_PROJECT_ID)  # GCS, kept for rollback (client now comes from gcc_backend.r2)
 import os
 
 from xhtml2pdf import pisa
@@ -121,19 +122,25 @@ class DossierDataForm_Create(APIView):
             obj = serializer.save()
             source = request.data.get("source")
             if str(source)=="16":
-                pdf_url = f"{settings.STATIC_URL}files/GCC%20School_%20AEUAP%20Student%20Brochure.pdf"
+                # GCS: pdf_url = f"{settings.STATIC_URL}files/GCC%20School_%20AEUAP%20Student%20Brochure.pdf"
+                pdf_url = file_url(settings.GS_STATIC_BUCKET_NAME, "static/files/GCC School_ AEUAP Student Brochure.pdf")
             elif str(source)=="17":
-                pdf_url = f"{settings.STATIC_URL}files/EA-STUDENT-DOSSIER.pdf"
+                # GCS: pdf_url = f"{settings.STATIC_URL}files/EA-STUDENT-DOSSIER.pdf"
+                pdf_url = file_url(settings.GS_STATIC_BUCKET_NAME, "static/files/EA-STUDENT-DOSSIER.pdf")
             else:
-                pdf_url = f"{settings.STATIC_URL}files/GCC%20SCHOOL%20Dossier.pdf"
+                # GCS: pdf_url = f"{settings.STATIC_URL}files/GCC%20SCHOOL%20Dossier.pdf"
+                pdf_url = file_url(settings.GS_STATIC_BUCKET_NAME, "static/files/GCC SCHOOL Dossier.pdf")
                 program = request.data.get("program")
                 if program:
                     if str(program) == "1":
-                        pdf_url = f"{settings.STATIC_URL}files/GCC%20School_%20AEUAP%20Student%20Brochure.pdf"
+                        # GCS: pdf_url = f"{settings.STATIC_URL}files/GCC%20School_%20AEUAP%20Student%20Brochure.pdf"
+                        pdf_url = file_url(settings.GS_STATIC_BUCKET_NAME, "static/files/GCC School_ AEUAP Student Brochure.pdf")
                     elif str(program) == "2":
-                        pdf_url = f"{settings.STATIC_URL}files/EA-STUDENT-DOSSIER.pdf"
+                        # GCS: pdf_url = f"{settings.STATIC_URL}files/EA-STUDENT-DOSSIER.pdf"
+                        pdf_url = file_url(settings.GS_STATIC_BUCKET_NAME, "static/files/EA-STUDENT-DOSSIER.pdf")
                     else:
-                        pdf_url = f"{settings.STATIC_URL}files/GCC%20SCHOOL%20Dossier.pdf"
+                        # GCS: pdf_url = f"{settings.STATIC_URL}files/GCC%20SCHOOL%20Dossier.pdf"
+                        pdf_url = file_url(settings.GS_STATIC_BUCKET_NAME, "static/files/GCC SCHOOL Dossier.pdf")
             return success_response(message="success", data={"url":pdf_url, "id":obj.id, "data":ListDossierDataSerializer(obj).data}, status_code=status.HTTP_200_OK)
         else:
             return error_response(message="failed", data = {}, status_code=status.HTTP_400_BAD_REQUEST)
@@ -2640,7 +2647,8 @@ import os
 import pandas as pd
 import tempfile
 from datetime import datetime
-from google.cloud import storage
+# from google.cloud import storage  # GCS, kept for rollback
+from gcc_backend.r2 import client
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -2800,7 +2808,7 @@ class ExcelLogicProcessAPI(APIView):
                 )
 
                 # Initialize GCP Client
-                client = storage.Client()
+                # client = storage.Client()  # GCS, kept for rollback (client now comes from gcc_backend.r2)
 
                 # Bucket
                 bucket = client.get_bucket(

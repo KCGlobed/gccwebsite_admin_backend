@@ -1,3 +1,4 @@
+{% load reports_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -104,7 +105,8 @@
             GCC School, DLF Cyber City, Gurugram, Haryana (India)
 </td>
 <td align="right" style="vertical-align:middle;">
-<img src="https://storage.googleapis.com/gcc_static_files_backend/static/images/gcc-admit-card-logo.jpeg" alt="GCC School Logo" height="60">
+{# GCS: <img src="https://storage.googleapis.com/gcc_static_files_backend/static/images/gcc-admit-card-logo.jpeg" alt="GCC School Logo" height="60"> #}
+<img src="{% bucket_static 'static/images/gcc-admit-card-logo.jpeg' %}" alt="GCC School Logo" height="60">
 </td>
 </tr>
 </table>
@@ -185,7 +187,8 @@
 <tr>
 <td width="70%"></td>
 <td width="30%" align="center">
-<img src="https://storage.googleapis.com/gcc_static_files_backend/static/images/gcc_admit_card_sign.png" alt="Signature" height="44">
+{# GCS: <img src="https://storage.googleapis.com/gcc_static_files_backend/static/images/gcc_admit_card_sign.png" alt="Signature" height="44"> #}
+<img src="{% bucket_static 'static/images/gcc_admit_card_sign.png' %}" alt="Signature" height="44">
 <br>
 <span class="sig-label">Examination Coordinator</span>
 </td>

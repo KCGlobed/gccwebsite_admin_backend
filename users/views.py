@@ -12,9 +12,10 @@ from django.core.mail import send_mail
 from django.conf import settings
 import threading
 from .service import zoom
-from google.cloud import storage
+# from google.cloud import storage  # GCS, kept for rollback
+from gcc_backend.r2 import client
 from datetime import timedelta
-client = storage.Client(project=settings.GS_PROJECT_ID)
+# client = storage.Client(project=settings.GS_PROJECT_ID)  # GCS, kept for rollback (client now comes from gcc_backend.r2)
 
 
 

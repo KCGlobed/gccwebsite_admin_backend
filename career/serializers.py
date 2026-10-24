@@ -2,6 +2,7 @@ from career.models import DossierData
 from rest_framework import serializers
 from .models import *
 from django.conf import settings
+from gcc_backend.r2 import file_url
 from users.models import User
 from students.models import StudentProfile, ManageStudentInterview
 from users.serializers import StudentProfileDetailSerializer
@@ -19,7 +20,8 @@ class ListCareerApplicationSerializer(serializers.ModelSerializer):
         fields = "__all__"
     
     def get_resume_path(self, obj):
-        url = f'https://storage.googleapis.com/{settings.GS_BUCKET_NAME}/{obj.resume_path}'
+        # GCS: url = f'https://storage.googleapis.com/{settings.GS_BUCKET_NAME}/{obj.resume_path}'
+        url = file_url(settings.GS_BUCKET_NAME, obj.resume_path)
         return url
 
 class ListPartnerWithUsSerializer(serializers.ModelSerializer):

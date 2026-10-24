@@ -9,8 +9,9 @@ from datetime import datetime, timedelta, date
 import requests
 from django.conf import settings
 from .utils import get_student_score_card_url
-from google.cloud import storage
-client = storage.Client(project=settings.GS_PROJECT_ID)
+# from google.cloud import storage  # GCS, kept for rollback
+from gcc_backend.r2 import client
+# client = storage.Client(project=settings.GS_PROJECT_ID)  # GCS, kept for rollback (client now comes from gcc_backend.r2)
 
 from django.db.models import Count
 from django.db.models.functions import TruncDate

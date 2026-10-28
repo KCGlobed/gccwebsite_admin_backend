@@ -58,12 +58,15 @@ class CreateDossierDataSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         if str(validated_data.get("source")) == "7":
             validated_data["fee_waiver_category"] = "Free of cost (FOC)"
-        if str(validated_data.get("source")) in ["16","19","22"]:
-            validated_data["program"] = 1
-        elif str(validated_data.get("source")) in ["17","18","20","22"]:
-            validated_data["program"] = 2
+        if validated_data.get("program"):
+            validated_data["program"] = validated_data.get("program")
         else:
-            validated_data["program"] = 3
+            if str(validated_data.get("source")) in ["16","19","22"]:
+                validated_data["program"] = 1
+            elif str(validated_data.get("source")) in ["17","18","20","22"]:
+                validated_data["program"] = 2
+            else:
+                validated_data["program"] = 3
 
         print("leads data...",validated_data)
         instance = super().create(validated_data)

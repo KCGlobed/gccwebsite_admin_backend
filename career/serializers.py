@@ -1,3 +1,4 @@
+from django.core.validators import validate_email
 from career.models import DossierData
 from rest_framework import serializers
 from .models import *
@@ -754,14 +755,17 @@ class CreateDossierDataCustomAffliateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data["fee_waiver_category"] = "Free of cost (FOC)"
-        if str(validated_data.get("source")) in ["16","19","21"]:
-            validated_data["program"] = 1
-        elif str(validated_data.get("source")) in ["17","18","20","22"]:
-            validated_data["program"] = 2
-        elif str(validated_data.get("source")) in ["23","24"]:
-            pass
+        if validated_data.get("program"):
+            validated_data["program"] = validated_data.get("program")
         else:
-            validated_data["program"] = 3
+            if str(validated_data.get("source")) in ["16","19","21"]:
+                validated_data["program"] = 1
+            elif str(validated_data.get("source")) in ["17","18","20","22"]:
+                validated_data["program"] = 2
+            elif str(validated_data.get("source")) in ["23","24"]:
+                pass
+            else:
+                validated_data["program"] = 3
         instance = super().create(validated_data)
         src_type = instance.source
 

@@ -49,6 +49,7 @@ urlpatterns = [
     path('student-admit-card-admin-download/<int:id>', GetStudentAdmitCardAdminView.as_view(), name="student-admit-card-admin-download"),
     path('get-student-profile/', GetStudentProfileView.as_view(), name="get-student-profile"),
     path('get-student-profile-draft/', GetStudentProfileDraftView.as_view(), name="get-student-profile-draft"),
+    path('documents/', StudentDocumentsView.as_view(), name="student-documents"),
     path('exam-re-attempt-status/', GetStudentReAttemptView.as_view(), name="exam-re-attempt-status"),
     path('get-student-profile-listing/', GetStudentProfileListingView.as_view(), name="get-student-profile-listing"),
 

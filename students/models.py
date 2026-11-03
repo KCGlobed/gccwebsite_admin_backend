@@ -666,3 +666,34 @@ class ApplicationLog(models.Model):
 
 
 
+
+
+def student_document_path(instance, filename):
+    """student-documents/<user id>/<random>.<ext>: a folder per student and a name nobody can guess."""
+    import os
+    import uuid
+    return f'student-documents/{instance.user_id}/{uuid.uuid4().hex}{os.path.splitext(filename)[1].lower()}'
+
+
+class StudentDocument(models.Model):
+    """
+    A profile document uploaded on the website (students.documents). Aadhaar, the marksheets and Other Documents
+    hold several files; the other types one, which a new upload replaces. Each file goes to the CRM as soon as it is
+    uploaded; the CRM's list (its counsellors' uploads and deletions included) is what the student then sees.
+    """
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='profile_documents')
+    doc_type = models.CharField(max_length=30)  # the CRM's type: aadhaar, pan, class10_marksheet, ...
+    file = models.FileField(upload_to=student_document_path, max_length=255)
+    original_name = models.CharField(max_length=255)
+    size = models.IntegerField()
+    content_type = models.CharField(max_length=100, blank=True, default='')
+    checksum = models.CharField(max_length=64)
+    is_current = models.BooleanField(default=True)  # False: replaced by a newer file of a single-file type
+    crm_document_id = models.CharField(max_length=24, null=True, blank=True)  # set once the CRM has it
+    crm_synced_at = models.DateTimeField(null=True, blank=True)
+    crm_error = models.CharField(max_length=300, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'student_profile_documents'
+        indexes = [models.Index(fields=['user', 'doc_type', 'is_current'])]

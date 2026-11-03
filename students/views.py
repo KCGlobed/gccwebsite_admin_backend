@@ -3127,3 +3127,23 @@ class ScheduleAssessmentAPIView(APIView):
             )
 
 
+
+
+class StudentDocumentsView(APIView):
+    """
+    The student's profile documents (students.documents): GET lists them per type (the CRM's view, several files
+    for Aadhaar, the marksheets and Other Documents); POST uploads ONE file (multipart: type, file) and sends it to
+    the CRM at once. The student is the signed-in user; there is no delete here, only the CRM deletes.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        from . import documents
+        return Response({'message': 'success', 'status': 200, 'data': documents.list_documents(request.user)})
+
+    def post(self, request):
+        from . import documents
+        doc = documents.upload(request.user, request.data.get('type'), request.FILES.get('file'))
+        if doc['unchanged']:
+            return Response({'message': 'This file is already uploaded', 'status': 200, 'data': doc})
+        return Response({'message': 'Document uploaded', 'status': 201, 'data': doc}, status=201)

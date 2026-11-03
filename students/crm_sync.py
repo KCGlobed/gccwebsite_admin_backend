@@ -386,8 +386,22 @@ def _capture_lead(mobile, body):
 
 
 def _upload_documents(p, mobile):
+    """
+    Uploads made through /api/students/documents/ (students.documents) that the CRM could not take yet go first.
+    Then the profile's old file columns — but not for a type the student uploads through that endpoint: those
+    files are already in the CRM, file by file.
+    """
+    from .documents import push_pending, types_with_uploads
+
+    user = getattr(p, 'user', None)
+    handled = set()
+    if user is not None:
+        push_pending(user, mobile)
+        handled = types_with_uploads(user)
     url = f'{_base_url()}/api/v1/leads/profile-capture/document'
     for field_name, doc_type in DOC_FIELDS.items():
+        if doc_type in handled:
+            continue
         field = getattr(p, field_name, None)
         if not field or not getattr(field, 'name', ''):
             continue

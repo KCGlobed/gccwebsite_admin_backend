@@ -9,6 +9,7 @@ from datetime import datetime, timedelta, date
 import requests
 from django.conf import settings
 from .utils import get_student_score_card_url
+from .documents import fill_missing_files
 # from google.cloud import storage  # GCS, kept for rollback
 from gcc_backend.r2 import client
 # client = storage.Client(project=settings.GS_PROJECT_ID)  # GCS, kept for rollback (client now comes from gcc_backend.r2)
@@ -2003,6 +2004,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
             datas.ug_qualification_other = validate_data.get('ug_qualification_other',datas.ug_qualification_other)
             datas.declaration = validate_data.get('declaration', datas.declaration)
             datas.graduation_certificate = validate_data.get('graduation_certificate',datas.graduation_certificate)
+            fill_missing_files(datas)  # empty file columns take the student's uploads (students.documents)
             datas.save()
             query = datas
             if len(validate_data.get('user_experience')) > 0:
@@ -2099,6 +2101,7 @@ class CompleteStudentSerializer(serializers.ModelSerializer) :
                 declaration = bool(validate_data.get('declaration')),
                 graduation_certificate = validate_data.get('graduation_certificate'),
             )
+            fill_missing_files(query)  # empty file columns take the student's uploads (students.documents)
             query.save()
             print(validate_data)
             if len(validate_data.get('user_experience')) > 0:
@@ -2439,6 +2442,7 @@ class CompleteStudentDraftSerializer(serializers.ModelSerializer) :
             datas.declaration = validate_data.get('declaration', datas.declaration)
             datas.twelveth_marksheet = validate_data.get('twelveth_marksheet',datas.twelveth_marksheet)
             datas.graduation_certificate = validate_data.get('graduation_certificate',datas.graduation_certificate)
+            fill_missing_files(datas)  # empty file columns take the student's uploads (students.documents)
             datas.save()
             query = datas
             exp_val = validate_data.get('user_experience')
@@ -2518,6 +2522,7 @@ class CompleteStudentDraftSerializer(serializers.ModelSerializer) :
                 graduation_certificate = validate_data.get('graduation_certificate')
             )
             print("before saving")
+            fill_missing_files(query)  # empty file columns take the student's uploads (students.documents)
             query.save()
             print(validate_data)
             exp_val = validate_data.get('user_experience')

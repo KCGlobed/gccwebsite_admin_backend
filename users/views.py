@@ -306,11 +306,16 @@ class Mail_test(APIView):
         email_from = settings.DEFAULT_FROM_EMAIL
         recipient_list = ['vishal.dubey@kcglobed.com']
         html_message = ''
+        from django.core.mail import send_mail
+
+        result = send_mail(subject, message, email_from, recipient_list, html_message)
+        print("result...",result)
+        
         # fail_silently=False
-        threading.Thread(
-            target=send_email_async,
-            args=(subject, message, email_from, recipient_list, html_message)
-        ).start()
+        # threading.Thread(
+        #     target=send_email_async,
+        #     args=(subject, message, email_from, recipient_list, html_message)
+        # ).start()
        
         
         return success_response(message="Success", data=[], status_code=status.HTTP_200_OK)

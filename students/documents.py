@@ -103,6 +103,17 @@ def list_documents(user) -> dict:
     }
 
 
+def documents_of_types(user, types) -> dict:
+    """list_documents narrowed to some types (get_student_document: photo and Aadhaar), each with its files."""
+    mobile = student_mobile(user)
+    crm = crm_sync.fetch_crm_profile(mobile) if mobile else None
+    files = _files(user, crm)
+    return {
+        'documents': [{'type': t, 'label': TYPES[t][0], 'files': files[t]} for t in types],
+        'crmSynced': crm is not None,
+    }
+
+
 def _checksum(file) -> str:
     digest = hashlib.sha256()
     for chunk in file.chunks():

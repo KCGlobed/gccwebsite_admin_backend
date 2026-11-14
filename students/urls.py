@@ -91,4 +91,7 @@ urlpatterns = [
     path("check_blank_payment/",ReAttemptPaymentsView.as_view(),name="check_blank_payment"),
     path("meritto_update_result/",MerittoExamResultUpdateView.as_view(),name="meritto_update_result"),
 
+    path("get_student_document/",StudentGetProfileView.as_view(),name="get_student_document"),
+
+
 ]

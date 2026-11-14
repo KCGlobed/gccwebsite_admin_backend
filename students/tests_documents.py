@@ -137,3 +137,58 @@ class StudentDocumentsTests(TestCase):
 
     def test_only_a_signed_in_student(self, _fetch):
         self.assertEqual(APIClient().get(URL).status_code, 401)
+
+
+PROFILE_DOCS_URL = '/api/students/get_student_document/'
+
+
+@mock.patch.dict(os.environ, {**ENV, 'STUDENT_DOCS_API_KEY': 'docs-key'})
+@mock.patch.object(crm_sync, 'fetch_crm_profile', return_value=None)
+class StudentGetProfileDocumentsTests(TestCase):
+    """POST /api/students/get_student_document/ {email}: photo and Aadhaar for a calling service with the API key."""
+
+    def setUp(self):
+        self.user = User.objects.create(email='meera@example.com', first_name='Meera', phone1='9876543210')
+        StudentProfileDraft.objects.create(user=self.user, phone='9876543210', email='meera.personal@example.com')
+        self.client = APIClient()
+
+    def ask(self, body, key='docs-key'):
+        return self.client.post(PROFILE_DOCS_URL, body, format='json', **({'HTTP_X_API_KEY': key} if key else {}))
+
+    def test_photo_and_aadhaar_of_the_email_with_the_key_and_no_login(self, fetch):
+        StudentDocument.objects.create(user=self.user, doc_type='photo', file='student-documents/x/p.png',
+                                       original_name='waiting.png', size=1, checksum='p')
+        fetch.return_value = {'exists': True, 'locked': False, 'documents': {
+            'aadhaar': {'files': [{'id': 'crm1', 'fileName': 'front.pdf', 'url': 'https://r2/a.pdf', 'source': 'crm'},
+                                  {'id': 'crm2', 'fileName': 'back.pdf', 'url': 'https://r2/b.pdf', 'source': 'crm'}]},
+            'pan': {'files': [{'id': 'crm3', 'fileName': 'pan.pdf', 'url': 'https://r2/p.pdf', 'source': 'crm'}]}}}
+        res = self.ask({'email': ' MEERA@example.com '})
+        self.assertEqual(res.status_code, 200, res.content)
+        data = res.json()['data']
+        self.assertEqual(data['email'], 'meera@example.com')
+        docs = {d['type']: d for d in data['documents']}
+        self.assertEqual(list(docs), ['photo', 'aadhaar'])  # nothing else, PAN included
+        self.assertEqual((docs['photo']['label'], docs['aadhaar']['label']), ('Photograph', 'Aadhaar Card'))
+        self.assertEqual([f['fileName'] for f in docs['photo']['files']], ['waiting.png'])
+        self.assertEqual([(f['fileName'], f['url']) for f in docs['aadhaar']['files']],
+                         [('front.pdf', 'https://r2/a.pdf'), ('back.pdf', 'https://r2/b.pdf')])
+        fetch.assert_called_with('9876543210')
+
+    def test_the_email_on_the_profile_finds_the_student_too(self, _fetch):
+        res = self.ask({'email': 'meera.personal@example.com'})
+        self.assertEqual(res.status_code, 200, res.content)
+        self.assertEqual(res.json()['data']['email'], 'meera@example.com')
+
+    def test_a_missing_or_wrong_key_is_refused(self, fetch):
+        self.assertEqual(self.ask({'email': 'meera@example.com'}, key=None).status_code, 401)
+        self.assertEqual(self.ask({'email': 'meera@example.com'}, key='wrong').status_code, 401)
+        with mock.patch.dict(os.environ, {'STUDENT_DOCS_API_KEY': ''}):  # no key set on the server: nobody gets in
+            self.assertEqual(self.ask({'email': 'meera@example.com'}, key='').status_code, 401)
+        # a student's own login is not a way in either
+        self.client.force_authenticate(self.user)
+        self.assertEqual(self.ask({'email': 'meera@example.com'}, key=None).status_code, 401)
+        fetch.assert_not_called()
+
+    def test_an_unknown_or_missing_email(self, _fetch):
+        self.assertEqual(self.ask({'email': 'nobody@example.com'}).status_code, 404)
+        self.assertEqual(self.ask({}).status_code, 400)

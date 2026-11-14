@@ -3147,3 +3147,37 @@ class StudentDocumentsView(APIView):
         if doc['unchanged']:
             return Response({'message': 'This file is already uploaded', 'status': 200, 'data': doc})
         return Response({'message': 'Document uploaded', 'status': 201, 'data': doc}, status=201)
+
+
+
+
+class StudentGetProfileView(APIView):
+    """
+    POST {email}: the student's Photograph and Aadhaar Card files (the CRM's list, as the student sees it). No login:
+    the calling service sends the X-API-Key header, which must match STUDENT_DOCS_API_KEY in .env.
+    """
+    authentication_classes = []
+    permission_classes = []
+
+    def post(self, request):
+        import hmac
+        from . import documents
+
+        key = os.getenv('STUDENT_DOCS_API_KEY', '')
+        if not key or not hmac.compare_digest(request.headers.get('X-API-Key', ''), key):
+            return Response({'message': 'Invalid API key', 'status': 401, 'data': []}, status=401)
+        email = str(request.data.get('email') or '').strip().lower()
+        if not email:
+            return Response({'message': 'Email is required', 'status': 400, 'data': []}, status=400)
+        # the login email, else the email on a profile or a draft
+        user = User.objects.filter(email__iexact=email).first()
+        for model in (StudentProfile, StudentProfileDraft):
+            if user is None:
+                row = model.objects.filter(email__iexact=email).exclude(user=None).select_related('user').first()
+                user = row.user if row else None
+        if user is None:
+            return Response({'message': 'Student not found', 'status': 404, 'data': []}, status=404)
+        data = documents.documents_of_types(user, ('photo', 'aadhaar'))
+        return Response({'message': 'success', 'status': 200, 'data': {'email': user.email, **data}})
+
+

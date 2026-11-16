@@ -93,5 +93,5 @@ urlpatterns = [
 
     path("get_student_document/",StudentGetProfileView.as_view(),name="get_student_document"),
 
-
+## testing
 ]

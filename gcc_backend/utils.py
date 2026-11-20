@@ -623,7 +623,7 @@ def send_interview_trigger_email(student):
         },
     )
 
-    send_email_async_multiple(subject, "", settings.DEFAULT_FROM_EMAIL, ['vironika.takkar@kcglobed.com'], html_message, cc_list=['info@kcglobed.com','akshay.jangra@gccschool.com'],)
+    send_email_async_multiple(subject, "", settings.DEFAULT_FROM_EMAIL, ['vironika.takkar@gccschool.com'], html_message, cc_list=['info@kcglobed.com','akshay.jangra@gccschool.com'],)
 
     return "success"
 
